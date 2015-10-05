@@ -1,0 +1,122 @@
+%{
+#include <cinttypes>
+#include <cstdint>
+#include <climits>
+#include <cstdio>
+#include <cfloat>
+#include <cmath>
+#include <iostream>
+#include <stack>
+using namespace std;
+#include "ast.h"
+extern "C" int yylex();
+extern "C" int yyparse();
+extern "C" FILE *yyin;
+
+void yyerror(const char *s);
+%}
+%union {
+    Node*   node;
+    int64_t integer;
+    double  real;
+    bool    boolean;
+    char*   str;
+}
+
+%right <operator> INVERT "!"
+%right <operator> NEGATE "~"
+%right <operator> QUERY "?"
+
+%token <operator> ALIAS "="
+%token <operator> ASSIGN "<-"
+
+%left <operator> ADD "+"
+%left <operator> SUB "-"
+
+%left <operator> MUL "*"
+%left <operator> DIV "/"
+%left <operator> MOD "%"
+%left <operator> POW "^"
+
+%left <operator> LTHAN "<"
+%left <operator> GTHAN ">"
+%left <operator> EQUAL "=="
+%left <operator> LTHAN_EQUAL "<="
+%left <operator> GTHAN_EQUAL ">="
+
+%left <operator> OR "or"
+%left <operator> XOR "xor"
+%left <operator> AND "and"
+
+%token <operator> SHAPER "as"
+%token NL "\n"
+%token COMMA ","
+%token LPAREN "("
+%token RPAREN ")"
+%token LBRACK "["
+%token RBRACK "]"
+%token LBRACE "{"
+%token RBRACE "}"
+%token COLON ":"
+%token SEMICOLON ";"
+
+%token <boolean> BOOL
+%token <real64> REAL
+%token <int64> INT
+%token <str> STRING
+
+%token <str> IDENT
+
+%type <node> input line literal shape expr
+
+%%
+input: %empty {}
+    | input line
+;
+line: NL {}
+    | expr NL { eval($$); }
+    | IDENT ASSIGN expr NL { $$ = new Node(); }
+    | IDENT ALIAS expr NL { $$ = new Node(); }
+;
+literal: INT  { $$ = new Node(); }
+    | REAL { $$ = new Node(); }
+    | BOOL { $$ = new Node(); }
+;
+shape: INT { $$ = new Node(); } 
+    | IDENT { $$ = new Node(); } 
+    | shape COMMA shape { $$ = new Node(); }
+;
+expr: literal { $$ = new Node(); }
+    | IDENT { $$ = new Node(); }
+    | LPAREN expr RPAREN { $$ = $2; }
+    | expr ADD expr  { $$ = new Node(); }
+    | expr SUB expr  { $$ = new Node(); }
+    | expr MUL expr  { $$ = new Node();  }
+    | expr DIV expr  { $$ = new Node(); }
+    | expr POW expr  { $$ = new Node();  }
+    | expr SHAPER LPAREN shape RPAREN { $$ = new Node(); }
+    | NEGATE expr { $$ = new Node(); }
+    | INVERT expr { $$ = new Node(); }
+    | QUERY expr { $$ = new Node();   }
+;
+%%
+int main(int, char**) {
+    /*
+    FILE *myfile = fopen("input.nls", "r");
+    if (!myfile) {
+        cout << "I cannot open input.nls!" << endl;
+        return -1;
+    }
+    
+    yyin = myfile;  // Switch from STDIN to 'input.nls'
+    */
+    do {
+        yyparse();
+    } while (!feof(yyin));
+}
+
+void yyerror(const char *s) {
+    cout << "Doh! " << s << endl;
+    exit(-1);
+}
+

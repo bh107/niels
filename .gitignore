@@ -1,3 +1,19 @@
+# Niels
+src/niels
+
+# Latex related files
+*.blb
+*.blg
+*.fls
+*.bbl
+*.aux
+*.fdb_latexmk
+*.log
+*.pdf
+
+# Vim
+*.swp
+
 # Object files
 *.o
 *.ko
