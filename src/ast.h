@@ -3,6 +3,9 @@
 #include <sstream>
 #include <iostream>
 
+namespace nir {
+
+// Structs for ranges, and the like
 struct Range {
     int64_t begin;
     int64_t end;
@@ -11,46 +14,91 @@ struct Range {
 };
 typedef struct Range Range;
 
-union Primitives {
-    int32_t int32;
-    int64_t int64;
-    float real32;
-    double real64;
+// Representation
+enum Operator {
+    NOOP,
+    ADD,
+    SUB,
+    MUL,
+    POW,
+    DIV,
+    NEG,
+    INV,
+    QUERY,
+    ASSIGN,
+    ALIAS
+};
+typedef enum Operator Operator;
+
+std::string Operator_text(Operator op);
+
+enum Structure {
+    NOSTRUCT,
+    SHAPE,
+    RANGE
+};
+typedef enum Structure Structure;
+
+std::string Structure_text(Structure structure);
+
+enum Vclass {
+    NOVAL,
+    I32,
+    I64,
+    R32,
+    R64,
+    STRING,
+    BOOL,
+    IDENT
+};
+typedef enum Vclass Vclass;
+
+std::string Vclass_text(Vclass vclass);
+
+union Vtype {
+    int32_t i32;
+    int64_t i64;
+    float r32;
+    double r64;
     bool boolean;
     char* str;
 };
-typedef union PrimitiveType PrimitiveType;
+typedef union Vtype Vtype;
 
-enum SymbolType {
-    LITERAL,
-    VARIABLE,
-    FUNCTION
-};
-typedef enum SymbolType Symboltype;
-
-struct Symbol {
-    SymbolType type;
-    Primitives val;
-};
-typedef struct Symbol Symbol;
+std::string Vtype_text(Vclass vclass, Vtype vtype);
 
 class Node {
 public:
-    Node(void);
+    Node(void);         // NOOP
+    Node(Vclass vclass, int32_t val);  // Constructors for literals
+    Node(Vclass vclass, int64_t val);
+    Node(Vclass vclass, float val);
+    Node(Vclass vclass, double val);
+    Node(Vclass vclass, bool val);
+    Node(Vclass vclass, char* val);   // strings and idents
 
-    std::string text(void);
+    Node(Operator op, Node* left);               // Expressions with unary operator
+    Node(Operator op, Node* left, Node* right);  // Expressions with unary operator
 
-    void left(Node* left);
-    void right(Node* right);
+    // Fix constructors for structures
 
     Node* left(void);
     Node* right(void);
-    Symbol* symbol(void);
 
-    Symbol _symbol;
+    std::string dot(void);
+    std::string text(void);
 private:
+    Operator _operator;
+    Structure _structure;
+    
+    Vclass _vclass;
+    Vtype _vtype;
+
     Node* _left;
     Node* _right;
 };
 
 void eval(Node* node);
+std::string dot(Node* node);
+
+}

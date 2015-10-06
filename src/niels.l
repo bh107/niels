@@ -57,11 +57,11 @@ false {
     return BOOL;
 }
 [0-9]+\.[0-9]+  {
-    yylval.real = atof(yytext);
+    yylval.r64 = atof(yytext);
     return REAL;
 }
 [0-9]+          {
-    yylval.integer = atoi(yytext);
+    yylval.i64 = atoi(yytext);
     return INT;
 }
 \".+\" {
