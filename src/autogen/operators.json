@@ -1,0 +1,18 @@
+{
+    {"flex": "+",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "-",  "bison": "SUB", "ast": "Sub", "operands": "infix", "noperands": 2},
+    {"flex": "*",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "/",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "%",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "^",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "!",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "?",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "~",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "<",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": ">",  "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "<=", "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": ">=", "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "==", "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+    {"flex": "!=", "bison": "ADD", "ast": "Add", "operands": "infix", "noperands": 2},
+}
+

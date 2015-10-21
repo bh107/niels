@@ -48,23 +48,25 @@ void yyerror(const char *s);
 %token LBRACE RBRACE
 %token COMMA COLON SEMICOLON
 
-%token <boolean> BOOL
-%token <r64> REAL
-%token <i64> INT
+%token <i32> INT32
+%token <i64> INT64
+%token <r32> REAL32
+%token <r64> REAL64
 %token <str> STRING
+%token <boolean> BOOL
 
 %token <str> IDENT
 %token <str> RETURN DEFINE WHILE WHEN IS OTHERWISE
 
 %token <str> COMMENT
 
-%type <node> input lines line block expr literal shape range args def while
+%type <node> input stmts stmt block expr scalar shape range args def while
 %type <node> when is is_chain otherwise
 
 %%
 
 input: %empty { }
-    | lines { 
+    | stmts { 
         $$ = new nir::Program();
         $$->right($1);
         cout << dot($$) << endl;
@@ -73,12 +75,12 @@ input: %empty { }
 
 block: LBRACE RBRACE { $$ = new nir::Block(new nir::Anon(), new nir::Noop()); }
     | LBRACE expr RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
-    | LBRACE line RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
-    | LBRACE lines RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
+    | LBRACE stmt RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
+    | LBRACE stmts RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
     | IDENT LBRACE RBRACE { $$ = new nir::Block(new nir::Ident($1), new nir::Noop()); }
     | IDENT LBRACE expr RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
-    | IDENT LBRACE line RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
-    | IDENT LBRACE lines RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
+    | IDENT LBRACE stmt RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
+    | IDENT LBRACE stmts RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
 ;
 
 def: DEFINE IDENT LPAREN RPAREN block {
@@ -91,7 +93,7 @@ while: WHILE LPAREN expr RPAREN block {
     }
 ;
 
-is: IS LPAREN literal RPAREN block {
+is: IS LPAREN scalar RPAREN block {
         $$ = new nir::Is($3, $5);
     }
 ;
@@ -129,8 +131,8 @@ when: WHEN LPAREN expr RPAREN is_chain otherwise {
     }
 ;
 
-lines: line { $$ = new nir::StmtList($1); }
-    | lines line {
+stmts: stmt { $$ = new nir::StmtList($1); }
+    | stmts stmt {
         nir::Node* next = $1;
         while(next->right()) {
             next = next->right();
@@ -139,17 +141,20 @@ lines: line { $$ = new nir::StmtList($1); }
     }
 ;
 
-line: NL { $$ = new nir::Noop(); }
+stmt: NL { $$ = new nir::Noop(); }
     | COMMENT { $$ = new nir::Comment($1); }
-    | expr NL { $$ = new nir::Line($1); }
+    | expr NL { $$ = $1; }
     | def { $$ = $1; }
     | when { $$ = $1; }
     | while { $$ = $1; }
     | block { $$ = $1; }
 ;
 
-literal: INT  { $$ = new nir::Int64($1); }
-    | REAL { $$ = new nir::Real64($1); }
+
+scalar: INT32  { $$ = new nir::Int32($1); }
+    | INT64  { $$ = new nir::Int64($1); }
+    | REAL32 { $$ = new nir::Real32($1); }
+    | REAL64 { $$ = new nir::Real64($1); }
     | BOOL { $$ = new nir::Bool($1); }
     | STRING { $$ = new nir::Str($1); }
 ;
@@ -175,7 +180,7 @@ range: LBRACK expr SEMICOLON expr RBRACK { $$ = new nir::Range(false, false, $2,
     | expr SEMICOLON expr { $$ = new nir::Range(false, false, $1, $3 ); }
 ;
 
-expr: literal { $$ = $1; }
+expr: scalar { $$ = $1; }
     | range
     | IDENT   { $$ = new nir::Ident($1); }
     | LPAREN expr RPAREN { $$ = $2; }
@@ -198,6 +203,7 @@ expr: literal { $$ = $1; }
     | QUERY expr  { $$ = new nir::Query($2); }
     | expr AS LPAREN shape RPAREN { $$ = new nir::As($1, $4); }
 ;
+
 %%
 int main(int, char**) {
     FILE *myfile = fopen("input.nls", "r");

@@ -81,22 +81,54 @@ stringstream _comment;
 "is" { return IS; }
 "otherwise" { return OTHERWISE; }
 
-true {
+
+"true" {
     yylval.boolean = true;
     return BOOL;
 }
-false {
+"false" {
     yylval.boolean = false;
     return BOOL;
 }
+"bool" {
+    yylval.boolean = true;
+    return BOOL;
+}
+
 [0-9]+\.[0-9]+  {
     yylval.r64 = atof(yytext);
-    return REAL;
+    return REAL64;
 }
+"real(32)" {
+    yylval.r32 = atof(yytext);
+    return REAL32;
+}
+"real(64)" {
+    yylval.r64 = atof(yytext);
+    return REAL64;
+}
+"real" {
+    yylval.r64 = atof(yytext);
+    return REAL64;
+}
+
 [0-9]+          {
     yylval.i64 = atol(yytext);
-    return INT;
+    return INT64;
 }
+"int(32)" {
+    yylval.i32 = atoi(yytext);
+    return INT32;
+}
+"int(64)" {
+    yylval.i64 = atol(yytext);
+    return INT64;
+}
+"int" {
+    yylval.i64 = atol(yytext);
+    return INT64;
+}
+
 \".+\" {
     yylval.str = strdup(yytext);
     return STRING;
@@ -105,22 +137,11 @@ false {
     yylval.str = strdup(yytext);
     return STRING;
 }
+
 [a-zA-Z]+[a-zA-Z0-9]? {
     yylval.str = strdup(yytext);
     return IDENT;
 }
 
 %%
-
-/*
-YYSTYPE yylval;
-
-int main(void)
-{
-    int token;
-    while ((token = yylex()) != 0)
-        printf("Token: %d (%s)\n", token, yytext);
-    return 0;
-}
-*/
 

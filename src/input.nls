@@ -1,4 +1,20 @@
-    
+a = real(64)
+
+/*
+setup {
+    w = ones as (3,3)
+}
+
+execution {
+    while(i<d) {
+        a = rand(n)
+    }
+}
+
+visualize {
+
+}
+
 while(true) {
     when(3<4) {
     }
@@ -10,7 +26,6 @@ while(true) {
 
     }
 }
-/*
 
 when(3<4) {
 } otherwise {
