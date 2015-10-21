@@ -5,97 +5,377 @@
 
 namespace nir {
 
-// Structs for ranges, and the like
-struct Range {
-    int64_t begin;
-    int64_t end;
-    bool begin_inclusive;
-    bool end_inclusive;
-};
-typedef struct Range Range;
-
-// Representation
-enum Operator {
-    NOOP,
-    ADD,
-    SUB,
-    MUL,
-    POW,
-    DIV,
-    NEG,
-    INV,
-    QUERY,
-    ASSIGN,
-    ALIAS
-};
-typedef enum Operator Operator;
-
-std::string Operator_text(Operator op);
-
-enum Structure {
-    NOSTRUCT,
-    SHAPE,
-    RANGE
-};
-typedef enum Structure Structure;
-
-std::string Structure_text(Structure structure);
-
-enum Vclass {
-    NOVAL,
-    I32,
-    I64,
-    R32,
-    R64,
-    STRING,
-    BOOL,
-    IDENT
-};
-typedef enum Vclass Vclass;
-
-std::string Vclass_text(Vclass vclass);
-
-union Vtype {
-    int32_t i32;
-    int64_t i64;
-    float r32;
-    double r64;
+union Value {
+    int32_t int32;
+    int64_t int64;
+    float real32;
+    double real64;
     bool boolean;
     char* str;
 };
-typedef union Vtype Vtype;
+typedef union Value Value;
 
-std::string Vtype_text(Vclass vclass, Vtype vtype);
+enum VType {
+
+    S_BOOL,
+    S_INT32,
+    S_INT64,
+    S_REAL32,
+    S_REAL64,
+    S_STR,
+
+    A_BOOL,
+    A_INT32,
+    A_INT64,
+    A_REAL32,
+    A_REAL64,
+    A_STR,
+
+    UNDEFINED
+};
+typedef enum VType VType;
+
+std::string VType_text(VType vtype);
 
 class Node {
 public:
-    Node(void);         // NOOP
-    Node(Vclass vclass, int32_t val);  // Constructors for literals
-    Node(Vclass vclass, int64_t val);
-    Node(Vclass vclass, float val);
-    Node(Vclass vclass, double val);
-    Node(Vclass vclass, bool val);
-    Node(Vclass vclass, char* val);   // strings and idents
-
-    Node(Operator op, Node* left);               // Expressions with unary operator
-    Node(Operator op, Node* left, Node* right);  // Expressions with unary operator
-
-    // Fix constructors for structures
+    Node(void);
+    Node(Node* left);
+    Node(Node* left, Node* right);
 
     Node* left(void);
     Node* right(void);
 
+    void left(Node* left);
+    void right(Node* right);
+
+    VType vtype(void);
+    void vtype(VType value);
+
     std::string dot(void);
-    std::string text(void);
-private:
-    Operator _operator;
-    Structure _structure;
-    
-    Vclass _vclass;
-    Vtype _vtype;
+    std::string dot_relation(void);
+
+    virtual std::string dot_shape(void);
+    virtual std::string dot_label(void);
+    virtual std::string dot_color(void);
+
+protected:
+    VType _vtype;
+    Value _value;
 
     Node* _left;
     Node* _right;
+};
+
+//
+// Literals
+//
+
+class Int32 : public Node {
+public:
+    Int32(int32_t val);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+    std::string dot_color(void);
+};
+
+class Int64 : public Node {
+public:
+    Int64(int64_t val);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+    std::string dot_color(void);
+};
+
+class Real32 : public Node {
+public:
+    Real32(float val);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+    std::string dot_color(void);
+};
+
+class Real64 : public Node {
+public:
+    Real64(double val);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+    std::string dot_color(void);
+};
+
+class Bool : public Node {
+public:
+    Bool(bool val);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+    std::string dot_color(void);
+};
+
+class Str : public Node {
+public:
+    Str(char* val);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+    std::string dot_color(void);
+};
+
+//
+// Identifiers
+//
+class Ident : public Node {
+public:
+    Ident(char* val);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+    std::string dot_color(void);
+};
+
+//
+// Unary Arithmetic Operators
+//
+class Neg : public Node {
+public:
+    Neg(Node* left);
+    std::string dot_label(void);
+};
+
+class Inv : public Node {
+public:
+    Inv(Node* left);
+    std::string dot_label(void);
+};
+
+//
+// Query
+//
+class Query : public Node {
+public:
+    Query(Node* left);
+    std::string dot_label(void);
+};
+
+//
+// Binary Arithmetic Operators
+//
+class Add : public Node {
+public:
+    Add(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class Sub : public Node {
+public:
+    Sub(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class Mul : public Node {
+public:
+    Mul(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class Mod : public Node {
+public:
+    Mod(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class Div : public Node {
+public:
+    Div(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class Pow : public Node {
+public:
+    Pow(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class LThan : public Node {
+public:
+    LThan(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class As : public Node {
+public:
+    As(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class Assign : public Node {
+public:
+    Assign(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class Alias : public Node {
+public:
+    Alias(Node* left, Node* right);
+    std::string dot_label(void);
+};
+
+class Range : public Node {
+public:
+    Range(bool lb_open, bool ub_open, Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class FuncCall : public Node {
+public:
+    FuncCall(Node* left, Node* right);
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class FuncDef : public Node {
+public:
+    FuncDef(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Shape : public Node {
+public:
+    Shape(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Arg : public Node {
+public:
+    Arg(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Param : public Node {
+public:
+    Param(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class EmptyLine : public Node {
+public:
+    EmptyLine(void);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Noop : public Node {
+public:
+    Noop(void);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+
+class Line : public Node {
+public:
+    Line(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Block : public Node {
+public:
+    Block(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class While : public Node {
+public:
+    While(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class When : public Node {
+public:
+    When(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class CaseList : public Node {
+public:
+    CaseList();
+    CaseList(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Is : public Node {
+public:
+    Is(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Otherwise : public Node {
+public:
+    Otherwise(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Program : public Node {
+public:
+    Program(void);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class StmtList : public Node {
+public:
+    StmtList(Node* left);
+    StmtList(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Comment : public Node {
+public:
+    Comment(char* comment);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Anon : public Node {
+public:
+    Anon(void);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
 };
 
 void eval(Node* node);

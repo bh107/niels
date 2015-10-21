@@ -1,8 +1,34 @@
-4 + 5.1 + 2 * 5
-3.2 / 2
-a <- 1.1 / 40
-b = 1.0 / 20 * 40 ^ 2
-! a
-? b
+    
+while(true) {
+    when(3<4) {
+    }
 
-z <- ones as (2,2,3)
+    when(3<4) {
+    } otherwise {
+
+
+
+    }
+}
+/*
+
+when(3<4) {
+} otherwise {
+}
+
+when(3<4) {
+} otherwise {
+}
+
+when(3+4) is(2) {
+} is(3) {
+} otherwise {
+}
+
+when(3+4) is(2) {
+} is(3) {
+}otherwise {
+}
+
+*/
+ 

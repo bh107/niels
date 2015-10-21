@@ -3,13 +3,38 @@ niels.l
 #include "ast.h"
 #include "niels.tab.hpp"
 #include <iostream>
+#include <string>
 using namespace std;
+stringstream _comment;
 #define YY_DECL extern "C" int yylex()
 
 %}
 %option noyywrap
+%x IN_COMMENT
 %%
 [ \t]   ; // Ignore whitespace
+
+<INITIAL>{
+    "/*"    {
+        BEGIN(IN_COMMENT);
+    }
+}
+<IN_COMMENT>{
+    "*/"    {
+        yylval.str = strdup(_comment.str().c_str());
+        _comment.str("");   // Reset the stream
+        _comment.clear();
+
+        BEGIN(INITIAL);
+        return COMMENT;
+    }
+    [^*\n]+ { _comment << yytext; }
+    "*"     { _comment << yytext; }
+    \n      {
+        _comment << yytext;
+        yylineno++;
+    }
+}
 "!"     { return INVERT; }
 "~"     { return NEGATE; }
 "?"     { return QUERY; }
@@ -35,7 +60,7 @@ using namespace std;
 "xor"   { return XOR; }
 "and"   { return AND; }
 
-"as"    { return SHAPER; }
+"as"    { return AS; }
 
 "\n"    { return NL; }
 ","     { return COMMA;  }
@@ -47,6 +72,14 @@ using namespace std;
 "}"     { return RBRACE; }
 ":"     { return COLON; }
 ";"     { return SEMICOLON; }
+
+"return" { return RETURN; }
+"define" { return DEFINE; }
+"while" { return WHILE; }
+
+"when" { return WHEN; }
+"is" { return IS; }
+"otherwise" { return OTHERWISE; }
 
 true {
     yylval.boolean = true;
@@ -61,7 +94,7 @@ false {
     return REAL;
 }
 [0-9]+          {
-    yylval.i64 = atoi(yytext);
+    yylval.i64 = atol(yytext);
     return INT;
 }
 \".+\" {

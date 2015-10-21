@@ -15,6 +15,7 @@ extern "C" FILE *yyin;
 
 void yyerror(const char *s);
 %}
+%define parse.error verbose
 %union {
     nir::Node*   node;
     int32_t i32;
@@ -25,42 +26,27 @@ void yyerror(const char *s);
     char*   str;
 }
 
-%right <operator> INVERT "!"
-%right <operator> NEGATE "~"
-%right <operator> QUERY "?"
+%right <operator> ALIAS ASSIGN
 
-%token <operator> ALIAS "="
-%token <operator> ASSIGN "<-"
+%right <operator> AS
 
-%left <operator> ADD "+"
-%left <operator> SUB "-"
+%left <operator> ADD SUB
+%left <operator> MUL DIV MOD POW
 
-%left <operator> MUL "*"
-%left <operator> DIV "/"
-%left <operator> MOD "%"
-%left <operator> POW "^"
+%left <operator> LTHAN GTHAN
+%left <operator> EQUAL
+%left <operator> LTHAN_EQUAL
+%left <operator> GTHAN_EQUAL
 
-%left <operator> LTHAN "<"
-%left <operator> GTHAN ">"
-%left <operator> EQUAL "=="
-%left <operator> LTHAN_EQUAL "<="
-%left <operator> GTHAN_EQUAL ">="
+%left <operator> OR XOR AND
 
-%left <operator> OR "or"
-%left <operator> XOR "xor"
-%left <operator> AND "and"
+%right <operator> INVERT NEGATE QUERY
 
-%token <operator> SHAPER "as"
-%token NL "\n"
-%token COMMA ","
-%token LPAREN "("
-%token RPAREN ")"
-%token LBRACK "["
-%token RBRACK "]"
-%token LBRACE "{"
-%token RBRACE "}"
-%token COLON ":"
-%token SEMICOLON ";"
+%token NL
+%token LPAREN RPAREN 
+%token LBRACK RBRACK
+%token LBRACE RBRACE
+%token COMMA COLON SEMICOLON
 
 %token <boolean> BOOL
 %token <r64> REAL
@@ -68,54 +54,152 @@ void yyerror(const char *s);
 %token <str> STRING
 
 %token <str> IDENT
+%token <str> RETURN DEFINE WHILE WHEN IS OTHERWISE
 
-%type <node> input line literal shape expr
+%token <str> COMMENT
+
+%type <node> input lines line block expr literal shape range args def while
+%type <node> when is is_chain otherwise
 
 %%
+
 input: %empty { }
-    | input line
+    | lines { 
+        $$ = new nir::Program();
+        $$->right($1);
+        cout << dot($$) << endl;
+    }
 ;
-line: NL {}
-    | expr NL { cout << dot($$) << endl; }
+
+block: LBRACE RBRACE { $$ = new nir::Block(new nir::Anon(), new nir::Noop()); }
+    | LBRACE expr RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
+    | LBRACE line RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
+    | LBRACE lines RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
+    | IDENT LBRACE RBRACE { $$ = new nir::Block(new nir::Ident($1), new nir::Noop()); }
+    | IDENT LBRACE expr RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
+    | IDENT LBRACE line RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
+    | IDENT LBRACE lines RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
 ;
-literal: INT  { $$ = new nir::Node(nir::I64, $1); }
-       | REAL { $$ = new nir::Node(nir::R64, $1); }
-       | BOOL { $$ = new nir::Node(nir::BOOL, $1); }
+
+def: DEFINE IDENT LPAREN RPAREN block {
+        $$ = new nir::FuncDef(new nir::Ident($2), $5);
+    }
 ;
-shape: INT { $$ = new nir::Node(nir::I64, $1); } 
-     | IDENT { $$ = new nir::Node(nir::IDENT, $1); } 
-     | shape COMMA shape { $$ = $1; }
+
+while: WHILE LPAREN expr RPAREN block {
+        $$ = new nir::While($3, $5);
+    }
+;
+
+is: IS LPAREN literal RPAREN block {
+        $$ = new nir::Is($3, $5);
+    }
+;
+is_chain: %empty { $$ = new nir::CaseList(); }
+    | is { $$ = new nir::CaseList($1); }
+    | is_chain is {
+        $$ = $1; $1->right(new nir::CaseList($2));
+    }
+;
+
+otherwise: %empty {
+        $$ = new nir::CaseList(new nir::Otherwise(new nir::Bool(false), new nir::Noop()));
+    }
+    | OTHERWISE block {
+        $$ = new nir::CaseList(new nir::Otherwise(new nir::Bool(true), $2));
+    }
+;
+
+when: WHEN LPAREN expr RPAREN is_chain otherwise {
+        $$ = new nir::When($3, $5);
+        nir::Node* next = $5;
+        while(next->right()) {
+            next = next->right();
+        }
+        next->right($6);
+    }
+    | WHEN LPAREN expr RPAREN block otherwise {
+        nir::Node* _case = new nir::CaseList(new nir::Is(new nir::Bool(true), $5));
+        $$ = new nir::When($3, _case);
+        nir::Node* next = _case;
+        while(next->right()) {
+            next = next->right();
+        }
+        next->right($6);
+    }
+;
+
+lines: line { $$ = new nir::StmtList($1); }
+    | lines line {
+        nir::Node* next = $1;
+        while(next->right()) {
+            next = next->right();
+        }
+        next->right(new nir::StmtList($2));
+    }
+;
+
+line: NL { $$ = new nir::Noop(); }
+    | COMMENT { $$ = new nir::Comment($1); }
+    | expr NL { $$ = new nir::Line($1); }
+    | def { $$ = $1; }
+    | when { $$ = $1; }
+    | while { $$ = $1; }
+    | block { $$ = $1; }
+;
+
+literal: INT  { $$ = new nir::Int64($1); }
+    | REAL { $$ = new nir::Real64($1); }
+    | BOOL { $$ = new nir::Bool($1); }
+    | STRING { $$ = new nir::Str($1); }
+;
+
+shape: expr { $$ = new nir::Shape($1); }
+    | shape COMMA expr {
+        $1->right(new nir::Shape($3));
+        $$ = $1;
+    }
+;
+
+args: expr { $$ = new nir::Arg($1); }
+    | args COMMA expr {
+        $1->right(new nir::Arg($3));
+        $$ = $1;
+    }
+;
+
+range: LBRACK expr SEMICOLON expr RBRACK { $$ = new nir::Range(false, false, $2, $4 ); }
+    | LBRACK expr SEMICOLON expr LBRACK { $$ = new nir::Range(false, true, $2, $4 ); }
+    | RBRACK expr SEMICOLON expr RBRACK { $$ = new nir::Range(true, false, $2, $4 ); }
+    | RBRACK expr SEMICOLON expr LBRACK { $$ = new nir::Range(true, true, $2, $4 ); }
+    | expr SEMICOLON expr { $$ = new nir::Range(false, false, $1, $3 ); }
+;
 
 expr: literal { $$ = $1; }
-    | IDENT   { $$ = new nir::Node(nir::IDENT, $1); }
+    | range
+    | IDENT   { $$ = new nir::Ident($1); }
     | LPAREN expr RPAREN { $$ = $2; }
-    | expr ADD expr  { $$ = new nir::Node(nir::ADD, $1, $3); }
-    | expr SUB expr  { $$ = new nir::Node(nir::SUB, $1, $3); }
-    | expr MUL expr  { $$ = new nir::Node(nir::MUL, $1, $3); }
-    | expr DIV expr  { $$ = new nir::Node(nir::DIV, $1, $3); }
-    | expr POW expr  { $$ = new nir::Node(nir::POW, $1, $3); }
-    | expr SHAPER LPAREN shape RPAREN { $$ = new nir::Node(); }
-    | NEGATE expr { $$ = new nir::Node(nir::NEG, $2); }
-    | INVERT expr { $$ = new nir::Node(nir::INV, $2); }
-    | QUERY expr  { $$ = new nir::Node(nir::QUERY, $2); }
-    | IDENT ASSIGN expr { 
-        $$ = new nir::Node(
-            nir::ASSIGN,
-            new nir::Node(nir::IDENT, $1),
+    | IDENT ASSIGN expr { $$ = new nir::Assign(new nir::Ident($1), $3); }
+    | IDENT ALIAS expr {  $$ = new nir::Alias(new nir::Ident($1), $3); }
+    | IDENT LPAREN args RPAREN {
+        $$ = new nir::FuncCall(
+            new nir::Ident($1),
             $3
-        ); 
+        );
     }
-    | IDENT ALIAS expr {
-        $$ = new nir::Node(
-            nir::ALIAS,
-            new nir::Node(nir::IDENT, $1),
-            $3
-        ); 
-    }
+    | expr ADD expr  { $$ = new nir::Add($1, $3); }
+    | expr SUB expr  { $$ = new nir::Sub($1, $3); }
+    | expr MUL expr  { $$ = new nir::Mul($1, $3); }
+    | expr DIV expr  { $$ = new nir::Div($1, $3); }
+    | expr POW expr  { $$ = new nir::Pow($1, $3); }
+    | expr LTHAN expr  { $$ = new nir::LThan($1, $3); }
+    | NEGATE expr { $$ = new nir::Neg($2); }
+    | INVERT expr { $$ = new nir::Inv($2); }
+    | QUERY expr  { $$ = new nir::Query($2); }
+    | expr AS LPAREN shape RPAREN { $$ = new nir::As($1, $4); }
 ;
 %%
 int main(int, char**) {
-    /*
     FILE *myfile = fopen("input.nls", "r");
     if (!myfile) {
         cout << "I cannot open input.nls!" << endl;
@@ -123,7 +207,6 @@ int main(int, char**) {
     }
     
     yyin = myfile;  // Switch from STDIN to 'input.nls'
-    */
     do {
         yyparse();
     } while (!feof(yyin));
