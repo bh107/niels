@@ -1,32 +1,13 @@
-a = real(64)
+a <- real(64)
+? a
+w = ones as (3,3)
+
+record saxofon {
+    horn <- int(32)
+    vild <- real(32)
+}
 
 /*
-setup {
-    w = ones as (3,3)
-}
-
-execution {
-    while(i<d) {
-        a = rand(n)
-    }
-}
-
-visualize {
-
-}
-
-while(true) {
-    when(3<4) {
-    }
-
-    when(3<4) {
-    } otherwise {
-
-
-
-    }
-}
-
 when(3<4) {
 } otherwise {
 }
@@ -42,8 +23,7 @@ when(3+4) is(2) {
 
 when(3+4) is(2) {
 } is(3) {
-}otherwise {
+} otherwise {
 }
-
 */
- 
+

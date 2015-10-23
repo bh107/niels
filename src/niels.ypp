@@ -6,6 +6,7 @@
 #include <cfloat>
 #include <cmath>
 #include <iostream>
+#include <cstring>
 #include <stack>
 using namespace std;
 #include "ast.h"
@@ -56,35 +57,38 @@ void yyerror(const char *s);
 %token <boolean> BOOL
 
 %token <str> IDENT
-%token <str> RETURN DEFINE WHILE WHEN IS OTHERWISE
+%token <str> RETURN FUNCTION WHILE WHEN IS OTHERWISE RECORD
 
+%token <operator> AT
 %token <str> COMMENT
 
-%type <node> input stmts stmt block expr scalar shape range args def while
+%type <node> input module block stmts stmt expr scalar val shape range args params function while
 %type <node> when is is_chain otherwise
+%type <node> record attr attrs
 
 %%
 
 input: %empty { }
     | stmts { 
-        $$ = new nir::Program();
-        $$->right($1);
+        $$ = new nir::Collection(new nir::Ident(strdup("Root")), $1);
         cout << dot($$) << endl;
     }
+;
+
+module: IDENT LBRACE RBRACE { $$ = new nir::Module(new nir::Ident($1), new nir::Noop()); }
+    | IDENT LBRACE expr RBRACE { $$ = new nir::Module(new nir::Ident($1), $3); }
+    | IDENT LBRACE stmt RBRACE { $$ = new nir::Module(new nir::Ident($1), $3); }
+    | IDENT LBRACE stmts RBRACE { $$ = new nir::Module(new nir::Ident($1), $3); }
 ;
 
 block: LBRACE RBRACE { $$ = new nir::Block(new nir::Anon(), new nir::Noop()); }
     | LBRACE expr RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
     | LBRACE stmt RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
     | LBRACE stmts RBRACE { $$ = new nir::Block(new nir::Anon(), $2); }
-    | IDENT LBRACE RBRACE { $$ = new nir::Block(new nir::Ident($1), new nir::Noop()); }
-    | IDENT LBRACE expr RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
-    | IDENT LBRACE stmt RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
-    | IDENT LBRACE stmts RBRACE { $$ = new nir::Block(new nir::Ident($1), $3); }
 ;
 
-def: DEFINE IDENT LPAREN RPAREN block {
-        $$ = new nir::FuncDef(new nir::Ident($2), $5);
+function: FUNCTION IDENT LPAREN params RPAREN block {
+        $$ = new nir::Function(new nir::Ident($2), $6);
     }
 ;
 
@@ -144,35 +148,29 @@ stmts: stmt { $$ = new nir::StmtList($1); }
 stmt: NL { $$ = new nir::Noop(); }
     | COMMENT { $$ = new nir::Comment($1); }
     | expr NL { $$ = $1; }
-    | def { $$ = $1; }
+    | module { $$ = $1; }
+    | function { $$ = $1; }
+    | record { $$ = $1; }
     | when { $$ = $1; }
     | while { $$ = $1; }
     | block { $$ = $1; }
 ;
-
 
 scalar: INT32  { $$ = new nir::Int32($1); }
     | INT64  { $$ = new nir::Int64($1); }
     | REAL32 { $$ = new nir::Real32($1); }
     | REAL64 { $$ = new nir::Real64($1); }
     | BOOL { $$ = new nir::Bool($1); }
+;
+val: scalar { $$ = $1; }
     | STRING { $$ = new nir::Str($1); }
 ;
-
 shape: expr { $$ = new nir::Shape($1); }
     | shape COMMA expr {
         $1->right(new nir::Shape($3));
         $$ = $1;
     }
 ;
-
-args: expr { $$ = new nir::Arg($1); }
-    | args COMMA expr {
-        $1->right(new nir::Arg($3));
-        $$ = $1;
-    }
-;
-
 range: LBRACK expr SEMICOLON expr RBRACK { $$ = new nir::Range(false, false, $2, $4 ); }
     | LBRACK expr SEMICOLON expr LBRACK { $$ = new nir::Range(false, true, $2, $4 ); }
     | RBRACK expr SEMICOLON expr RBRACK { $$ = new nir::Range(true, false, $2, $4 ); }
@@ -180,14 +178,46 @@ range: LBRACK expr SEMICOLON expr RBRACK { $$ = new nir::Range(false, false, $2,
     | expr SEMICOLON expr { $$ = new nir::Range(false, false, $1, $3 ); }
 ;
 
-expr: scalar { $$ = $1; }
+attr: IDENT ASSIGN scalar NL {
+        $$ = new nir::Attr(new nir::Ident($1), $3);
+    }
+;
+attrs: %empty { $$ = new nir::Empty(); }
+    | attr { $$ = new nir::AttrList($1); }
+    | attrs attr {
+        $1->right(new nir::AttrList($2));
+        $$ = $1;
+    }
+;
+record: RECORD IDENT LBRACE NL attrs RBRACE {
+        $$ = new nir::RecDef(new nir::Ident($2), $5);
+    }
+;
+
+params: %empty { $$ = new nir::Empty(); }
+    | expr { $$ = new nir::Param($1); }
+    | params COMMA expr {
+        $1->right(new nir::Param($3));
+        $$ = $1;
+    }
+;
+
+args: %empty { $$ = new nir::Empty(); }
+    | expr { $$ = new nir::Arg($1); }
+    | args COMMA expr {
+        $1->right(new nir::Arg($3));
+        $$ = $1;
+    }
+;
+
+expr: val { $$ = $1; }
     | range
     | IDENT   { $$ = new nir::Ident($1); }
     | LPAREN expr RPAREN { $$ = $2; }
     | IDENT ASSIGN expr { $$ = new nir::Assign(new nir::Ident($1), $3); }
     | IDENT ALIAS expr {  $$ = new nir::Alias(new nir::Ident($1), $3); }
     | IDENT LPAREN args RPAREN {
-        $$ = new nir::FuncCall(
+        $$ = new nir::Function(
             new nir::Ident($1),
             $3
         );

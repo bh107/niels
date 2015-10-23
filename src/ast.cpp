@@ -83,8 +83,8 @@ string Node::dot_relation(void)
             ss << "{rank=same; " << "N" << this << " N" << _right << " }" << endl;
         }
         /*
-        if (((typeid(*this) == typeid(Line)) || (typeid(*this) == typeid(EmptyLine))) && \
-            ((typeid(*_right) == typeid(Line)) || (typeid(*_right) == typeid(EmptyLine)))) {
+        if (((typeid(*this) == typeid(Line)) || (typeid(*this) == typeid(Empty))) && \
+            ((typeid(*_right) == typeid(Line)) || (typeid(*_right) == typeid(Empty)))) {
             ss << "{rank=same; " << "N" << this << " N" << _right << " }" << endl;
         }
         */
@@ -216,13 +216,33 @@ Param::Param(Node* left) : Node(left) {}
 string Param::dot_label(void) { return "Param"; }
 string Param::dot_shape(void) { return "diamond"; }
 
-FuncCall::FuncCall(Node* left, Node* right) : Node(left, right) {}
-string FuncCall::dot_label(void) { return "FuncCall"; }
-string FuncCall::dot_shape(void) { return "parallelogram"; }
+Call::Call(Node* left, Node* right) : Node(left, right) {}
+string Call::dot_label(void) { return "Call"; }
+string Call::dot_shape(void) { return "parallelogram"; }
 
-FuncDef::FuncDef(Node* left, Node* right) : Node(left, right) {}
-string FuncDef::dot_label(void) { return "FuncDef"; }
-string FuncDef::dot_shape(void) { return "parallelogram"; }
+Function::Function(Node* left, Node* right) : Node(left, right) {}
+string Function::dot_label(void) { return "Function"; }
+string Function::dot_shape(void) { return "parallelogram"; }
+
+Attr::Attr(Node* left, Node* right) : Node(left, right) {}
+string Attr::dot_label(void) { return "Attr"; }
+string Attr::dot_shape(void) { return "parallelogram"; }
+
+AttrList::AttrList(Node* left) : Node(left) {}
+string AttrList::dot_label(void) { return "AttrList"; }
+string AttrList::dot_shape(void) { return "parallelogram"; }
+
+RecDef::RecDef(Node* left, Node* right) : Node(left, right) {}
+string RecDef::dot_label(void) { return "RecDef"; }
+string RecDef::dot_shape(void) { return "parallelogram"; }
+
+Collection::Collection(Node* left, Node* right) : Node(left, right) { }
+string Collection::dot_label(void) { return "Collection"; }
+string Collection::dot_shape(void) { return "box"; }
+
+Module::Module(Node* left, Node* right) : Node(left, right) { }
+string Module::dot_label(void) { return "Module"; }
+string Module::dot_shape(void) { return "box"; }
 
 Block::Block(Node* left, Node* right) : Node(left, right) { }
 string Block::dot_label(void) { return "Block"; }
@@ -231,6 +251,10 @@ string Block::dot_shape(void) { return "box"; }
 While::While(Node* left, Node* right) : Node(left, right) { }
 string While::dot_label(void) { return "While"; }
 string While::dot_shape(void) { return "box"; }
+
+Return::Return() : Node() {}
+string Return::dot_label(void) { return "Return"; }
+string Return::dot_shape(void) { return "box"; }
 
 When::When(Node* left, Node* right) : Node(left, right) { }
 string When::dot_label(void) { return "When"; }
@@ -249,10 +273,9 @@ Otherwise::Otherwise(Node* left, Node* right) : Node(left, right) { }
 string Otherwise::dot_label(void) { return "Otherwise"; }
 string Otherwise::dot_shape(void) { return "box"; }
 
-
-EmptyLine::EmptyLine(void) : Node() {}
-string EmptyLine::dot_label(void) { return "EmptyLine"; }
-string EmptyLine::dot_shape(void) { return "box"; }
+Empty::Empty(void) : Node() {}
+string Empty::dot_label(void) { return "Empty"; }
+string Empty::dot_shape(void) { return "box"; }
 
 Noop::Noop(void) : Node() {}
 string Noop::dot_label(void) { return "Noop"; }

@@ -232,16 +232,40 @@ public:
     std::string dot_shape(void);
 };
 
-class FuncCall : public Node {
+class Call : public Node {
 public:
-    FuncCall(Node* left, Node* right);
+    Call(Node* left, Node* right);
     std::string dot_label(void);
     std::string dot_shape(void);
 };
 
-class FuncDef : public Node {
+class Function : public Node {
 public:
-    FuncDef(Node* left, Node* right);
+    Function(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Attr : public Node {
+public:
+    Attr(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class AttrList : public Node {
+public:
+    AttrList(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class RecDef : public Node {
+public:
+    RecDef(Node* left, Node* right);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -271,9 +295,9 @@ public:
     std::string dot_shape(void);
 };
 
-class EmptyLine : public Node {
+class Empty : public Node {
 public:
-    EmptyLine(void);
+    Empty(void);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -296,6 +320,22 @@ public:
     std::string dot_shape(void);
 };
 
+class Collection : public Node {
+public:
+    Collection(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Module : public Node {
+public:
+    Module(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
 class Block : public Node {
 public:
     Block(Node* left, Node* right);
@@ -307,6 +347,14 @@ public:
 class While : public Node {
 public:
     While(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Return : public Node {
+public:
+    Return();
 
     std::string dot_label(void);
     std::string dot_shape(void);

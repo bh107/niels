@@ -35,12 +35,15 @@ stringstream _comment;
         yylineno++;
     }
 }
-"!"     { return INVERT; }
-"~"     { return NEGATE; }
+
+"@"     { return AT; }
 "?"     { return QUERY; }
 
 "="     { return ALIAS; }
 "<-"    { return ASSIGN; }
+
+"!"     { return INVERT; }
+"~"     { return NEGATE; }
 
 "+"     { return ADD; }
 "-"     { return SUB; }
@@ -73,14 +76,15 @@ stringstream _comment;
 ":"     { return COLON; }
 ";"     { return SEMICOLON; }
 
+"function" { return FUNCTION; }
+"record" { return RECORD; }
+
 "return" { return RETURN; }
-"define" { return DEFINE; }
 "while" { return WHILE; }
 
-"when" { return WHEN; }
-"is" { return IS; }
+"when"      { return WHEN; }
+"is"        { return IS; }
 "otherwise" { return OTHERWISE; }
-
 
 "true" {
     yylval.boolean = true;
