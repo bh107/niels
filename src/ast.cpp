@@ -285,6 +285,10 @@ When::When(Node* left, Node* right) : Node(left, right) { }
 string When::dot_label(void) { return "When"; }
 string When::dot_shape(void) { return "box"; }
 
+WhenBool::WhenBool(Node* left, Node* right) : Node(left, right) { }
+string WhenBool::dot_label(void) { return "WhenBool"; }
+string WhenBool::dot_shape(void) { return "box"; }
+
 Cases::Cases(Node* left) : Node(left) {}
 Cases::Cases(Node* left, Node* right) : Node(left, right) {}
 string Cases::dot_label(void) { return "Cases"; }
@@ -325,6 +329,10 @@ Comment::Comment(char* comment) : Node() {
 }
 string Comment::dot_label(void) { return "Comment"; }
 string Comment::dot_shape(void) { return "box"; }
+
+Import::Import(Node* left) : Node(left) {}
+string Import::dot_label(void) { return "Import"; }
+string Import::dot_shape(void) { return "box"; }
 
 //
 // Pretty Printing

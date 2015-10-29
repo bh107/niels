@@ -45,6 +45,7 @@ extern "C" void yyerror(const char *s);
 
 %right <operator> INVERT NEGATE QUERY
 
+%token IMPORT
 %token NL
 %token LPAREN RPAREN 
 %token LBRACK RBRACK
@@ -64,8 +65,10 @@ extern "C" void yyerror(const char *s);
 %token <operator> AT
 %token <str> COMMENT
 
+
 %type <node> input module block stmts stmt expr scalar val shape range arg args param params function while
 %type <node> when is otherwise cases cases_otherwise
+%type <node> import
 %type <node> record attr attrs
 
 %%
@@ -81,6 +84,11 @@ module: IDENT LBRACE RBRACE { $$ = new nir::Module(new nir::Ident($1), new nir::
     | IDENT LBRACE expr RBRACE { $$ = new nir::Module(new nir::Ident($1), $3); }
     | IDENT LBRACE stmt RBRACE { $$ = new nir::Module(new nir::Ident($1), $3); }
     | IDENT LBRACE stmts RBRACE { $$ = new nir::Module(new nir::Ident($1), $3); }
+;
+
+import: IMPORT IDENT {
+        $$ = new nir::Import(new nir::Ident($2));
+    }
 ;
 
 block: LBRACE RBRACE { $$ = new nir::Block(new nir::Anon(), new nir::Noop()); }
@@ -129,13 +137,17 @@ when: WHEN LPAREN expr RPAREN cases {
         $$ = new nir::When($3, $5);
     }
     | WHEN LPAREN expr RPAREN block {
-        $$ = new nir::When($3, new nir::Cases(
+        $$ = new nir::WhenBool($3, new nir::Cases(
             new nir::Is(new nir::Bool(true), $5),
             new nir::Cases(new nir::Otherwise(new nir::Bool(true), new nir::Noop()))
         ));
     }
     | WHEN LPAREN expr RPAREN block otherwise {
-        $$ = new nir::When($3, new nir::Is(new nir::Bool(true), $5));
+        $$ = new nir::WhenBool($3, new nir::Cases(
+            new nir::Is(new nir::Bool(true), $5),
+            new nir::Cases($6)
+        ));
+
     }
 ;
 
@@ -162,6 +174,7 @@ stmt: NL { $$ = new nir::Noop(); }
     | when { $$ = $1; }
     | while { $$ = $1; }
     | block { $$ = $1; }
+    | import { $$ = $1; }
 ;
 
 scalar: INT32  { $$ = new nir::Int32($1); }

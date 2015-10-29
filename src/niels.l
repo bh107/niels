@@ -76,6 +76,8 @@ stringstream _comment;
 ":"     { return COLON; }
 ";"     { return SEMICOLON; }
 
+"import" { return IMPORT; }
+
 "function" { return FUNCTION; }
 "record" { return RECORD; }
 

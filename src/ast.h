@@ -411,6 +411,14 @@ public:
     std::string dot_shape(void);
 };
 
+class WhenBool : public Node {
+public:
+    WhenBool(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
 class Cases : public Node {
 public:
     Cases(Node* left);
@@ -448,6 +456,14 @@ class StmtList : public Node {
 public:
     StmtList(Node* left);
     StmtList(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Import : public Node {
+public:
+    Import(Node* node);
 
     std::string dot_label(void);
     std::string dot_shape(void);
