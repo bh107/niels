@@ -49,6 +49,8 @@ public:
     void left(Node* left);
     void right(Node* right);
 
+    void append(Node* node);
+
     VType vtype(void);
     void vtype(VType value);
 
@@ -232,6 +234,39 @@ public:
     std::string dot_shape(void);
 };
 
+class Arg : public Node {
+public:
+    Arg(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class ArgList : public Node {
+public:
+    ArgList(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Param : public Node {
+public:
+    Param(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class ParamList : public Node {
+public:
+    ParamList(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+
 class Call : public Node {
 public:
     Call(Node* left, Node* right);
@@ -242,6 +277,22 @@ public:
 class Function : public Node {
 public:
     Function(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class FunctionDecl : public Node {
+public:
+    FunctionDecl(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class FunctionBody : public Node {
+public:
+    FunctionBody(Node* left, Node* right);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -279,17 +330,9 @@ public:
     std::string dot_shape(void);
 };
 
-class Arg : public Node {
+class Undefined : public Node {
 public:
-    Arg(Node* left);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-};
-
-class Param : public Node {
-public:
-    Param(Node* left);
+    Undefined(void);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -368,10 +411,10 @@ public:
     std::string dot_shape(void);
 };
 
-class CaseList : public Node {
+class Cases : public Node {
 public:
-    CaseList();
-    CaseList(Node* left);
+    Cases(Node* left);
+    Cases(Node* left, Node* right);
 
     std::string dot_label(void);
     std::string dot_shape(void);

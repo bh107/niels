@@ -10,8 +10,8 @@ lex.yy.c: niels.l
 niels.tab.cpp: niels.ypp
 	bison -d $<
 	
-niels: niels.tab.cpp lex.yy.c ast.cpp
-	$(CXX) ast.cpp lex.yy.c $(CXX_FLAGS) $< $(LIBS) -g -o niels
+niels: niels.tab.cpp lex.yy.c
+	$(CXX) ast.cpp $^ $(CXX_FLAGS) $(LIBS) -g -o niels
 
 run:
 	./niels > output.dot

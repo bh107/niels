@@ -4,17 +4,19 @@
 #include <climits>
 #include <cstdio>
 #include <cfloat>
-#include <cmath>
 #include <iostream>
+#include <typeinfo>
 #include <cstring>
-#include <stack>
 using namespace std;
 #include "ast.h"
 extern "C" int yylex();
 extern "C" int yyparse();
 extern "C" FILE *yyin;
 
-void yyerror(const char *s);
+nir::Node* program;         // Root of the AST
+bool fewerNoops = true;  // Whether or not Noop nodes should be removed
+
+extern "C" void yyerror(const char *s);
 %}
 %define parse.error verbose
 %union {
@@ -62,8 +64,8 @@ void yyerror(const char *s);
 %token <operator> AT
 %token <str> COMMENT
 
-%type <node> input module block stmts stmt expr scalar val shape range args params function while
-%type <node> when is is_chain otherwise
+%type <node> input module block stmts stmt expr scalar val shape range arg args param params function while
+%type <node> when is otherwise cases cases_otherwise
 %type <node> record attr attrs
 
 %%
@@ -71,7 +73,7 @@ void yyerror(const char *s);
 input: %empty { }
     | stmts { 
         $$ = new nir::Collection(new nir::Ident(strdup("Root")), $1);
-        cout << dot($$) << endl;
+        program = $$;
     }
 ;
 
@@ -88,7 +90,10 @@ block: LBRACE RBRACE { $$ = new nir::Block(new nir::Anon(), new nir::Noop()); }
 ;
 
 function: FUNCTION IDENT LPAREN params RPAREN block {
-        $$ = new nir::Function(new nir::Ident($2), $6);
+        $$ = new nir::Function(
+            new nir::FunctionDecl(new nir::Ident($2), $4),
+            $6
+        );
     }
 ;
 
@@ -101,47 +106,50 @@ is: IS LPAREN scalar RPAREN block {
         $$ = new nir::Is($3, $5);
     }
 ;
-is_chain: %empty { $$ = new nir::CaseList(); }
-    | is { $$ = new nir::CaseList($1); }
-    | is_chain is {
-        $$ = $1; $1->right(new nir::CaseList($2));
+otherwise: OTHERWISE block {
+        $$ = new nir::Otherwise(new nir::Bool(true), $2);
     }
 ;
-
-otherwise: %empty {
-        $$ = new nir::CaseList(new nir::Otherwise(new nir::Bool(false), new nir::Noop()));
+cases:  is {
+        $$ = new nir::Cases($1);
     }
-    | OTHERWISE block {
-        $$ = new nir::CaseList(new nir::Otherwise(new nir::Bool(true), $2));
+    | cases is {
+        $1->append(new nir::Cases($2));
+        $$ = $1;
     }
 ;
-
-when: WHEN LPAREN expr RPAREN is_chain otherwise {
+when: WHEN LPAREN expr RPAREN cases {
+        $5->append(new nir::Cases(
+            new nir::Otherwise(new nir::Bool(true), new nir::Noop()))
+        );
         $$ = new nir::When($3, $5);
-        nir::Node* next = $5;
-        while(next->right()) {
-            next = next->right();
-        }
-        next->right($6);
+    }
+    | WHEN LPAREN expr RPAREN cases otherwise {
+        $5->append(new nir::Cases($6));
+        $$ = new nir::When($3, $5);
+    }
+    | WHEN LPAREN expr RPAREN block {
+        $$ = new nir::When($3, new nir::Cases(
+            new nir::Is(new nir::Bool(true), $5),
+            new nir::Cases(new nir::Otherwise(new nir::Bool(true), new nir::Noop()))
+        ));
     }
     | WHEN LPAREN expr RPAREN block otherwise {
-        nir::Node* _case = new nir::CaseList(new nir::Is(new nir::Bool(true), $5));
-        $$ = new nir::When($3, _case);
-        nir::Node* next = _case;
-        while(next->right()) {
-            next = next->right();
-        }
-        next->right($6);
+        $$ = new nir::When($3, new nir::Is(new nir::Bool(true), $5));
     }
 ;
 
-stmts: stmt { $$ = new nir::StmtList($1); }
+stmts: stmt {
+        $$ = new nir::StmtList($1);
+        $$->left(NULL);
+        $$->right($1);
+    }
     | stmts stmt {
-        nir::Node* next = $1;
-        while(next->right()) {
-            next = next->right();
+        if (fewerNoops && ((typeid(*$2) == typeid(nir::Noop)))) {
+            $$ = $1;
+        } else {
+            $$ = new nir::StmtList($1, $2);
         }
-        next->right(new nir::StmtList($2));
     }
 ;
 
@@ -194,24 +202,38 @@ record: RECORD IDENT LBRACE NL attrs RBRACE {
     }
 ;
 
+param: IDENT {
+        $$ = new nir::Param(
+            new nir::Ident($1),
+            new nir::Undefined()
+        );
+    }
+;
 params: %empty { $$ = new nir::Empty(); }
-    | expr { $$ = new nir::Param($1); }
-    | params COMMA expr {
-        $1->right(new nir::Param($3));
+    | param { $$ = new nir::ParamList($1); }
+    | params COMMA param {
+        $1->right(new nir::ParamList($3));
         $$ = $1;
     }
 ;
 
+arg: expr {
+        $$ = new nir::Arg(
+            $1,
+            new nir::Undefined()
+        );
+    }
+;
 args: %empty { $$ = new nir::Empty(); }
-    | expr { $$ = new nir::Arg($1); }
-    | args COMMA expr {
-        $1->right(new nir::Arg($3));
+    | arg { $$ = new nir::ArgList($1); }
+    | args COMMA arg {
+        $1->right(new nir::ArgList($3));
         $$ = $1;
     }
 ;
 
 expr: val { $$ = $1; }
-    | range
+    | range { $$ = $1; }
     | IDENT   { $$ = new nir::Ident($1); }
     | LPAREN expr RPAREN { $$ = $2; }
     | IDENT ASSIGN expr { $$ = new nir::Assign(new nir::Ident($1), $3); }
@@ -235,6 +257,11 @@ expr: val { $$ = $1; }
 ;
 
 %%
+void yyerror(const char *s) {
+    cout << "Doh! " << s << endl;
+    exit(-1);
+}
+
 int main(int, char**) {
     FILE *myfile = fopen("input.nls", "r");
     if (!myfile) {
@@ -246,10 +273,6 @@ int main(int, char**) {
     do {
         yyparse();
     } while (!feof(yyin));
-}
-
-void yyerror(const char *s) {
-    cout << "Doh! " << s << endl;
-    exit(-1);
+    cout << nir::dot(program) << endl;
 }
 

@@ -36,11 +36,19 @@ Node::Node(Node* left, Node* right) : _vtype(UNDEFINED), _left(left), _right(rig
     _vtype = left->vtype() >= right->vtype() ? left->vtype() : right->vtype();
 }
 
+Node* Node::left(void) { return _left; }
+Node* Node::right(void) { return _right; }
+
 void Node::left(Node* left) { _left = left; }
 void Node::right(Node* right) { _right = right; }
 
-Node* Node::left(void) { return _left; }
-Node* Node::right(void) { return _right; }
+void Node::append(Node* node) {
+    Node* next = this;
+    while(next->right()) {
+        next = next->right();
+    }
+    next->right(node);
+}
 
 string Node::dot(void)
 {
@@ -79,7 +87,8 @@ string Node::dot_relation(void)
            << "[label=\"" << VType_text(_right->vtype())  << "\""
            << "]" << endl;
 
-        if (typeid(*this) == typeid(StmtList)) {
+        if ((typeid(*this) == typeid(StmtList)) or \
+            (typeid(*this) == typeid(Cases))) {
             ss << "{rank=same; " << "N" << this << " N" << _right << " }" << endl;
         }
         /*
@@ -135,7 +144,7 @@ Bool::Bool(bool val) : Node() {
     _value.boolean = val;
     _vtype = S_BOOL;
 }
-string Bool::dot_label(void) { stringstream ss; ss << _value.boolean; return ss.str(); }
+string Bool::dot_label(void) { stringstream ss; ss << boolalpha << _value.boolean; return ss.str(); }
 string Bool::dot_shape(void) { return "house"; }
 string Bool::dot_color(void) { return "#d9f0d3"; }
 
@@ -208,13 +217,21 @@ Shape::Shape(Node* left) : Node(left) {}
 string Shape::dot_label(void) { return "Shape"; }
 string Shape::dot_shape(void) { return "trapezium"; }
 
-Arg::Arg(Node* left) : Node(left) {}
+Arg::Arg(Node* left, Node* right) : Node(left, right) {}
 string Arg::dot_label(void) { return "Arg"; }
 string Arg::dot_shape(void) { return "diamond"; }
 
-Param::Param(Node* left) : Node(left) {}
+ArgList::ArgList(Node* left) : Node(left) {}
+string ArgList::dot_label(void) { return "ArgList"; }
+string ArgList::dot_shape(void) { return "diamond"; }
+
+Param::Param(Node* left, Node* right) : Node(left, right) {}
 string Param::dot_label(void) { return "Param"; }
 string Param::dot_shape(void) { return "diamond"; }
+
+ParamList::ParamList(Node* left) : Node(left) {}
+string ParamList::dot_label(void) { return "ParamList"; }
+string ParamList::dot_shape(void) { return "diamond"; }
 
 Call::Call(Node* left, Node* right) : Node(left, right) {}
 string Call::dot_label(void) { return "Call"; }
@@ -223,6 +240,14 @@ string Call::dot_shape(void) { return "parallelogram"; }
 Function::Function(Node* left, Node* right) : Node(left, right) {}
 string Function::dot_label(void) { return "Function"; }
 string Function::dot_shape(void) { return "parallelogram"; }
+
+FunctionDecl::FunctionDecl(Node* left, Node* right) : Node(left, right) {}
+string FunctionDecl::dot_label(void) { return "FunctionDecl"; }
+string FunctionDecl::dot_shape(void) { return "parallelogram"; }
+
+FunctionBody::FunctionBody(Node* left, Node* right) : Node(left, right) {}
+string FunctionBody::dot_label(void) { return "FunctionBody"; }
+string FunctionBody::dot_shape(void) { return "parallelogram"; }
 
 Attr::Attr(Node* left, Node* right) : Node(left, right) {}
 string Attr::dot_label(void) { return "Attr"; }
@@ -260,10 +285,10 @@ When::When(Node* left, Node* right) : Node(left, right) { }
 string When::dot_label(void) { return "When"; }
 string When::dot_shape(void) { return "box"; }
 
-CaseList::CaseList() : Node() { }
-CaseList::CaseList(Node* left) : Node(left) { }
-string CaseList::dot_label(void) { return "CaseList"; }
-string CaseList::dot_shape(void) { return "box"; }
+Cases::Cases(Node* left) : Node(left) {}
+Cases::Cases(Node* left, Node* right) : Node(left, right) {}
+string Cases::dot_label(void) { return "Cases"; }
+string Cases::dot_shape(void) { return "box"; }
 
 Is::Is(Node* left, Node* right) : Node(left, right) { }
 string Is::dot_label(void) { return "Is"; }
@@ -272,6 +297,10 @@ string Is::dot_shape(void) { return "box"; }
 Otherwise::Otherwise(Node* left, Node* right) : Node(left, right) { }
 string Otherwise::dot_label(void) { return "Otherwise"; }
 string Otherwise::dot_shape(void) { return "box"; }
+
+Undefined::Undefined(void) : Node() {}
+string Undefined::dot_label(void) { return "Undefined"; }
+string Undefined::dot_shape(void) { return "box"; }
 
 Empty::Empty(void) : Node() {}
 string Empty::dot_label(void) { return "Empty"; }

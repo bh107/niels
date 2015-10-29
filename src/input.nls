@@ -1,29 +1,39 @@
-a <- real(64)
-? a
-w = ones as (3,3)
+/**
+Wicked!
+function main() {
 
-record saxofon {
-    horn <- int(32)
-    vild <- real(32)
-}
 
-/*
-when(3<4) {
-} otherwise {
-}
-
-when(3<4) {
-} otherwise {
-}
-
-when(3+4) is(2) {
-} is(3) {
-} otherwise {
-}
-
-when(3+4) is(2) {
-} is(3) {
-} otherwise {
 }
 */
 
+when(x+1) {
+}
+
+when(x+2) {
+} otherwise {
+}
+
+when(x+2) is (1) {
+
+} is (2) {
+
+} is (3) {
+
+} is (4) {
+
+} is (5) {
+
+} otherwise {
+}
+
+when(x+3) is (1) {
+
+} is (2) {
+
+} is (3) {
+
+} is (4) {
+
+} is (5) {
+
+} 
