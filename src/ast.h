@@ -274,6 +274,14 @@ public:
     std::string dot_shape(void);
 };
 
+class Return : public Node {
+public:
+    Return(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
 class Function : public Node {
 public:
     Function(Node* left, Node* right);
@@ -390,14 +398,6 @@ public:
 class While : public Node {
 public:
     While(Node* left, Node* right);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-};
-
-class Return : public Node {
-public:
-    Return();
 
     std::string dot_label(void);
     std::string dot_shape(void);

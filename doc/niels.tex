@@ -55,7 +55,7 @@
 \titlebanner{banner above paper title}        % These are ignored unless
 \preprintfooter{short description of paper}   % 'preprint' option specified.
 
-\title{The design and implementation of a numerically intensive expressions language for science}
+\title{The design and implementation of a numerically intensive expression language for science}
 \subtitle{A pragmatic study}
 
 \authorinfo{Simon A. F. Lund}
@@ -114,6 +114,21 @@ Built-in declarative command-line parsing. Inspirated by Chapel and docopt.
 
 Mathematical ASCII notation, that is, not the extent of APL og unicode.
 Inspiration from ISO 80000-2 for set/range/interval notation.
+
+\subsection{Grammar}
+
+\textbf{Loops}
+
+A single loop-contruct exists, that of a well-known while-loop. The motivations behind this choice, specifically to exclude for-loops, is that loop-constructs are intended as drivers for time-steps in simulations or simulations until some stopping criteria is met. While-loops serve such repetive patterns well. For-loops on the other hand are great for iteration over an index-set, such as the index from 0-100, and their neighbors i+1, i-1 and such.
+However, it is the intent of niels to capture such loop constructs by expressing them as array operations on array-subsets instead of a loop construct.
+
+\textbf{Conditionals}
+
+Conditionals traditional exist in multiple forms for control-flow constructs such as if-then-else and switch/case statements. In Niels this is expressed with the same construct, the when-is-otherwise.
+
+\textbf{Organization}
+
+Collections, modules, and namespaces.
 
 \section{Tools of the trade}
 

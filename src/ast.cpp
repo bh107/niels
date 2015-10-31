@@ -1,5 +1,6 @@
 #include "ast.h"
 #include <typeinfo>
+#include <iomanip>
 
 using namespace std;
 
@@ -128,7 +129,7 @@ Real32::Real32(float val) : Node() {
     _value.real32 = val;
     _vtype = S_REAL32;
 }
-string Real32::dot_label(void) { stringstream ss; ss << _value.real32; return ss.str(); }
+string Real32::dot_label(void) { stringstream ss; ss << fixed << setprecision(2) << _value.real32; return ss.str(); }
 string Real32::dot_shape(void) { return "house"; }
 string Real32::dot_color(void) { return "#d9f0d3"; }
 
@@ -136,7 +137,7 @@ Real64::Real64(double val) : Node() {
     _value.real64 = val;
     _vtype = S_REAL64;
 }
-string Real64::dot_label(void) { stringstream ss; ss << _value.real64; return ss.str(); }
+string Real64::dot_label(void) { stringstream ss; ss << fixed << setprecision(2) << _value.real64; return ss.str(); }
 string Real64::dot_shape(void) { return "house"; }
 string Real64::dot_color(void) { return "#d9f0d3"; }
 
@@ -237,6 +238,10 @@ Call::Call(Node* left, Node* right) : Node(left, right) {}
 string Call::dot_label(void) { return "Call"; }
 string Call::dot_shape(void) { return "parallelogram"; }
 
+Return::Return(Node* left) : Node(left) {}
+string Return::dot_label(void) { return "Return"; }
+string Return::dot_shape(void) { return "box"; }
+
 Function::Function(Node* left, Node* right) : Node(left, right) {}
 string Function::dot_label(void) { return "Function"; }
 string Function::dot_shape(void) { return "parallelogram"; }
@@ -269,17 +274,22 @@ Module::Module(Node* left, Node* right) : Node(left, right) { }
 string Module::dot_label(void) { return "Module"; }
 string Module::dot_shape(void) { return "box"; }
 
-Block::Block(Node* left, Node* right) : Node(left, right) { }
+Block::Block(Node* left, Node* right) : Node(left) {
+    if (typeid(*right) != typeid(StmtList)) {
+        nir::Node* stmtList = new nir::StmtList(right);
+        stmtList->left(NULL);
+        stmtList->right(right);
+        this->right(stmtList);
+    } else {
+        this->right(right);
+    }
+}
 string Block::dot_label(void) { return "Block"; }
 string Block::dot_shape(void) { return "box"; }
 
 While::While(Node* left, Node* right) : Node(left, right) { }
 string While::dot_label(void) { return "While"; }
 string While::dot_shape(void) { return "box"; }
-
-Return::Return() : Node() {}
-string Return::dot_label(void) { return "Return"; }
-string Return::dot_shape(void) { return "box"; }
 
 When::When(Node* left, Node* right) : Node(left, right) { }
 string When::dot_label(void) { return "When"; }

@@ -1,41 +1,13 @@
-import fft
+tsteps  <- 10
+samples <- 10000000
 
-/**
-Wicked!
-function main() {
-
-
-}
-*/
-
-when(x+1) {
-}
-
-when(x+2) {
-} otherwise {
+pi <- 0.0
+while(0<tsteps) {
+    tsteps <- tsteps - 1
+    x <- rand(samples)
+    y <- rand(samples)
+    m <- sum(sqrt(x^2 + y^2) < 1.0) * 4.0
+    pi <- pi + m / samples
 }
 
-when(x+2) is (1) {
-
-} is (2) {
-
-} is (3) {
-
-} is (4) {
-
-} is (5) {
-
-} otherwise {
-}
-
-when(x+3) is (1) {
-
-} is (2) {
-
-} is (3) {
-
-} is (4) {
-
-} is (5) {
-
-} 
+? pi
