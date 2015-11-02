@@ -1,6 +1,8 @@
 #include "ast.h"
+#include "symboltable.h"
 #include <typeinfo>
 #include <iomanip>
+#include <exception>
 
 using namespace std;
 
@@ -26,14 +28,24 @@ string VType_text(VType vtype)
     }
 }
 
+string SType_text(SType stype)
+{
+    switch(stype) {
+        case VAR:       return "var";
+        case FUNC:      return "function";
+        case MOD:       return "module";
+        case COLL:      return "collection";
+        case UNKNOWN:   return "unknown";
+    }
+}
+
 //
 //  Node
 //
-Node::Node(void)                    : _vtype(UNDEFINED), _left(NULL), _right(NULL) {}
-Node::Node(Node* left)              : _vtype(left->vtype()), _left(left), _right(NULL) {
-    _vtype = left->vtype();
+Node::Node(void)                    : _stype(UNKNOWN), _vtype(UNDEFINED), _left(NULL), _right(NULL) {}
+Node::Node(Node* left)              : _stype(UNKNOWN), _vtype(left->vtype()), _left(left), _right(NULL) {
 }
-Node::Node(Node* left, Node* right) : _vtype(UNDEFINED), _left(left), _right(right) {
+Node::Node(Node* left, Node* right) : _stype(UNKNOWN), _vtype(UNDEFINED), _left(left), _right(right) {
     _vtype = left->vtype() >= right->vtype() ? left->vtype() : right->vtype();
 }
 
@@ -49,30 +61,6 @@ void Node::append(Node* node) {
         next = next->right();
     }
     next->right(node);
-}
-
-string Node::dot(void)
-{
-    stringstream ss;
-    ss  << "N" << this << "["
-        << "style=filled" << ","
-        << "label=" << dot_label() << ","
-        << "shape=" << dot_shape() << ","
-        << "fillcolor=\"" << dot_color() << "\""
-        << "]" << endl;
-
-    ss << dot_relation();   
-    return ss.str();
-}
-
-void Node::vtype(VType vtype)
-{
-    _vtype = vtype;
-}
-
-VType Node::vtype(void)
-{
-    return _vtype;
 }
 
 string Node::dot_relation(void)
@@ -92,16 +80,81 @@ string Node::dot_relation(void)
             (typeid(*this) == typeid(Cases))) {
             ss << "{rank=same; " << "N" << this << " N" << _right << " }" << endl;
         }
-        /*
-        if (((typeid(*this) == typeid(Line)) || (typeid(*this) == typeid(Empty))) && \
-            ((typeid(*_right) == typeid(Line)) || (typeid(*_right) == typeid(Empty)))) {
-            ss << "{rank=same; " << "N" << this << " N" << _right << " }" << endl;
-        }
-        */
     }
     return ss.str();
 }
 
+string Node::dot(void)
+{
+    stringstream ss;
+    ss << "N" << this << "[";
+    ss << "style=filled" << ",";
+    ss << "label=" << dot_label() << ",";
+    ss << "shape=" << dot_shape() << ",";
+    ss << "fillcolor=\"" << dot_color() << "\"";
+    ss << "]" << endl;
+
+    return ss.str();
+}
+
+string Node::txt(void)
+{
+    stringstream ss;
+    ss << SType_text(stype()) << " of " << VType_text(vtype());
+
+    return ss.str();
+}
+
+void Node::vtype(VType vtype)
+{
+    _vtype = vtype;
+}
+
+VType Node::vtype(void)
+{
+    return _vtype;
+}
+
+string& Node::str(void)
+{
+    return *(_value.str);
+}
+
+Value& Node::value(void)
+{
+    return _value;
+}
+
+void Node::value(Value& val)
+{
+    _value = val;
+}
+
+void Node::stype(SType val)
+{
+    _stype = val;
+}
+
+SType Node::stype(void)
+{
+    return _stype;
+}
+
+bool Node::defined(void)
+{
+    return _vtype != UNDEFINED;
+}
+
+bool Node::known(void)
+{
+    return _stype != UNKNOWN;
+}
+
+Node::~Node(void) {
+    if (vtype() == S_STR) {
+        delete _value.str;
+    }
+}
 string Node::dot_shape(void) { return "box"; }
 string Node::dot_label(void) { return "b0rk3d"; }
 string Node::dot_color(void) { return "#e0e0e0"; }
@@ -109,6 +162,10 @@ string Node::dot_color(void) { return "#e0e0e0"; }
 //
 // Literals
 //
+Int32::Int32(void) : Node() {
+    _value.int32 = 0;
+    _vtype = S_INT32;
+}
 Int32::Int32(int32_t val) : Node() {
     _value.int32 = val;
     _vtype = S_INT32;
@@ -117,6 +174,10 @@ string Int32::dot_label(void) { stringstream ss; ss << _value.int32; return ss.s
 string Int32::dot_shape(void) { return "house"; }
 string Int32::dot_color(void) { return "#d9f0d3"; }
 
+Int64::Int64(void) : Node() {
+    _value.int64 = 0;
+    _vtype = S_INT64;
+}
 Int64::Int64(int64_t val) : Node() {
     _value.int64 = val;
     _vtype = S_INT64;
@@ -125,6 +186,10 @@ string Int64::dot_label(void) { stringstream ss; ss << _value.int64; return ss.s
 string Int64::dot_shape(void) { return "house"; }
 string Int64::dot_color(void) { return "#d9f0d3"; }
 
+Real32::Real32(void) : Node() {
+    _value.real32 = 0.0;
+    _vtype = S_REAL32;
+}
 Real32::Real32(float val) : Node() {
     _value.real32 = val;
     _vtype = S_REAL32;
@@ -133,6 +198,10 @@ string Real32::dot_label(void) { stringstream ss; ss << fixed << setprecision(2)
 string Real32::dot_shape(void) { return "house"; }
 string Real32::dot_color(void) { return "#d9f0d3"; }
 
+Real64::Real64(void) : Node() {
+    _value.real64 = 0.0;
+    _vtype = S_REAL64;
+}
 Real64::Real64(double val) : Node() {
     _value.real64 = val;
     _vtype = S_REAL64;
@@ -141,6 +210,10 @@ string Real64::dot_label(void) { stringstream ss; ss << fixed << setprecision(2)
 string Real64::dot_shape(void) { return "house"; }
 string Real64::dot_color(void) { return "#d9f0d3"; }
 
+Bool::Bool(void) : Node() {
+    _value.boolean = false;
+    _vtype = S_BOOL;
+}
 Bool::Bool(bool val) : Node() {
     _value.boolean = val;
     _vtype = S_BOOL;
@@ -149,19 +222,26 @@ string Bool::dot_label(void) { stringstream ss; ss << boolalpha << _value.boolea
 string Bool::dot_shape(void) { return "house"; }
 string Bool::dot_color(void) { return "#d9f0d3"; }
 
-Str::Str(char* val) : Node() {
-    _value.str = val;
+Comment::Comment(const char* comment) : Node() {
+    _value.str = new string(comment);
     _vtype = S_STR;
 }
-string Str::dot_label(void) { stringstream ss; ss << _value.str; return ss.str(); }
+string Comment::dot_label(void) { return "Comment"; }
+string Comment::dot_shape(void) { return "box"; }
+
+Str::Str(const char* val) : Node() {
+    _value.str = new string(val);
+    _vtype = S_STR;
+}
+string Str::dot_label(void) { return *_value.str; }
 string Str::dot_shape(void) { return "house"; }
 string Str::dot_color(void) { return "#5aae61"; }
 
-Ident::Ident(char* name) : Node()
+Ident::Ident(const char* name) : Node()
 {
-    _value.str = name;
+    _value.str = new string(name);
 }
-string Ident::dot_label(void) { stringstream ss; ss << _value.str; return ss.str(); }
+string Ident::dot_label(void) { return *_value.str; }
 string Ident::dot_shape(void) { return "hexagon"; }
 string Ident::dot_color(void) { return "#fee0b6"; }
 
@@ -195,18 +275,76 @@ string Div::dot_label(void) { return "Div"; }
 LThan::LThan(Node* left, Node* right) : Node(left, right) {}
 string LThan::dot_label(void) { return "LThan"; }
 
-As::As(Node* left, Node* right) : Node(left, right) {}
+As::As(Node* left, Node* right) : Node(left, right) {
+    switch(left->vtype()) {
+        case S_BOOL:    vtype(A_BOOL);  break;
+        case S_INT32:   vtype(A_INT32); break;
+        case S_INT64:   vtype(A_INT64); break;
+        case S_REAL32:  vtype(A_REAL32); break;
+        case S_REAL64:  vtype(A_REAL64); break;
+        case S_STR:     throw logic_error("Array of strings is unsupported.");
+        case A_BOOL:    throw logic_error("Array of arrays is unsupported.");
+        case A_INT32:   throw logic_error("Array of arrays is unsupported.");
+        case A_INT64:   throw logic_error("Array of arrays is unsupported.");
+        case A_REAL32:  throw logic_error("Array of arrays is unsupported.");
+        case A_REAL64:  throw logic_error("Array of arrays is unsupported.");
+        case UNDEFINED: throw logic_error("Cannot construct array of undefined.");
+    }
+}
 string As::dot_label(void) { return "As"; }
 
 Assign::Assign(Node* left, Node* right) : Node(left, right) {
-    left->vtype(right->vtype());    // Derive the type
-    vtype(right->vtype());
+
+    if (left->defined() && (left->vtype() != right->vtype())) {
+        stringstream ss;
+        ss << "Assigning " << right->txt();
+        ss << " to " << left->str() << " " << left->txt();
+        ss << " is not supported.";
+
+        throw logic_error(ss.str());
+    }
+
+    if (left->known() && (left->stype() != VAR)) {
+        stringstream ss;
+        ss << "Assigning " << right->txt();
+        ss << " to " << left->str() << " " << left->txt();
+        ss << " is not supported.";
+
+        throw logic_error(ss.str());
+    }
+
+    if (!left->defined()) {   // Derive the type of IDENT from right
+        left->vtype(right->vtype());    
+        left->stype(VAR);
+    }
+    vtype(left->vtype());               // IDENT determines type
 }
 string Assign::dot_label(void) { return "Assign"; }
 
 Alias::Alias(Node* left, Node* right) : Node(left, right) {
-    left->vtype(right->vtype());
-    vtype(right->vtype());
+    if ((left->vtype() != UNDEFINED) && (left->vtype() != right->vtype())) {
+        stringstream ss;
+        ss << "Aliasing " << right->txt();
+        ss << " to " << left->str() << " " << left->txt();
+        ss << " is not supported.";
+
+        throw logic_error(ss.str());
+    }
+
+    if ((left->stype() != UNKNOWN) && (left->stype() != VAR)) {
+        stringstream ss;
+        ss << "Aliasing " << right->txt();
+        ss << " to " << left->str() << " " << left->txt();
+        ss << " is not supported.";
+
+        throw logic_error(ss.str());
+    }
+
+    if (left->vtype() == UNDEFINED) {   // Derive the type of IDENT from right
+        left->vtype(right->vtype());    
+        left->stype(VAR);
+    }
+    vtype(left->vtype());               // IDENT determines type
 }
 string Alias::dot_label(void) { return "Alias"; }
 
@@ -218,21 +356,22 @@ Shape::Shape(Node* left) : Node(left) {}
 string Shape::dot_label(void) { return "Shape"; }
 string Shape::dot_shape(void) { return "trapezium"; }
 
-Arg::Arg(Node* left, Node* right) : Node(left, right) {}
-string Arg::dot_label(void) { return "Arg"; }
-string Arg::dot_shape(void) { return "diamond"; }
+Args::Args(Node* left) : Node(left) {}
+string Args::dot_label(void) { return "Args"; }
+string Args::dot_shape(void) { return "diamond"; }
 
-ArgList::ArgList(Node* left) : Node(left) {}
-string ArgList::dot_label(void) { return "ArgList"; }
-string ArgList::dot_shape(void) { return "diamond"; }
-
-Param::Param(Node* left, Node* right) : Node(left, right) {}
+Param::Param(Node* left, Node* right) : Node(left, right) {
+    if (left->vtype() == UNDEFINED) {   // Derive the type
+        left->vtype(right->vtype());    
+    }
+    vtype(right->vtype());
+}
 string Param::dot_label(void) { return "Param"; }
 string Param::dot_shape(void) { return "diamond"; }
 
-ParamList::ParamList(Node* left) : Node(left) {}
-string ParamList::dot_label(void) { return "ParamList"; }
-string ParamList::dot_shape(void) { return "diamond"; }
+Params::Params(Node* left) : Node(left) {}
+string Params::dot_label(void) { return "Params"; }
+string Params::dot_shape(void) { return "diamond"; }
 
 Call::Call(Node* left, Node* right) : Node(left, right) {}
 string Call::dot_label(void) { return "Call"; }
@@ -242,13 +381,15 @@ Return::Return(Node* left) : Node(left) {}
 string Return::dot_label(void) { return "Return"; }
 string Return::dot_shape(void) { return "box"; }
 
-Function::Function(Node* left, Node* right) : Node(left, right) {}
+Function::Function(Node* left, Node* right) : Node(left, right) {
+    _stype = FUNC;
+}
 string Function::dot_label(void) { return "Function"; }
 string Function::dot_shape(void) { return "parallelogram"; }
 
-FunctionDecl::FunctionDecl(Node* left, Node* right) : Node(left, right) {}
-string FunctionDecl::dot_label(void) { return "FunctionDecl"; }
-string FunctionDecl::dot_shape(void) { return "parallelogram"; }
+FunctionDef::FunctionDef(Node* left, Node* right) : Node(left, right) {}
+string FunctionDef::dot_label(void) { return "FunctionDef"; }
+string FunctionDef::dot_shape(void) { return "parallelogram"; }
 
 FunctionBody::FunctionBody(Node* left, Node* right) : Node(left, right) {}
 string FunctionBody::dot_label(void) { return "FunctionBody"; }
@@ -333,33 +474,10 @@ StmtList::StmtList(Node* left, Node* right) : Node(left, right) {}
 string StmtList::dot_label(void) { return "StmtList"; }
 string StmtList::dot_shape(void) { return "box"; }
 
-Comment::Comment(char* comment) : Node() {
-    _value.str = comment;
-    _vtype = S_STR;
-}
-string Comment::dot_label(void) { return "Comment"; }
-string Comment::dot_shape(void) { return "box"; }
 
 Import::Import(Node* left) : Node(left) {}
 string Import::dot_label(void) { return "Import"; }
 string Import::dot_shape(void) { return "box"; }
-
-//
-// Pretty Printing
-//
-string dot(Node* node) {
-    if (node) {
-        if (node->left() and node->right()) {
-            return node->dot() + dot(node->left()) + dot(node->right());
-        } else if (node->left() and ! node->right()) {
-            return node->dot() + dot(node->left());
-        } else if (!node->left() and node->right()) {
-            return node->dot() + dot(node->right());
-        } else {
-            return node->dot();
-        }
-    }    
-}
 
 Program::Program(void) : Node() {}
 string Program::dot_label(void) { return "Program"; }
@@ -369,7 +487,4 @@ Anon::Anon(void) : Node() {}
 string Anon::dot_label(void) { return "Anon"; }
 string Anon::dot_shape(void) { return "box"; }
 
-void eval(Node* node) { }
-
 }
-

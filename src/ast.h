@@ -1,3 +1,5 @@
+#ifndef NIELS_AST_H
+#define NIELS_AST_H
 #include <cinttypes>
 #include <cstddef>
 #include <sstream>
@@ -11,12 +13,11 @@ union Value {
     float real32;
     double real64;
     bool boolean;
-    char* str;
+    std::string* str;
 };
 typedef union Value Value;
 
 enum VType {
-
     S_BOOL,
     S_INT32,
     S_INT64,
@@ -29,13 +30,24 @@ enum VType {
     A_INT64,
     A_REAL32,
     A_REAL64,
-    A_STR,
 
     UNDEFINED
 };
 typedef enum VType VType;
 
 std::string VType_text(VType vtype);
+
+enum SType {
+    VAR,
+    FUNC,
+    MOD,
+    COLL,
+
+    UNKNOWN
+};
+typedef enum SType SType;
+
+std::string SType_text(SType stype);
 
 class Node {
 public:
@@ -52,16 +64,32 @@ public:
     void append(Node* node);
 
     VType vtype(void);
-    void vtype(VType value);
+    void vtype(VType val);
+
+    SType stype(void);
+    void stype(SType val);
+
+    void value(Value& val);
+
+    Value& value(void);
+
+    bool defined(void);
+    bool known(void);
+
+    std::string& str(void);
 
     std::string dot(void);
     std::string dot_relation(void);
+    std::string txt(void);
 
     virtual std::string dot_shape(void);
     virtual std::string dot_label(void);
     virtual std::string dot_color(void);
+    
+    virtual ~Node(void);
 
 protected:
+    SType _stype;
     VType _vtype;
     Value _value;
 
@@ -75,6 +103,7 @@ protected:
 
 class Int32 : public Node {
 public:
+    Int32(void);
     Int32(int32_t val);
 
     std::string dot_label(void);
@@ -84,6 +113,7 @@ public:
 
 class Int64 : public Node {
 public:
+    Int64(void);
     Int64(int64_t val);
 
     std::string dot_label(void);
@@ -93,6 +123,7 @@ public:
 
 class Real32 : public Node {
 public:
+    Real32(void);
     Real32(float val);
 
     std::string dot_label(void);
@@ -102,6 +133,7 @@ public:
 
 class Real64 : public Node {
 public:
+    Real64(void);
     Real64(double val);
 
     std::string dot_label(void);
@@ -111,6 +143,7 @@ public:
 
 class Bool : public Node {
 public:
+    Bool(void);
     Bool(bool val);
 
     std::string dot_label(void);
@@ -120,11 +153,19 @@ public:
 
 class Str : public Node {
 public:
-    Str(char* val);
+    Str(const char* val);
 
     std::string dot_label(void);
     std::string dot_shape(void);
     std::string dot_color(void);
+};
+
+class Comment : public Node {
+public:
+    Comment(const char* comment);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
 };
 
 //
@@ -132,7 +173,7 @@ public:
 //
 class Ident : public Node {
 public:
-    Ident(char* val);
+    Ident(const char* val);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -234,17 +275,9 @@ public:
     std::string dot_shape(void);
 };
 
-class Arg : public Node {
+class Args : public Node {
 public:
-    Arg(Node* left, Node* right);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-};
-
-class ArgList : public Node {
-public:
-    ArgList(Node* left);
+    Args(Node* left);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -258,9 +291,9 @@ public:
     std::string dot_shape(void);
 };
 
-class ParamList : public Node {
+class Params : public Node {
 public:
-    ParamList(Node* left);
+    Params(Node* left);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -290,9 +323,9 @@ public:
     std::string dot_shape(void);
 };
 
-class FunctionDecl : public Node {
+class FunctionDef : public Node {
 public:
-    FunctionDecl(Node* left, Node* right);
+    FunctionDef(Node* left, Node* right);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -469,13 +502,6 @@ public:
     std::string dot_shape(void);
 };
 
-class Comment : public Node {
-public:
-    Comment(char* comment);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-};
 
 class Anon : public Node {
 public:
@@ -485,7 +511,7 @@ public:
     std::string dot_shape(void);
 };
 
-void eval(Node* node);
-std::string dot(Node* node);
 
 }
+#endif
+

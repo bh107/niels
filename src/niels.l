@@ -10,6 +10,7 @@ stringstream _comment;
 
 %}
 %option noyywrap
+%option yylineno
 %x IN_COMMENT
 %%
 [ \t]   ; // Ignore whitespace
@@ -21,7 +22,7 @@ stringstream _comment;
 }
 <IN_COMMENT>{
     "*/"    {
-        yylval.str = strdup(_comment.str().c_str());
+        yylval.node = new nir::Comment(_comment.str().c_str());
         _comment.str("");   // Reset the stream
         _comment.clear();
 
@@ -89,63 +90,63 @@ stringstream _comment;
 "otherwise" { return OTHERWISE; }
 
 "true" {
-    yylval.boolean = true;
+    yylval.node = new nir::Bool(true);
     return BOOL;
 }
 "false" {
-    yylval.boolean = false;
+    yylval.node = new nir::Bool(false);
     return BOOL;
 }
 "bool" {
-    yylval.boolean = true;
+    yylval.node = new nir::Bool();
     return BOOL;
 }
 
 [0-9]+\.[0-9]+  {
-    yylval.r64 = atof(yytext);
+    yylval.node = new nir::Real64(atof(yytext));
     return REAL64;
 }
 "real(32)" {
-    yylval.r32 = atof(yytext);
+    yylval.node = new nir::Real32();
     return REAL32;
 }
 "real(64)" {
-    yylval.r64 = atof(yytext);
+    yylval.node = new nir::Real64();
     return REAL64;
 }
 "real" {
-    yylval.r64 = atof(yytext);
+    yylval.node = new nir::Real64();
     return REAL64;
 }
 
 [0-9]+          {
-    yylval.i64 = atol(yytext);
+    yylval.node = new nir::Int64(atol(yytext));
     return INT64;
 }
 "int(32)" {
-    yylval.i32 = atoi(yytext);
+    yylval.node = new nir::Int32();
     return INT32;
 }
 "int(64)" {
-    yylval.i64 = atol(yytext);
+    yylval.node = new nir::Int64();
     return INT64;
 }
 "int" {
-    yylval.i64 = atol(yytext);
+    yylval.node = new nir::Int64();
     return INT64;
 }
 
 \".+\" {
-    yylval.str = strdup(yytext);
+    yylval.node = new nir::Str(yytext);
     return STRING;
 }
 '[a-zA-Z0-9]+' {
-    yylval.str = strdup(yytext);
+    yylval.node = new nir::Str(yytext);
     return STRING;
 }
 
 [a-zA-Z]+[a-zA-Z0-9]? {
-    yylval.str = strdup(yytext);
+    yylval.node = new nir::Ident(yytext);
     return IDENT;
 }
 
