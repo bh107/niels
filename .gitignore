@@ -4,6 +4,9 @@ src/niels
 # Clion project files
 .idea
 
+# cmake build-folder
+*build/
+
 # Latex related files
 *.blb
 *.blg
