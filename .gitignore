@@ -1,6 +1,9 @@
 # Niels
 src/niels
 
+# Clion project files
+.idea
+
 # Latex related files
 *.blb
 *.blg
