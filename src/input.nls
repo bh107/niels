@@ -1,13 +1,18 @@
-tsteps  <- 10
-samples <- 10000000
+a <- real(64)
 
-pi <- 0.0
-while(0<tsteps) {
-    tsteps <- tsteps - 1
-    x <- rand(samples)
-    y <- rand(samples)
-    m <- sum(sqrt(x^2 + y^2) < 1.0) * 4.0
-    pi <- pi + m / samples
+function rap(x:int(32), y:int(32)) {
+    x + y
 }
 
-? pi
+record jazz {
+    a <- int(32)
+    b <- real(32)
+}
+
+x <- int(32)
+
+record jeff {
+    a <- int(64)
+    b <- real(64)
+}
+

@@ -395,7 +395,10 @@ FunctionBody::FunctionBody(Node* left, Node* right) : Node(left, right) {}
 string FunctionBody::dot_label(void) { return "FunctionBody"; }
 string FunctionBody::dot_shape(void) { return "parallelogram"; }
 
-Attr::Attr(Node* left, Node* right) : Node(left, right) {}
+Attr::Attr(Node* left, Node* right) : Node(left, right) {
+    left->vtype(right->vtype());
+    vtype(right->vtype());
+}
 string Attr::dot_label(void) { return "Attr"; }
 string Attr::dot_shape(void) { return "parallelogram"; }
 

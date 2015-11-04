@@ -1,3 +1,4 @@
+%require "3.0.2"
 %{
 #include <cinttypes>
 #include <cstdint>
@@ -59,10 +60,12 @@ extern "C" void assert_undefined(nir::Node* node);
 %token <node> INT32 INT64 REAL32 REAL64 STRING BOOL IDENT
 %token RETURN FUNCTION WHILE WHEN IS OTHERWISE RECORD
 
-%type <node> input module block stmts stmt expr scalar val shape range ident args param params function while return
-%type <node> when is otherwise cases
+%type <node> input block stmts stmt expr scalar val shape range ident
+%type <node> args param params function function_block return
+%type <node> while when is otherwise cases
 %type <node> import
 %type <node> record attr attrs noop
+%type <node> scopeBegin scopeEnd
 
 %%
 
@@ -73,8 +76,7 @@ input: %empty { }
     }
 ;
 
-scope: %empty {
-        // I wonder if this will work...
+scopeBegin: %empty {
         nir::SymbolTable* childScope = new nir::SymbolTable();
         childScope->parent(symbolTable);
 
@@ -91,30 +93,13 @@ scope: %empty {
     }
 ;
 
-noop: %empty {
-        $$ = new nir::Noop();
+scopeEnd: %empty {
+        symbolTable = symbolTable->parent();
     }
 ;
 
-module: ident[id] scope LBRACE noop[n] RBRACE {
-        assert_undefined($id);
-
-        $$ = new nir::Module($id, $n);
-    }
-    | ident[id] scope LBRACE expr[e] RBRACE {
-        assert_undefined($id);
-
-        $$ = new nir::Module($id, $e);
-    }
-    | ident[id] scope LBRACE stmt[s] RBRACE {
-        assert_undefined($id);
-
-        $$ = new nir::Module($id, $s);
-    }
-    | ident[id] scope LBRACE stmts[s] RBRACE {
-        assert_undefined($id);
-
-        $$ = new nir::Module($id, $s);
+noop: %empty {
+        $$ = new nir::Noop();
     }
 ;
 
@@ -142,19 +127,15 @@ return: RETURN expr NL {
     }
 ;
 
-function_scope: FUNCTION {
-        cout << "HUH!" << endl;
-        symbolTable = new nir::SymbolTable();
+function_block: scopeBegin LPAREN params[p] RPAREN block[b] scopeEnd {
+        $$ = new nir::FunctionDef($p, $b);
     }
 ;
 
-function: function_scope ident[id] LPAREN params[p] RPAREN block[b] {
+function: FUNCTION ident[id] function_block[fb] {
         assert_undefined($id);
         
-        $$ = new nir::Function(
-            $id,
-            new nir::FunctionDef($p, $b)
-        );
+        $$ = new nir::Function($id, $fb);
         symbolTable->put($id->str(), $$);
     }
 ;
@@ -252,7 +233,6 @@ stmt: NL { $$ = new nir::Noop(); }
             yyerror(e.what());
         }
     }
-    | module { $$ = $1; }
     | function { $$ = $1; }
     | record { $$ = $1; }
     | return { $$ = $1; }
@@ -277,11 +257,21 @@ shape: expr { $$ = new nir::Shape($1); }
         $$ = $1;
     }
 ;
-range: LBRACK expr SEMICOLON expr RBRACK { $$ = new nir::Range(false, false, $2, $4 ); }
-    | LBRACK expr SEMICOLON expr LBRACK { $$ = new nir::Range(false, true, $2, $4 ); }
-    | RBRACK expr SEMICOLON expr RBRACK { $$ = new nir::Range(true, false, $2, $4 ); }
-    | RBRACK expr SEMICOLON expr LBRACK { $$ = new nir::Range(true, true, $2, $4 ); }
-    | expr SEMICOLON expr { $$ = new nir::Range(false, false, $1, $3 ); }
+range: LBRACK expr SEMICOLON expr RBRACK {
+        $$ = new nir::Range(false, false, $2, $4);
+    }
+    | LBRACK expr SEMICOLON expr LBRACK {
+        $$ = new nir::Range(false, true, $2, $4);
+    }
+    | RBRACK expr SEMICOLON expr RBRACK {
+        $$ = new nir::Range(true, false, $2, $4);
+    }
+    | RBRACK expr SEMICOLON expr LBRACK {
+        $$ = new nir::Range(true, true, $2, $4);
+    }
+    | expr SEMICOLON expr {
+        $$ = new nir::Range(false, false, $1, $3);
+    }
 ;
 
 ident: IDENT {
@@ -290,8 +280,10 @@ ident: IDENT {
     }
 ;
 
-attr: ident ASSIGN scalar NL {
-        $$ = new nir::Attr($1, $3);
+attr: ident[id] ASSIGN scalar[s] NL {
+        assert_undefined($id);
+        $$ = new nir::Attr($id, $s);
+        symbolTable->put($id->str(), $$);
     }
 ;
 attrs: %empty { $$ = new nir::Empty(); }
@@ -302,18 +294,23 @@ attrs: %empty { $$ = new nir::Empty(); }
     }
 ;
 
-record: RECORD ident[id] scope LBRACE NL attrs[a] RBRACE {
+record: RECORD ident[id] scopeBegin LBRACE NL attrs[a] RBRACE scopeEnd {
         assert_undefined($id);
         
         $$ = new nir::RecDef($id, $a);
+        symbolTable->put($id->str(), $$);
     }
 ;
 
-param: ident {
+param: ident[id] {
+        assert_undefined($id);
         $$ = new nir::Param($1, new nir::Undefined());
+        symbolTable->put($1->str(), $$);
     }
-    | ident COLON scalar {
+    | ident[id] COLON scalar[s] {
+        assert_undefined($id);
         $$ = new nir::Param($1, $3);
+        symbolTable->put($1->str(), $$);
     }
 ;
 params: %empty { $$ = new nir::Empty(); }
@@ -340,7 +337,8 @@ expr: val { $$ = $1; }
     }
     | LPAREN expr RPAREN { $$ = $2; }
     | ident LPAREN args RPAREN {
-        $$ = new nir::Call($1,$3);
+        assert_defined($1);
+        $$ = new nir::Call($1, $3);
     }
     | expr ADD expr  { $$ = new nir::Add($1, $3); }
     | expr SUB expr  { $$ = new nir::Sub($1, $3); }

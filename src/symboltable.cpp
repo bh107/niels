@@ -69,7 +69,7 @@ string SymbolTable::dot(void)
 {
     stringstream ss;
     ss << "subgraph cluster" << this <<  "{" << endl;
-    ss << "SymbolTableStart[label=\"<f0>|<f1>SymbolTable|<f2>\",shape=record];" << endl;
+    ss << "SymbolTableStart" << this << "[label=\"<f0>|<f1>SymbolTable|<f2>\",shape=record];" << endl;
     for (map<string, Node*>::iterator it=symbols().begin(); it!=symbols().end(); ++it) {
         ss << "\"" << it->second << "\" [" << endl;
         ss << "label=" << "\"<f0>" << it->first << " | " 
@@ -78,13 +78,13 @@ string SymbolTable::dot(void)
         ss << "shape=\"record\"" << endl;
         ss << "]; " <<  endl;
     }
-    ss << "SymbolTableEnd[label=\"<f0>|<f1>SymbolTable|<f2>\",shape=record];" << endl;
+    ss << "SymbolTableEnd" << this << "[label=\"<f0>|<f1>SymbolTable|<f2>\",shape=record];" << endl;
 
-    ss << "SymbolTableStart:f0 -- " << endl;
+    ss << "SymbolTableStart" << this << ":f0 -- " << endl;
     for (map<string, Node*>::iterator it=symbols().begin(); it!=symbols().end(); ++it) {
         ss << "\"" << it->second << "\":f0 -- ";
     }
-    ss << "SymbolTableEnd:f0" << endl;
+    ss << "SymbolTableEnd" << this << ":f0" << endl;
     ss << "}" << endl;
 
     return ss.str();
