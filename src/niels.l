@@ -13,7 +13,6 @@ stringstream _comment;
 %option yylineno
 %x IN_COMMENT
 %%
-[ \t]   ; // Ignore whitespace
 
 <INITIAL>{
     "/*"    {
@@ -37,6 +36,7 @@ stringstream _comment;
     }
 }
 
+[ \t]   ; // Ignore whitespace
 "@"     { return AT; }
 "?"     { return QUERY; }
 
