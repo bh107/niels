@@ -1,8 +1,8 @@
 #ifndef NIELS_UTILS_H
 #define NIELS_UTILS_H
 #include <sstream>
-#include "ast.h"
-#include "symboltable.h"
+#include "ast.hh"
+#include "symboltable.hh"
 
 namespace nir {
 

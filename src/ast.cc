@@ -1,8 +1,8 @@
-#include "ast.h"
-#include "symboltable.h"
 #include <typeinfo>
-#include <iomanip>
 #include <exception>
+#include <iomanip>
+#include "ast.hh"
+#include "symboltable.hh"
 
 using namespace std;
 

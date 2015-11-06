@@ -1,7 +1,7 @@
 #ifndef NIELS_DRIVER_H
 #define NIELS_DRIVER_H
-#include "ast.h"
-#include "symboltable.h"
+#include "ast.hh"
+#include "symboltable.hh"
 
 namespace nir {
 

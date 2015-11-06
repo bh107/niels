@@ -1,18 +1,1 @@
-a <- real(64)
-
-function rap(x:int(32), y:int(32)) {
-    x + y
-}
-
-record jazz {
-    a <- int(32)
-    b <- real(32)
-}
-
-x <- int(32)
-
-record jeff {
-    a <- int(64)
-    b <- real(64)
-}
-
+? ((1 < 2) *2) / 5.0

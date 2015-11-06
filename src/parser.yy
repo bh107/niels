@@ -8,9 +8,9 @@
 #include <iostream>
 #include <typeinfo>
 #include <cstring>
-#include "ast.h"
-#include "symboltable.h"
-#include "utils.hpp"
+#include "ast.hh"
+#include "symboltable.hh"
+#include "utils.hh"
 
 using namespace std;
 

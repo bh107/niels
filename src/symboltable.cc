@@ -1,5 +1,5 @@
 #include <map>
-#include "symboltable.h"
+#include "symboltable.hh"
 
 using namespace std;
 

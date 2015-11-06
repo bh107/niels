@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 #include <map>
-#include "ast.h"
+#include "ast.hh"
 
 namespace nir {
 

@@ -4,14 +4,14 @@ CXX_FLAGS=-std=c++11
 
 all: clean niels run
 
-lex.yy.c: niels.l
-	flex $< 
+scanner.c: scanner.l
+	flex -o scanner.c $< 
 
-niels.tab.cpp: niels.ypp
-	bison -d $<
+parser.cc: parser.yy
+	bison --defines=parser.hh -o parser.cc $<
 	
-niels: niels.tab.cpp lex.yy.c
-	$(CXX) -L/home/safl/.local/lib -I/home/safl/.local/include/bohrium -I/home/safl/.local/include driver.cpp utils.cpp ast.cpp symboltable.cpp $^ $(CXX_FLAGS) $(LIBS) -g -o niels
+niels: parser.cc scanner.c 
+	$(CXX) -L/home/safl/.local/lib -I/home/safl/.local/include/bohrium -I/home/safl/.local/include driver.cc utils.cc ast.cc symboltable.cc $^ $(CXX_FLAGS) $(LIBS) -g -o niels
 
 run:
 	./niels
@@ -23,8 +23,7 @@ dot: clean niels run
 	mupdf graph.pdf
 
 clean:
-	rm -f bah
 	rm -f niels
-	rm -f lex.yy.c
-	rm -f niels.tab.cpp
-	rm -f niels.tab.hpp
+	rm -f scanner.c
+	rm -f parser.hh
+	rm -f parser.cc

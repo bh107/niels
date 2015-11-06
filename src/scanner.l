@@ -1,9 +1,10 @@
 niels.l
 %{
-#include "ast.h"
-#include "niels.tab.hpp"
 #include <iostream>
 #include <string>
+#include "ast.hh"
+#include "parser.hh"
+
 using namespace std;
 stringstream _comment;
 #define YY_DECL extern "C" int yylex()
