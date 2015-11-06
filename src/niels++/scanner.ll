@@ -1,55 +1,71 @@
 %{ /* -*- C++ -*- */
-# include <cerrno>
-# include <climits>
-# include <cstdlib>
-# include <string>
-# include "driver.hh"
-# include "parser.hh"
+#include <cerrno>
+#include <climits>
+#include <cstdlib>
+#include <string>
+#include "driver.hh"
+#include "parser.hh"
 
-# undef yywrap
-# define yywrap() 1
+#undef yywrap
+#define yywrap() 1
 
 static nls::location loc; // Location of the current token.
 %}
 %option noyywrap nounput batch debug noinput
-id    [a-zA-Z][a-zA-Z_0-9]*
-int   [0-9]+
-blank [ \t]
 
 %{
-    // Code run each time a pattern is matched.
-    # define YY_USER_ACTION  loc.columns (yyleng);
+    #define YY_USER_ACTION  loc.columns (yyleng);
 %}
 
 %%
 
 %{
-    // Code run each time yylex is called.
-    loc.step ();
+    loc.step();
 %}
 
-{blank}+   loc.step ();
-[\n]+      loc.lines (yyleng); loc.step ();
-"-"      return nls::Parser::make_MINUS(loc);
-"+"      return nls::Parser::make_PLUS(loc);
-"*"      return nls::Parser::make_STAR(loc);
-"/"      return nls::Parser::make_SLASH(loc);
-"("      return nls::Parser::make_LPAREN(loc);
-")"      return nls::Parser::make_RPAREN(loc);
-":="     return nls::Parser::make_ASSIGN(loc);
-
-{int}      {
-    errno = 0;
-    long n = strtol (yytext, NULL, 10);
-    if (! (INT_MIN <= n && n <= INT_MAX && errno != ERANGE)) {
-        driver.error (loc, "integer is out of range");
-    }
-    return nls::Parser::make_NUMBER(n, loc);
+[ \t]+  {
+    loc.step();
 }
-
-{id}       return nls::Parser::make_IDENTIFIER(yytext, loc);
-.          driver.error (loc, "invalid character");
-<<EOF>>    return nls::Parser::make_END(loc);
+[\n]+   {
+    loc.lines(yyleng);
+    loc.step();
+}
+"<-" {
+    return nls::Parser::make_ASSIGN(loc);
+}
+"=" {
+    return nls::Parser::make_ALIAS(loc);
+}
+"(" {
+    return nls::Parser::make_LPAREN(loc);
+}
+")" {
+    return nls::Parser::make_RPAREN(loc);
+}
+"+"     {
+    return nls::Parser::make_ADD(loc);
+}
+"int(32)" {
+    return nls::Parser::make_INT32(atoi(yytext), loc);
+}
+"int(64)" {
+    return nls::Parser::make_INT64(atoi(yytext), loc);
+}
+"int" {
+    return nls::Parser::make_INT64(atoi(yytext), loc);
+}
+[0-9]+  {
+    return nls::Parser::make_INT64(atoi(yytext), loc);
+}
+[a-zA-Z]+[a-zA-Z0-9]? {
+    return nls::Parser::make_IDENT(yytext, loc);
+}
+. {
+    driver.error (loc, "invalid character");
+}
+<<EOF>> {
+    return nls::Parser::make_END(loc);
+}
 %%
 
 void nls::Driver::scan_begin ()

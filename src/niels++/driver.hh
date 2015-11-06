@@ -5,6 +5,7 @@
 #include <map>
 #include <parser.hh>
 #include <location.hh>
+#include <symboltable.hh>
 
 #define YY_DECL \
   nls::Parser::symbol_type yylex (nls::Driver& driver)
@@ -32,9 +33,10 @@ public:
 
     void error(const std::string &m);
 
-    std::map<std::string, int> variables;
+    SymbolTable symbolTable;
+    Node* ast;
 
-    int result;
+    double result;
 
     // Whether scanner traces should be generated.
     bool trace_scanning;

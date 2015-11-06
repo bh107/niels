@@ -5,7 +5,7 @@
 #include <map>
 #include "ast.hh"
 
-namespace nir {
+namespace nls {
 
 /**
  *  SymbolTable!

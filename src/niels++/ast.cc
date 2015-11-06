@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace nir {
+namespace nls {
 
 string VType_text(VType vtype)
 {
@@ -43,11 +43,31 @@ string SType_text(SType stype)
 //
 //  Node
 //
-Node::Node(void)                    : _stype(UNKNOWN), _vtype(UNDEFINED), _left(NULL), _right(NULL) {}
-Node::Node(Node* left)              : _stype(UNKNOWN), _vtype(left->vtype()), _left(left), _right(NULL) {
+Node::Node(void)
+    : _stype(UNKNOWN), _vtype(UNDEFINED), _left(NULL), _right(NULL)
+{
 }
-Node::Node(Node* left, Node* right) : _stype(UNKNOWN), _vtype(UNDEFINED), _left(left), _right(right) {
-    _vtype = left->vtype() >= right->vtype() ? left->vtype() : right->vtype();
+Node::Node(Node* left)
+    : _stype(UNKNOWN), _vtype(UNDEFINED), _left(left), _right(NULL)
+{
+}
+Node::Node(Node* left, Node* right)
+    : _stype(UNKNOWN), _vtype(UNDEFINED), _left(left), _right(right)
+{
+}
+
+Node::Node(const Node& node)
+    : _stype(UNKNOWN), _vtype(UNDEFINED), _left(NULL), _right(NULL)
+{
+}
+
+Node::Node(Node& left)
+    : _stype(UNKNOWN), _vtype(UNDEFINED), _left(NULL), _right(NULL)
+{
+}
+Node::Node(Node& left, Node& right)
+    : _stype(UNKNOWN), _vtype(UNDEFINED), _left(NULL), _right(NULL)
+{
 }
 
 Node* Node::left(void) { return _left; }
@@ -183,6 +203,11 @@ Int64::Int64(int64_t val) : Node() {
     _value.int64 = val;
     _vtype = S_INT64;
 }
+Int64::Int64(Node& node) : Node() {
+    _value.int64 = node.value().int64;
+    _vtype = S_INT64;
+}
+
 string Int64::dot_label(void) { stringstream ss; ss << _value.int64; return ss.str(); }
 string Int64::dot_shape(void) { return "house"; }
 string Int64::dot_color(void) { return "#d9f0d3"; }
@@ -242,6 +267,11 @@ Ident::Ident(const char* name) : Node()
 {
     _value.str = new string(name);
 }
+Ident::Ident(string& val) : Node()
+{
+    _value.str = new string(val);
+}
+
 string Ident::dot_label(void) { return *_value.str; }
 string Ident::dot_shape(void) { return "hexagon"; }
 string Ident::dot_color(void) { return "#fee0b6"; }
@@ -256,6 +286,7 @@ Inv::Inv(Node* left) : Node(left) {}
 string Inv::dot_label(void) { return "Inv"; }
 
 Add::Add(Node* left, Node* right) : Node(left, right) {}
+Add::Add(Node& left, Node& right) : Node(left, right) {}
 string Add::dot_label(void) { return "Add"; }
 
 Sub::Sub(Node* left, Node* right) : Node(left, right) {}
@@ -421,7 +452,7 @@ string Module::dot_shape(void) { return "box"; }
 
 Block::Block(Node* left, Node* right) : Node(left) {
     if (typeid(*right) != typeid(StmtList)) {
-        nir::Node* stmtList = new nir::StmtList(right);
+        nls::Node* stmtList = new nls::StmtList(right);
         stmtList->left(NULL);
         stmtList->right(right);
         this->right(stmtList);

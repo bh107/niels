@@ -4,10 +4,8 @@
 namespace nls {
 
 Driver::Driver()
-        : trace_scanning(false), trace_parsing(false)
+        : trace_scanning(false), trace_parsing(false), symbolTable(), ast(NULL)
 {
-    variables["one"] = 1;
-    variables["two"] = 2;
 }
 
 Driver::~Driver()
@@ -27,7 +25,7 @@ int Driver::parse(const std::string &f)
 
 void Driver::error(const nls::location &l, const std::string &m)
 {
-    std::cerr << l << ": " << m << std::endl;
+    std::cerr << "@" << l << ": " << m << std::endl;
 }
 
 void Driver::error(const std::string &m)

@@ -2,19 +2,18 @@
 %require "3.0.2"
 %defines
 %define parser_class_name {Parser}
-
-%define api.token.constructor
 %define api.namespace {nls}
 %define api.value.type variant
+%define api.token.constructor
 %define parse.assert
 %code requires
 {
-# include <string>
+#include <string>
+#include <ast.hh>
 namespace nls {
     class Driver;
 }
 }
-// The parsing context.
 %param { Driver& driver }
 %locations
 %initial-action
@@ -31,44 +30,58 @@ namespace nls {
 %define api.token.prefix {TOK_}
 %token
     END  0  "end of file"
-    ASSIGN  ":="
-    MINUS   "-"
-    PLUS    "+"
-    STAR    "*"
-    SLASH   "/"
+    ASSIGN  "<-"
+    AS      "as"
+    AND     "and"
+    OR      "or"
+    XOR     "xor"
+    LTHAN   "<"
+    GTHAN   ">"
+    EQUAL   "=="
+    LTHAN_EQUAL "<="
+    GTHAN_EQUAL ">="
+    INVERT  "!"
+    NEGATE  "~"
+    ALIAS   "="
+    SUB     "-"
+    ADD     "+"
+    MUL     "*"
+    DIV     "/"
+    MOD     "%"
+    QUERY   "?"
     LPAREN  "("
     RPAREN  ")"
+    LBRACE  "{"
+    RBRACE  "}"
+    LBRACK  "["
+    RBRACK  "]"
 ;
-%token <std::string> IDENTIFIER "identifier"
-%token <int> NUMBER "number"
-%type  <int> exp
-%printer { yyoutput << $$; } <*>;
+%token <int>    INT32   "int(32)"
+%token <long>   INT64   "int(64)"
+%token <float>  REAL32  "real(32)"
+%token <double> REAL64  "real(64)"
+%token <std::string> IDENT  "identifier"
+%type  <Node> exp
+%printer {
+    yyoutput << "BLA";
+} <*>;
 %%
 %start unit;
-unit: assignments exp  { driver.result = $2; };
-
-assignments:
-  %empty                 {}
-| assignments assignment {};
-
-assignment:
-    IDENTIFIER ":=" exp {
-        driver.variables[$1] = $3;
+unit: exp  {
+        driver.ast = &$1;
     }
 ;
 
-%left "+" "-";
-%left "*" "/";
 exp:
-  exp "+" exp   { $$ = $1 + $3; }
-| exp "-" exp   { $$ = $1 - $3; }
-| exp "*" exp   { $$ = $1 * $3; }
-| exp "/" exp   { $$ = $1 / $3; }
-| "(" exp ")"   { std::swap ($$, $2); }
-| IDENTIFIER  { $$ = driver.variables[$1]; }
-| NUMBER      { std::swap ($$, $1); };
+  exp "+" exp   { $$ = new nls::Add($1, $3); }
+| LPAREN exp RPAREN { $$ = $2; }
+| INT32         { $$ = new nls::Int32($1); }
+| INT64         { $$ = new nls::Int64($1); }
+| REAL32        { $$ = new nls::Real32($1); }
+| REAL64        { $$ = new nls::Real64($1); }
+;
 %%
 void nls::Parser::error (const location_type& l, const std::string& m)
 {
-  driver.error (l, m);
+    driver.error (l, m);
 }

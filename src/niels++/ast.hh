@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iostream>
 
-namespace nir {
+namespace nls {
 
 union Value {
     int32_t int32;
@@ -54,6 +54,10 @@ public:
     Node(void);
     Node(Node* left);
     Node(Node* left, Node* right);
+
+    Node(const Node& node);
+    Node(Node& left);
+    Node(Node& left, Node& right);
 
     Node* left(void);
     Node* right(void);
@@ -115,6 +119,7 @@ class Int64 : public Node {
 public:
     Int64(void);
     Int64(int64_t val);
+    Int64(Node& node);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -174,6 +179,7 @@ public:
 class Ident : public Node {
 public:
     Ident(const char* val);
+    Ident(std::string& val);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -210,6 +216,7 @@ public:
 class Add : public Node {
 public:
     Add(Node* left, Node* right);
+    Add(Node& left, Node& right);
     std::string dot_label(void);
 };
 
