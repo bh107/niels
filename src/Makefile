@@ -1,5 +1,5 @@
 CXX=g++
-LIBS=-lfl
+LIBS=-lfl -lbh
 CXX_FLAGS=-std=c++11
 
 all: clean niels run
@@ -11,9 +11,12 @@ niels.tab.cpp: niels.ypp
 	bison -d $<
 	
 niels: niels.tab.cpp lex.yy.c
-	$(CXX) driver.cpp utils.cpp ast.cpp symboltable.cpp $^ $(CXX_FLAGS) $(LIBS) -g -o niels
+	$(CXX) -L/home/safl/.local/lib -I/home/safl/.local/include/bohrium -I/home/safl/.local/include driver.cpp utils.cpp ast.cpp symboltable.cpp $^ $(CXX_FLAGS) $(LIBS) -g -o niels
 
 run:
+	./niels
+
+dot: clean niels run
 	./niels > graph.dot
 	dot -T pdf graph.dot > graph.pdf
 	dot -T png graph.dot > graph.png

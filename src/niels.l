@@ -57,6 +57,7 @@ stringstream _comment;
 "<"     { return LTHAN; }
 ">"     { return GTHAN; }
 "=="    { return EQUAL; }
+"!="    { return NOT_EQUAL; }
 "<="    { return LTHAN_EQUAL; }
 ">="    { return GTHAN_EQUAL; }
 
@@ -106,11 +107,11 @@ stringstream _comment;
     yylval.node = new nir::Real64(atof(yytext));
     return REAL64;
 }
-"real(32)" {
+"r32" {
     yylval.node = new nir::Real32();
     return REAL32;
 }
-"real(64)" {
+"r64" {
     yylval.node = new nir::Real64();
     return REAL64;
 }
@@ -123,11 +124,11 @@ stringstream _comment;
     yylval.node = new nir::Int64(atol(yytext));
     return INT64;
 }
-"int(32)" {
+"i32" {
     yylval.node = new nir::Int32();
     return INT32;
 }
-"int(64)" {
+"i64" {
     yylval.node = new nir::Int64();
     return INT64;
 }

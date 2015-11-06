@@ -4,36 +4,42 @@
 #include <cstddef>
 #include <sstream>
 #include <iostream>
+#include <bxx/bohrium.hpp>
 
 namespace nir {
 
 union Value {
-    int32_t int32;
-    int64_t int64;
-    float real32;
-    double real64;
+    int32_t i32;
+    int64_t i64;
+    float r32;
+    double r64;
     bool boolean;
     std::string* str;
+    void* array;
 };
 typedef union Value Value;
 
 enum VType {
-    S_BOOL,
-    S_INT32,
-    S_INT64,
-    S_REAL32,
-    S_REAL64,
-    S_STR,
+    BOOL = 0,
+    I32 = 1,
+    I64 = 2,
+    R32 = 4,
+    R64 = 8,
 
-    A_BOOL,
-    A_INT32,
-    A_INT64,
-    A_REAL32,
-    A_REAL64,
+    BOOL_A = 16,
+    I32_A = 32,
+    I64_A = 64,
+    R32_A = 128,
+    R64_A = 256,
 
-    UNDEFINED
+    STR = 512,
+
+    UNDEFINED = 1024,
 };
 typedef enum VType VType;
+
+#define SCALAR (BOOL|I32|I64|R32|R64)
+#define ARRAY (BOOL_A|I32_A|I64_A|R32_A|R64_A)
 
 std::string VType_text(VType vtype);
 
@@ -81,6 +87,8 @@ public:
     std::string dot(void);
     std::string dot_relation(void);
     std::string txt(void);
+
+    virtual void eval(void);
 
     virtual std::string dot_shape(void);
     virtual std::string dot_label(void);
@@ -201,6 +209,8 @@ public:
 class Query : public Node {
 public:
     Query(Node* left);
+
+    void eval(void);
     std::string dot_label(void);
 };
 
@@ -210,48 +220,58 @@ public:
 class Add : public Node {
 public:
     Add(Node* left, Node* right);
+
+    void eval(void);
     std::string dot_label(void);
 };
 
 class Sub : public Node {
 public:
     Sub(Node* left, Node* right);
+    void eval(void);
     std::string dot_label(void);
 };
 
 class Mul : public Node {
 public:
     Mul(Node* left, Node* right);
+    void eval(void);
     std::string dot_label(void);
 };
 
 class Mod : public Node {
 public:
     Mod(Node* left, Node* right);
+
+    void eval(void);
     std::string dot_label(void);
 };
 
 class Div : public Node {
 public:
     Div(Node* left, Node* right);
+    void eval(void);
     std::string dot_label(void);
 };
 
 class Pow : public Node {
 public:
     Pow(Node* left, Node* right);
+    void eval(void);
     std::string dot_label(void);
 };
 
 class LThan : public Node {
 public:
     LThan(Node* left, Node* right);
+    void eval(void);
     std::string dot_label(void);
 };
 
 class As : public Node {
 public:
     As(Node* left, Node* right);
+    void eval(void);
     std::string dot_label(void);
 };
 
