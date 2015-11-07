@@ -237,14 +237,14 @@ string Real64::dot_shape(void) { return "house"; }
 string Real64::dot_color(void) { return "#d9f0d3"; }
 
 Bool::Bool(void) : Node() {
-    _value.boolean = false;
+    _value.bul = false;
     _vtype = S_BOOL;
 }
 Bool::Bool(bool val) : Node() {
-    _value.boolean = val;
+    _value.bul = val;
     _vtype = S_BOOL;
 }
-string Bool::dot_label(void) { stringstream ss; ss << boolalpha << _value.boolean; return ss.str(); }
+string Bool::dot_label(void) { stringstream ss; ss << boolalpha << _value.bul; return ss.str(); }
 string Bool::dot_shape(void) { return "house"; }
 string Bool::dot_color(void) { return "#d9f0d3"; }
 

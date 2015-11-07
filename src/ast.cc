@@ -13,27 +13,32 @@ namespace nls {
 string VType_text(VType vtype)
 {
     switch(vtype) {
-        case UNDEFINED: return "undef";
-        case STR:     return "str";
+        case UNDEFINED: return "undefined";
         
-        case I32:   return "i32";
-        case I64:   return "i64";
-        case R32:  return "r32";
-        case R64:  return "r64";
-        case BOOL:    return "bool";
+        case BUL: return "bool";
+        case I32: return "i32";
+        case I64: return "i64";
+        case R32: return "r32";
+        case R64: return "r64";
+        case C64: return "c64";
+        case C128: return "c128";
 
-        case I32_A:   return "i32[]";
-        case I64_A:   return "i64[]";
-        case R32_A:  return "r32[]";
-        case R64_A:  return "r64[]";
-        case BOOL_A:    return "bool[]";
+        case BUL_A: return "bool[]";
+        case I32_A: return "i32[]";
+        case I64_A: return "i64[]";
+        case R32_A: return "r32[]";
+        case R64_A: return "r64[]";
+        case C64_A: return "c64[]";
+        case C128_A: return "c128[]";
+
+        case STR: return "string";
     }
 }
 
 string SType_text(SType stype)
 {
     switch(stype) {
-        case VAR:       return "var";
+        case VAR:       return "variable";
         case FUNC:      return "function";
         case MOD:       return "module";
         case COLL:      return "collection";
@@ -236,14 +241,14 @@ string Real64::dot_shape(void) { return "house"; }
 string Real64::dot_color(void) { return "#d9f0d3"; }
 
 Bool::Bool(void) : Node() {
-    _value.boolean = false;
-    _vtype = BOOL;
+    _value.bul = false;
+    _vtype = BUL;
 }
 Bool::Bool(bool val) : Node() {
-    _value.boolean = val;
-    _vtype = BOOL;
+    _value.bul = val;
+    _vtype = BUL;
 }
-string Bool::dot_label(void) { stringstream ss; ss << boolalpha << _value.boolean; return ss.str(); }
+string Bool::dot_label(void) { stringstream ss; ss << boolalpha << _value.bul; return ss.str(); }
 string Bool::dot_shape(void) { return "house"; }
 string Bool::dot_color(void) { return "#d9f0d3"; }
 
@@ -293,8 +298,8 @@ void Query::eval(void)
     case R64:
         cout << left()->value().r64 << endl;
         break;
-    case BOOL:
-        cout << boolalpha << left()->value().boolean << endl;
+    case BUL:
+        cout << boolalpha << left()->value().bul << endl;
         break;
 
     case I32_A:
@@ -309,7 +314,7 @@ void Query::eval(void)
     case R64_A:
         cout << *((bxx::multi_array<double>*)(left()->value().array)) << endl;
         break;
-    case BOOL_A:
+    case BUL_A:
         cout << *((bxx::multi_array<bool>*)(left()->value().array)) << endl;
         break;
     }
@@ -328,7 +333,7 @@ void Query::eval(void)
         case R64_A:
             delete ((bxx::multi_array<double>*)(left()->value().array));
             break;
-        case BOOL_A:
+        case BUL_A:
             delete ((bxx::multi_array<bool>*)(left()->value().array));
             break;
         }       
@@ -405,9 +410,9 @@ string Div::dot_label(void) { return "Div"; }
 
 LThan::LThan(Node* left, Node* right) : Node(left, right) {
     if ((vtype() & SCALAR)>0) {
-        vtype(BOOL);
+        vtype(BUL);
     } else {
-        vtype(BOOL_A);
+        vtype(BUL_A);
     }
 }
 void LThan::eval(void)
@@ -422,19 +427,19 @@ string LThan::dot_label(void) { return "LThan"; }
 As::As(Node* left, Node* right) : Node(left, right) {
 
     switch(left->vtype()) {
-    case BOOL:  vtype(BOOL_A); break;
+    case BUL: vtype(BUL_A); break;
     case I32: vtype(I32_A); break;
     case I64: vtype(I64_A); break;
     case R32: vtype(R32_A); break;
     case R64: vtype(R64_A); break;
 
-    case STR:       throw logic_error("Array of strings is unsupported.");
+    case STR: throw logic_error("Array of strings is unsupported.");
 
-    case BOOL_A:    throw logic_error("Array of arrays is unsupported.");
-    case I32_A:   throw logic_error("Array of arrays is unsupported.");
-    case I64_A:   throw logic_error("Array of arrays is unsupported.");
-    case R32_A:  throw logic_error("Array of arrays is unsupported.");
-    case R64_A:  throw logic_error("Array of arrays is unsupported.");
+    case BUL_A: throw logic_error("Array of arrays is unsupported.");
+    case I32_A: throw logic_error("Array of arrays is unsupported.");
+    case I64_A: throw logic_error("Array of arrays is unsupported.");
+    case R32_A: throw logic_error("Array of arrays is unsupported.");
+    case R64_A: throw logic_error("Array of arrays is unsupported.");
     case UNDEFINED: throw logic_error("Cannot construct array of undefined.");
     }
 
@@ -461,9 +466,9 @@ void As::eval(void)
     left()->eval();
 
     switch(vtype()) {
-    case BOOL_A:
+    case BUL_A:
         ((bxx::multi_array<bool>*)(_value.array))->link();
-        *((bxx::multi_array<bool>*)(_value.array)) = left()->value().boolean;
+        *((bxx::multi_array<bool>*)(_value.array)) = left()->value().bul;
         break;
     case I32_A:
         ((bxx::multi_array<int32_t>*)(_value.array))->link();

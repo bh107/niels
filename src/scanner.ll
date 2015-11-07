@@ -93,15 +93,15 @@ stringstream _comment;
 
 "true" {
     yylval.node = new nls::Bool(true);
-    return BOOL;
+    return BUL;
 }
 "false" {
     yylval.node = new nls::Bool(false);
-    return BOOL;
+    return BUL;
 }
 "bool" {
     yylval.node = new nls::Bool();
-    return BOOL;
+    return BUL;
 }
 
 [0-9]+\.[0-9]+  {

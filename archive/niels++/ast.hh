@@ -12,7 +12,7 @@ union Value {
     int64_t int64;
     float real32;
     double real64;
-    bool boolean;
+    bool bul;
     std::string* str;
 };
 typedef union Value Value;

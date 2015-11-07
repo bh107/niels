@@ -13,33 +13,37 @@ union Value {
     int64_t i64;
     float r32;
     double r64;
-    bool boolean;
+    bool bul;
     std::string* str;
     void* array;
 };
 typedef union Value Value;
 
 enum VType {
-    BOOL = 0,
-    I32 = 1,
-    I64 = 2,
-    R32 = 4,
-    R64 = 8,
+    UNDEFINED = 0,
 
-    BOOL_A = 16,
-    I32_A = 32,
-    I64_A = 64,
-    R32_A = 128,
-    R64_A = 256,
+    BUL = 1,
+    I32 = 2,
+    I64 = 4,
+    R32 = 8,
+    R64 = 16,
+    C64 = 32,
+    C128 = 64,
 
-    STR = 512,
+    BUL_A = 128,
+    I32_A = 256,
+    I64_A = 512,
+    R32_A = 1024,
+    R64_A = 2048,
+    C64_A = 4096,
+    C128_A = 8192,
 
-    UNDEFINED = 1024,
+    STR = 16384
 };
 typedef enum VType VType;
 
-#define SCALAR (BOOL|I32|I64|R32|R64)
-#define ARRAY (BOOL_A|I32_A|I64_A|R32_A|R64_A)
+#define SCALAR  (BUL    |I32    |I64    |R32    |R64    |C64    |C128)
+#define ARRAY   (BUL_A  |I32_A  |I64_A  |R32_A  |R64_A  |C64_A  |C128_A)
 
 std::string VType_text(VType vtype);
 

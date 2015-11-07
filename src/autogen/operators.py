@@ -22,19 +22,19 @@ def binary_sigs(vtypes):
     return sorted(list(sigs))
 
 def unary_logic_sigs(vtypes):
-    return [("boolean", in1) for in1, in itertools.product(
+    return [("bul", in1) for in1, in itertools.product(
         [vtype for vtype, vtype_enum in vtypes],
         repeat=1
     )]
 
 def binary_logic_sigs(vtypes):
-    return [("boolean", in1, in2) for in1, in2 in itertools.product(
+    return [("bul", in1, in2) for in1, in2 in itertools.product(
         [vtype for vtype, vtype_enum in vtypes],
         repeat=2
     )]
 
 vtypes = [
-    ("boolean", "BOOL"),
+    ("bul", "BUL"),
     ("i32",  "I32"),
     ("i64",  "I64"),
     ("r32",  "R32"),
