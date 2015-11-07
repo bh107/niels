@@ -1,4 +1,4 @@
-niels.l
+scanner.l
 %{
 #include <iostream>
 #include <string>
