@@ -5,31 +5,31 @@ import itertools
 def unary_sigs(vtypes):
     sigs = set()
     for c, res_vtype in enumerate(vtypes):
-        (res_t, res_t_enum) = res_vtype
+        (res_t, res_t_enum, res_t_ctype) = res_vtype
         for in_vtype in vtypes[0:c+1]:
-            (in_t, in_t_enum) = in_vtype
+            (in_t, in_t_enum, in_t_ctype) = in_vtype
             sigs.add((res_t, in_t))
     return sorted(list(sigs))
 
 def binary_sigs(vtypes):
     sigs = set()
     for c, res_vtype in enumerate(vtypes):
-        (res_t, res_t_enum) = res_vtype
+        (res_t, res_t_enum, res_t_ctype) = res_vtype
         for in_vtype in vtypes[0:c+1]:
-            (in_t, in_t_enum) = in_vtype
+            (in_t, in_t_enum, in_t_ctype) = in_vtype
             sigs.add((res_t, res_t, in_t))
             sigs.add((res_t, in_t, res_t))
     return sorted(list(sigs))
 
 def unary_logic_sigs(vtypes):
     return [("bul", in1) for in1, in itertools.product(
-        [vtype for vtype, vtype_enum in vtypes],
+        [vtype for vtype, vtype_enum, vtype_ctype in vtypes],
         repeat=1
     )]
 
 def binary_logic_sigs(vtypes):
     return [("bul", in1, in2) for in1, in2 in itertools.product(
-        [vtype for vtype, vtype_enum in vtypes],
+        [vtype for vtype, vtype_enum, vtype_ctype in vtypes],
         repeat=2
     )]
 
@@ -41,7 +41,8 @@ vtypes = [
     ("r64",  "NLS_R64", "double")
 ]
 
-vtype2enum = dict(vtypes)
+vtype2enum  = {vtype: vtype_enum  for vtype, vtype_enum, vtype_ctype in vtypes}
+vtype2ctype = {vtype: vtype_ctype for vtype, vtype_enum, vtype_ctype in vtypes}
 
 operators = {
     "arithmetic": [
@@ -116,9 +117,9 @@ def operator_func(name, expr, sigs):
         ", ".join(["Node* in%d" % i for i in xrange(1, ninput+1)])
     )
     body = ["\n{{"]
-    body.append(" "*4 + "uint64_t res_t = res->vtype();")
+    body.append(" "*4 + "VType res_t = res->vtype();")
     for i in xrange(1, ninput+1):
-        body.append("    uint64_t in%d_t = in%d->vtype();" % (i,i))
+        body.append(" "*4 + "VType in%d_t = in%d->vtype();" % (i,i))
 
     if (ninput == 2):
         body.append(" "*4 + "uint64_t mask = (res_t << 32) + (in1_t << 16) + in2_t;")
@@ -133,11 +134,11 @@ def operator_func(name, expr, sigs):
 
         case = " "*4 + "case "
         if (ninput == 2):
-            case += "((uint64_t)%s << 32 ) + ((uint64_t)%s << 16) + (uint64_t)%s" % (
+            case += "(%s << 32 ) + (%s << 16) + %s" % (
                 vtype2enum[res_t], vtype2enum[in1_t], vtype2enum[in2_t]
             )
         elif (ninput == 1):
-            case += "((uint64_t)%s << 16) + (uint64_t)%s" % (vtype2enum[res_t], vtype2enum[in1_t])
+            case += "(%s << 16) + %s" % (vtype2enum[res_t], vtype2enum[in1_t])
         case += ":"
         body.append(case)
         body.append(" "*8 +"%s;" % inner_expr(name, expr, sig))
