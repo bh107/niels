@@ -6,7 +6,7 @@
 #include <iostream>
 #include <bxx/bohrium.hpp>
 
-namespace nir {
+namespace nls {
 
 union Value {
     int32_t i32;

@@ -18,17 +18,17 @@ extern "C" int yylex();
 extern "C" int yyparse();
 extern "C" FILE *yyin;
 
-nir::Node* program;             // Root of the AST
-nir::SymbolTable* symbolTable;  // Root of the SymbolTable
+nls::Node* program;             // Root of the AST
+nls::SymbolTable* symbolTable;  // Root of the SymbolTable
 bool fewerNoops = true;         // Whether or not Noop nodes should be removed
 
 extern "C" void yyerror(const char *s);
-extern "C" void assert_defined(nir::Node* node);
-extern "C" void assert_undefined(nir::Node* node);
+extern "C" void assert_defined(nls::Node* node);
+extern "C" void assert_undefined(nls::Node* node);
 %}
 %define parse.error verbose
 %union {
-    nir::Node*   node;
+    nls::Node*   node;
     char* str;
 }
 
@@ -71,17 +71,17 @@ extern "C" void assert_undefined(nir::Node* node);
 
 input: %empty { }
     | stmts {
-        $$ = new nir::Collection(new nir::Ident("root"), $1);
+        $$ = new nls::Collection(new nls::Ident("root"), $1);
         program = $$;
     }
 ;
 
 scopeBegin: %empty {
-        nir::SymbolTable* childScope = new nir::SymbolTable();
+        nls::SymbolTable* childScope = new nls::SymbolTable();
         childScope->parent(symbolTable);
 
         if (symbolTable->child()) {
-            nir::SymbolTable* sibling = symbolTable->child();
+            nls::SymbolTable* sibling = symbolTable->child();
             while(sibling->sibling()) {
                 sibling = sibling->sibling();
             }
@@ -99,123 +99,123 @@ scopeEnd: %empty {
 ;
 
 noop: %empty {
-        $$ = new nir::Noop();
+        $$ = new nls::Noop();
     }
 ;
 
 import: IMPORT ident {
-        $$ = new nir::Import($2);
+        $$ = new nls::Import($2);
     }
 ;
 
 block: LBRACE noop[n] RBRACE {
-        $$ = new nir::Block(new nir::Anon(), $n);
+        $$ = new nls::Block(new nls::Anon(), $n);
     }
     | LBRACE expr[e] RBRACE {
-        $$ = new nir::Block(new nir::Anon(), $e);
+        $$ = new nls::Block(new nls::Anon(), $e);
     }
     | LBRACE stmt[s] RBRACE {
-        $$ = new nir::Block(new nir::Anon(), $s);
+        $$ = new nls::Block(new nls::Anon(), $s);
     }
     | LBRACE stmts[s] RBRACE {
-        $$ = new nir::Block(new nir::Anon(), $s);
+        $$ = new nls::Block(new nls::Anon(), $s);
     }
 ;
 
 return: RETURN expr NL {
-        $$ = new nir::Return($2);
+        $$ = new nls::Return($2);
     }
 ;
 
 function_block: scopeBegin LPAREN params[p] RPAREN block[b] scopeEnd {
-        $$ = new nir::FunctionDef($p, $b);
+        $$ = new nls::FunctionDef($p, $b);
     }
 ;
 
 function: FUNCTION ident[id] function_block[fb] {
         assert_undefined($id);
         
-        $$ = new nir::Function($id, $fb);
+        $$ = new nls::Function($id, $fb);
         symbolTable->put($id->str(), $$);
     }
 ;
 
 while: WHILE LPAREN expr RPAREN block {
-        $$ = new nir::While($3, $5);
+        $$ = new nls::While($3, $5);
     }
 ;
 
 is: IS LPAREN scalar RPAREN block {
-        $$ = new nir::Is($3, $5);
+        $$ = new nls::Is($3, $5);
     }
 ;
 otherwise: OTHERWISE block {
-        $$ = new nir::Otherwise(new nir::Bool(true), $2);
+        $$ = new nls::Otherwise(new nls::Bool(true), $2);
     }
 ;
 cases:  is {
-        $$ = new nir::Cases($1);
+        $$ = new nls::Cases($1);
     }
     | cases is {
-        $1->append(new nir::Cases($2));
+        $1->append(new nls::Cases($2));
         $$ = $1;
     }
 ;
 when: WHEN LPAREN expr RPAREN cases {
-        $5->append(new nir::Cases(
-            new nir::Otherwise(
-                new nir::Bool(true),
-                new nir::Block(new nir::Anon(), new nir::Noop())
+        $5->append(new nls::Cases(
+            new nls::Otherwise(
+                new nls::Bool(true),
+                new nls::Block(new nls::Anon(), new nls::Noop())
             )
         ));
-        $$ = new nir::When($3, $5);
+        $$ = new nls::When($3, $5);
     }
     | WHEN LPAREN expr RPAREN cases otherwise {
-        $5->append(new nir::Cases($6));
-        $$ = new nir::When($3, $5);
+        $5->append(new nls::Cases($6));
+        $$ = new nls::When($3, $5);
     }
     | WHEN LPAREN expr RPAREN block {
-        $$ = new nir::WhenBool($3, new nir::Cases(
-            new nir::Is(new nir::Bool(true), $5),
-            new nir::Cases(new nir::Otherwise(
-                new nir::Bool(true),
-                new nir::Block(new nir::Anon(), new nir::Noop()))
+        $$ = new nls::WhenBool($3, new nls::Cases(
+            new nls::Is(new nls::Bool(true), $5),
+            new nls::Cases(new nls::Otherwise(
+                new nls::Bool(true),
+                new nls::Block(new nls::Anon(), new nls::Noop()))
             )));
     }
     | WHEN LPAREN expr RPAREN block otherwise {
-        $$ = new nir::WhenBool($3, new nir::Cases(
-            new nir::Is(new nir::Bool(true), $5),
-            new nir::Cases($6)
+        $$ = new nls::WhenBool($3, new nls::Cases(
+            new nls::Is(new nls::Bool(true), $5),
+            new nls::Cases($6)
         ));
 
     }
 ;
 
 stmts: stmt {
-        $$ = new nir::StmtList($1);
+        $$ = new nls::StmtList($1);
         $$->left(NULL);
         $$->right($1);
     }
     | stmts stmt {
-        if (fewerNoops && ((typeid(*$2) == typeid(nir::Noop)))) {
+        if (fewerNoops && ((typeid(*$2) == typeid(nls::Noop)))) {
             $$ = $1;
         } else {
-            $$ = new nir::StmtList($1, $2);
+            $$ = new nls::StmtList($1, $2);
         }
     }
 ;
 
-stmt: NL { $$ = new nir::Noop(); }
+stmt: NL { $$ = new nls::Noop(); }
     | COMMENT { $$ = $1; }
     | expr NL { $$ = $1; }
     | QUERY expr  {
-        $$ = new nir::Query($2);
+        $$ = new nls::Query($2);
         $$->eval();
     }
     | ident ASSIGN expr {
         try {
-            nir::Node* identNode = symbolTable->getIdent($1);
-            $$ = new nir::Assign($1, $3);
+            nls::Node* identNode = symbolTable->getIdent($1);
+            $$ = new nls::Assign($1, $3);
             if (!identNode) {
                 symbolTable->put($1->str(), $1);
             }
@@ -227,8 +227,8 @@ stmt: NL { $$ = new nir::Noop(); }
         assert_defined($3);
 
         try {
-            nir::Node* identNode = symbolTable->getIdent($1);
-            $$ = new nir::Alias($1, $3);
+            nls::Node* identNode = symbolTable->getIdent($1);
+            $$ = new nls::Alias($1, $3);
             if (!identNode) {   // Add Alias to symbol table
                 symbolTable->put($1->str(), $1);
             }
@@ -254,26 +254,26 @@ scalar: INT32  { $$ = $1; }
 val: scalar { $$ = $1; }
     | STRING { $$ = $1; }
 ;
-shape: expr { $$ = new nir::Shape($1); }
+shape: expr { $$ = new nls::Shape($1); }
     | shape COMMA expr {
-        $1->right(new nir::Shape($3));
+        $1->right(new nls::Shape($3));
         $$ = $1;
     }
 ;
 range: LBRACK expr SEMICOLON expr RBRACK {
-        $$ = new nir::Range(false, false, $2, $4);
+        $$ = new nls::Range(false, false, $2, $4);
     }
     | LBRACK expr SEMICOLON expr LBRACK {
-        $$ = new nir::Range(false, true, $2, $4);
+        $$ = new nls::Range(false, true, $2, $4);
     }
     | RBRACK expr SEMICOLON expr RBRACK {
-        $$ = new nir::Range(true, false, $2, $4);
+        $$ = new nls::Range(true, false, $2, $4);
     }
     | RBRACK expr SEMICOLON expr LBRACK {
-        $$ = new nir::Range(true, true, $2, $4);
+        $$ = new nls::Range(true, true, $2, $4);
     }
     | expr SEMICOLON expr {
-        $$ = new nir::Range(false, false, $1, $3);
+        $$ = new nls::Range(false, false, $1, $3);
     }
 ;
 
@@ -285,14 +285,14 @@ ident: IDENT {
 
 attr: ident[id] ASSIGN scalar[s] NL {
         assert_undefined($id);
-        $$ = new nir::Attr($id, $s);
+        $$ = new nls::Attr($id, $s);
         symbolTable->put($id->str(), $$);
     }
 ;
-attrs: %empty { $$ = new nir::Empty(); }
-    | attr { $$ = new nir::AttrList($1); }
+attrs: %empty { $$ = new nls::Empty(); }
+    | attr { $$ = new nls::AttrList($1); }
     | attrs attr {
-        $1->right(new nir::AttrList($2));
+        $1->right(new nls::AttrList($2));
         $$ = $1;
     }
 ;
@@ -300,34 +300,34 @@ attrs: %empty { $$ = new nir::Empty(); }
 record: RECORD ident[id] scopeBegin LBRACE NL attrs[a] RBRACE scopeEnd {
         assert_undefined($id);
         
-        $$ = new nir::RecDef($id, $a);
+        $$ = new nls::RecDef($id, $a);
         symbolTable->put($id->str(), $$);
     }
 ;
 
 param: ident[id] {
         assert_undefined($id);
-        $$ = new nir::Param($1, new nir::Undefined());
+        $$ = new nls::Param($1, new nls::Undefined());
         symbolTable->put($1->str(), $$);
     }
     | ident[id] COLON scalar[s] {
         assert_undefined($id);
-        $$ = new nir::Param($1, $3);
+        $$ = new nls::Param($1, $3);
         symbolTable->put($1->str(), $$);
     }
 ;
-params: %empty { $$ = new nir::Empty(); }
-    | param { $$ = new nir::Params($1); }
+params: %empty { $$ = new nls::Empty(); }
+    | param { $$ = new nls::Params($1); }
     | params COMMA param {
-        $1->right(new nir::Params($3));
+        $1->right(new nls::Params($3));
         $$ = $1;
     }
 ;
 
-args: %empty { $$ = new nir::Args(new nir::Empty()); }
-    | expr { $$ = new nir::Args($1); }
+args: %empty { $$ = new nls::Args(new nls::Empty()); }
+    | expr { $$ = new nls::Args($1); }
     | args COMMA expr {
-        $1->right(new nir::Args($3));
+        $1->right(new nls::Args($3));
         $$ = $1;
     }
 ;
@@ -341,22 +341,22 @@ expr: val { $$ = $1; }
     | LPAREN expr RPAREN { $$ = $2; }
     | ident LPAREN args RPAREN {
         assert_defined($1);
-        $$ = new nir::Call($1, $3);
+        $$ = new nls::Call($1, $3);
     }
-    | expr ADD expr  { $$ = new nir::Add($1, $3); }
-    | expr SUB expr  { $$ = new nir::Sub($1, $3); }
-    | expr MUL expr  { $$ = new nir::Mul($1, $3); }
-    | expr MOD expr  { $$ = new nir::Mod($1, $3); }
-    | expr DIV expr  { $$ = new nir::Div($1, $3); }
-    | expr POW expr  { $$ = new nir::Pow($1, $3); }
-    | expr LTHAN expr  { $$ = new nir::LThan($1, $3); }
-    | NEGATE expr { $$ = new nir::Neg($2); }
-    | INVERT expr { $$ = new nir::Inv($2); }
+    | expr ADD expr  { $$ = new nls::Add($1, $3); }
+    | expr SUB expr  { $$ = new nls::Sub($1, $3); }
+    | expr MUL expr  { $$ = new nls::Mul($1, $3); }
+    | expr MOD expr  { $$ = new nls::Mod($1, $3); }
+    | expr DIV expr  { $$ = new nls::Div($1, $3); }
+    | expr POW expr  { $$ = new nls::Pow($1, $3); }
+    | expr LTHAN expr  { $$ = new nls::LThan($1, $3); }
+    | NEGATE expr { $$ = new nls::Neg($2); }
+    | INVERT expr { $$ = new nls::Inv($2); }
     | val AS LPAREN shape RPAREN {
-        $$ = new nir::As($1, $4);
+        $$ = new nls::As($1, $4);
     }
     | ident AS LPAREN shape RPAREN {
-        $$ = new nir::As($1, $4);
+        $$ = new nls::As($1, $4);
     }
 ;
 
@@ -367,7 +367,7 @@ void yyerror(const char *s) {
     exit(-1);
 }
 
-void assert_defined(nir::Node* node) {
+void assert_defined(nls::Node* node) {
     if (!node->defined()) {
         stringstream ss;
         ss << "Identifier(" << node->str() << ") is not defined";
@@ -375,7 +375,7 @@ void assert_defined(nir::Node* node) {
     }
 }
 
-void assert_undefined(nir::Node* node) {
+void assert_undefined(nls::Node* node) {
     if (node->defined()) {
         stringstream ss;
         ss << "Identifier(" << node->str() << ") used elsewhere.";
@@ -390,7 +390,7 @@ int main(int, char**) {
         return -1;
     }
     
-    symbolTable = new nir::SymbolTable();
+    symbolTable = new nls::SymbolTable();
     yyin = myfile;  // Switch from STDIN to 'input.nls'
     do {
         yyparse();
@@ -403,9 +403,9 @@ int main(int, char**) {
     while(symbolTable->parent()) {  // Go to top-level
         symbolTable = symbolTable->parent();
     }
-    cout << nir::dot(symbolTable) << endl;
+    cout << nls::dot(symbolTable) << endl;
 
-    cout << nir::dot(program) << endl;
+    cout << nls::dot(program) << endl;
 
     cout << "}" << endl;
     */

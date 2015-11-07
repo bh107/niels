@@ -22,7 +22,7 @@ stringstream _comment;
 }
 <IN_COMMENT>{
     "*/"    {
-        yylval.node = new nir::Comment(_comment.str().c_str());
+        yylval.node = new nls::Comment(_comment.str().c_str());
         _comment.str("");   // Reset the stream
         _comment.clear();
 
@@ -92,63 +92,63 @@ stringstream _comment;
 "otherwise" { return OTHERWISE; }
 
 "true" {
-    yylval.node = new nir::Bool(true);
+    yylval.node = new nls::Bool(true);
     return BOOL;
 }
 "false" {
-    yylval.node = new nir::Bool(false);
+    yylval.node = new nls::Bool(false);
     return BOOL;
 }
 "bool" {
-    yylval.node = new nir::Bool();
+    yylval.node = new nls::Bool();
     return BOOL;
 }
 
 [0-9]+\.[0-9]+  {
-    yylval.node = new nir::Real64(atof(yytext));
+    yylval.node = new nls::Real64(atof(yytext));
     return REAL64;
 }
 "r32" {
-    yylval.node = new nir::Real32();
+    yylval.node = new nls::Real32();
     return REAL32;
 }
 "r64" {
-    yylval.node = new nir::Real64();
+    yylval.node = new nls::Real64();
     return REAL64;
 }
 "real" {
-    yylval.node = new nir::Real64();
+    yylval.node = new nls::Real64();
     return REAL64;
 }
 
 [0-9]+          {
-    yylval.node = new nir::Int64(atol(yytext));
+    yylval.node = new nls::Int64(atol(yytext));
     return INT64;
 }
 "i32" {
-    yylval.node = new nir::Int32();
+    yylval.node = new nls::Int32();
     return INT32;
 }
 "i64" {
-    yylval.node = new nir::Int64();
+    yylval.node = new nls::Int64();
     return INT64;
 }
 "int" {
-    yylval.node = new nir::Int64();
+    yylval.node = new nls::Int64();
     return INT64;
 }
 
 \".+\" {
-    yylval.node = new nir::Str(yytext);
+    yylval.node = new nls::Str(yytext);
     return STRING;
 }
 '[a-zA-Z0-9]+' {
-    yylval.node = new nir::Str(yytext);
+    yylval.node = new nls::Str(yytext);
     return STRING;
 }
 
 [a-zA-Z]+[a-zA-Z0-9]? {
-    yylval.node = new nir::Ident(yytext);
+    yylval.node = new nls::Ident(yytext);
     return IDENT;
 }
 

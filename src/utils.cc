@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace nir {
+namespace nls {
 
 void eval(Node* node) { }
 

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace nir {
+namespace nls {
 
 #include "scalar_ops.cc"
 
@@ -612,7 +612,7 @@ string Module::dot_shape(void) { return "box"; }
 
 Block::Block(Node* left, Node* right) : Node(left) {
     if (typeid(*right) != typeid(StmtList)) {
-        nir::Node* stmtList = new nir::StmtList(right);
+        nls::Node* stmtList = new nls::StmtList(right);
         stmtList->left(NULL);
         stmtList->right(right);
         this->right(stmtList);

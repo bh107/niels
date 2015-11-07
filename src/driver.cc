@@ -1,6 +1,6 @@
 #include "driver.hh"
 
-namespace nir {
+namespace nls {
 
 Driver::Driver()
 {

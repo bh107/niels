@@ -3,7 +3,7 @@
 
 using namespace std;
 
-namespace nir{
+namespace nls{
 
 SymbolTable::SymbolTable(void) : _symbols() {}
 

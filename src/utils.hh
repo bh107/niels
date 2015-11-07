@@ -4,7 +4,7 @@
 #include "ast.hh"
 #include "symboltable.hh"
 
-namespace nir {
+namespace nls {
 
 template <typename T>
 std::string tos(T val)
