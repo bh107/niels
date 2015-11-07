@@ -13,25 +13,25 @@ namespace nls {
 string VType_text(VType vtype)
 {
     switch(vtype) {
-        case UNDEFINED: return "undefined";
+        case NLS_UND: return "undefined";
         
-        case BUL: return "bool";
-        case I32: return "i32";
-        case I64: return "i64";
-        case R32: return "r32";
-        case R64: return "r64";
-        case C64: return "c64";
-        case C128: return "c128";
+        case NLS_BUL: return "bool";
+        case NLS_I32: return "i32";
+        case NLS_I64: return "i64";
+        case NLS_R32: return "r32";
+        case NLS_R64: return "r64";
+        case NLS_C64: return "c64";
+        case NLS_C128: return "c128";
 
-        case BUL_A: return "bool[]";
-        case I32_A: return "i32[]";
-        case I64_A: return "i64[]";
-        case R32_A: return "r32[]";
-        case R64_A: return "r64[]";
-        case C64_A: return "c64[]";
-        case C128_A: return "c128[]";
+        case NLS_BUL_A: return "bool[]";
+        case NLS_I32_A: return "i32[]";
+        case NLS_I64_A: return "i64[]";
+        case NLS_R32_A: return "r32[]";
+        case NLS_R64_A: return "r64[]";
+        case NLS_C64_A: return "c64[]";
+        case NLS_C128_A: return "c128[]";
 
-        case STR: return "string";
+        case NLS_STR: return "string";
     }
 }
 
@@ -50,14 +50,14 @@ string SType_text(SType stype)
 //  Node
 //
 Node::Node(void)
-    : _stype(UNKNOWN), _vtype(UNDEFINED), _left(NULL), _right(NULL)
+    : _stype(UNKNOWN), _vtype(NLS_UND), _left(NULL), _right(NULL)
 {
 }
 Node::Node(Node* left)
     : _stype(UNKNOWN), _vtype(left->vtype()), _left(left), _right(NULL)
 {
 }
-Node::Node(Node* left, Node* right) : _stype(UNKNOWN), _vtype(UNDEFINED), _left(left), _right(right)
+Node::Node(Node* left, Node* right) : _stype(UNKNOWN), _vtype(NLS_UND), _left(left), _right(right)
 {
     _vtype = left->vtype() >= right->vtype() ? left->vtype() : right->vtype();
 }
@@ -172,7 +172,7 @@ SType Node::stype(void)
 
 bool Node::defined(void)
 {
-    return _vtype != UNDEFINED;
+    return _vtype != NLS_UND;
 }
 
 bool Node::known(void)
@@ -181,7 +181,7 @@ bool Node::known(void)
 }
 
 Node::~Node(void) {
-    if (vtype() == STR) {
+    if (vtype() == NLS_STR) {
         delete _value.str;
     }
 }
@@ -194,11 +194,11 @@ string Node::dot_color(void) { return "#e0e0e0"; }
 //
 Int32::Int32(void) : Node() {
     _value.i32 = 0;
-    _vtype = I32;
+    _vtype = NLS_I32;
 }
 Int32::Int32(int32_t val) : Node() {
     _value.i32 = val;
-    _vtype = I32;
+    _vtype = NLS_I32;
 }
 string Int32::dot_label(void) { stringstream ss; ss << _value.i32; return ss.str(); }
 string Int32::dot_shape(void) { return "house"; }
@@ -206,11 +206,11 @@ string Int32::dot_color(void) { return "#d9f0d3"; }
 
 Int64::Int64(void) : Node() {
     _value.i64 = 0;
-    _vtype = I64;
+    _vtype = NLS_I64;
 }
 Int64::Int64(int64_t val) : Node() {
     _value.i64 = val;
-    _vtype = I64;
+    _vtype = NLS_I64;
 }
 string Int64::dot_label(void) { stringstream ss; ss << _value.i64; return ss.str(); }
 string Int64::dot_shape(void) { return "house"; }
@@ -218,11 +218,11 @@ string Int64::dot_color(void) { return "#d9f0d3"; }
 
 Real32::Real32(void) : Node() {
     _value.r32 = 0.0;
-    _vtype = R32;
+    _vtype = NLS_R32;
 }
 Real32::Real32(float val) : Node() {
     _value.r32 = val;
-    _vtype = R32;
+    _vtype = NLS_R32;
 }
 string Real32::dot_label(void) { stringstream ss; ss << fixed << setprecision(2) << _value.r32; return ss.str(); }
 string Real32::dot_shape(void) { return "house"; }
@@ -230,11 +230,11 @@ string Real32::dot_color(void) { return "#d9f0d3"; }
 
 Real64::Real64(void) : Node() {
     _value.r64 = 0.0;
-    _vtype = R64;
+    _vtype = NLS_R64;
 }
 Real64::Real64(double val) : Node() {
     _value.r64 = val;
-    _vtype = R64;
+    _vtype = NLS_R64;
 }
 string Real64::dot_label(void) { stringstream ss; ss << fixed << setprecision(2) << _value.r64; return ss.str(); }
 string Real64::dot_shape(void) { return "house"; }
@@ -242,11 +242,11 @@ string Real64::dot_color(void) { return "#d9f0d3"; }
 
 Bool::Bool(void) : Node() {
     _value.bul = false;
-    _vtype = BUL;
+    _vtype = NLS_BUL;
 }
 Bool::Bool(bool val) : Node() {
     _value.bul = val;
-    _vtype = BUL;
+    _vtype = NLS_BUL;
 }
 string Bool::dot_label(void) { stringstream ss; ss << boolalpha << _value.bul; return ss.str(); }
 string Bool::dot_shape(void) { return "house"; }
@@ -254,14 +254,14 @@ string Bool::dot_color(void) { return "#d9f0d3"; }
 
 Comment::Comment(const char* comment) : Node() {
     _value.str = new string(comment);
-    _vtype = STR;
+    _vtype = NLS_STR;
 }
 string Comment::dot_label(void) { return "Comment"; }
 string Comment::dot_shape(void) { return "box"; }
 
 Str::Str(const char* val) : Node() {
     _value.str = new string(val);
-    _vtype = STR;
+    _vtype = NLS_STR;
 }
 string Str::dot_label(void) { return *_value.str; }
 string Str::dot_shape(void) { return "house"; }
@@ -281,59 +281,59 @@ void Query::eval(void)
     left()->eval();
 
     switch(left()->vtype()) {
-    case UNDEFINED:
+    case NLS_UND:
         cout << "I have no idea what it is..." << endl;
-    case STR:
+    case NLS_STR:
         cout << *(left()->value().str) << endl;
         break;
-    case I32:
+    case NLS_I32:
         cout << left()->value().i32 << endl;
         break;
-    case I64:
+    case NLS_I64:
         cout << left()->value().i64 << endl;
         break;
-    case R32:
+    case NLS_R32:
         cout << left()->value().r32 << endl;
         break;
-    case R64:
+    case NLS_R64:
         cout << left()->value().r64 << endl;
         break;
-    case BUL:
+    case NLS_BUL:
         cout << boolalpha << left()->value().bul << endl;
         break;
 
-    case I32_A:
+    case NLS_I32_A:
         cout << *((bxx::multi_array<int32_t>*)(left()->value().array)) << endl;
         break;
-    case I64_A:
+    case NLS_I64_A:
         cout << *((bxx::multi_array<int64_t>*)(left()->value().array)) << endl;
         break;
-    case R32_A:
+    case NLS_R32_A:
         cout << *((bxx::multi_array<float>*)(left()->value().array)) << endl;
         break;
-    case R64_A:
+    case NLS_R64_A:
         cout << *((bxx::multi_array<double>*)(left()->value().array)) << endl;
         break;
-    case BUL_A:
+    case NLS_BUL_A:
         cout << *((bxx::multi_array<bool>*)(left()->value().array)) << endl;
         break;
     }
 
     if (typeid(*left()) == typeid(As)) { // TODO: Find a better way to clean up...
         switch(left()->vtype()) {
-        case I32_A:
+        case NLS_I32_A:
             delete ((bxx::multi_array<int32_t>*)(left()->value().array)); 
             break;
-        case I64_A:
+        case NLS_I64_A:
             delete ((bxx::multi_array<int64_t>*)(left()->value().array));
             break;
-        case R32_A:
+        case NLS_R32_A:
             delete ((bxx::multi_array<float>*)(left()->value().array));
             break;
-        case R64_A:
+        case NLS_R64_A:
             delete ((bxx::multi_array<double>*)(left()->value().array));
             break;
-        case BUL_A:
+        case NLS_BUL_A:
             delete ((bxx::multi_array<bool>*)(left()->value().array));
             break;
         }       
@@ -410,9 +410,9 @@ string Div::dot_label(void) { return "Div"; }
 
 LThan::LThan(Node* left, Node* right) : Node(left, right) {
     if ((vtype() & SCALAR)>0) {
-        vtype(BUL);
+        vtype(NLS_BUL);
     } else {
-        vtype(BUL_A);
+        vtype(NLS_BUL_A);
     }
 }
 void LThan::eval(void)
@@ -427,20 +427,20 @@ string LThan::dot_label(void) { return "LThan"; }
 As::As(Node* left, Node* right) : Node(left, right) {
 
     switch(left->vtype()) {
-    case BUL: vtype(BUL_A); break;
-    case I32: vtype(I32_A); break;
-    case I64: vtype(I64_A); break;
-    case R32: vtype(R32_A); break;
-    case R64: vtype(R64_A); break;
+    case NLS_BUL: vtype(NLS_BUL_A); break;
+    case NLS_I32: vtype(NLS_I32_A); break;
+    case NLS_I64: vtype(NLS_I64_A); break;
+    case NLS_R32: vtype(NLS_R32_A); break;
+    case NLS_R64: vtype(NLS_R64_A); break;
 
-    case STR: throw logic_error("Array of strings is unsupported.");
+    case NLS_STR: throw logic_error("Array of strings is unsupported.");
 
-    case BUL_A: throw logic_error("Array of arrays is unsupported.");
-    case I32_A: throw logic_error("Array of arrays is unsupported.");
-    case I64_A: throw logic_error("Array of arrays is unsupported.");
-    case R32_A: throw logic_error("Array of arrays is unsupported.");
-    case R64_A: throw logic_error("Array of arrays is unsupported.");
-    case UNDEFINED: throw logic_error("Cannot construct array of undefined.");
+    case NLS_BUL_A: throw logic_error("Array of arrays is unsupported.");
+    case NLS_I32_A: throw logic_error("Array of arrays is unsupported.");
+    case NLS_I64_A: throw logic_error("Array of arrays is unsupported.");
+    case NLS_R32_A: throw logic_error("Array of arrays is unsupported.");
+    case NLS_R64_A: throw logic_error("Array of arrays is unsupported.");
+    case NLS_UND: throw logic_error("Cannot construct array of undefined.");
     }
 
     uint64_t rank = 0;
@@ -466,23 +466,23 @@ void As::eval(void)
     left()->eval();
 
     switch(vtype()) {
-    case BUL_A:
+    case NLS_BUL_A:
         ((bxx::multi_array<bool>*)(_value.array))->link();
         *((bxx::multi_array<bool>*)(_value.array)) = left()->value().bul;
         break;
-    case I32_A:
+    case NLS_I32_A:
         ((bxx::multi_array<int32_t>*)(_value.array))->link();
         *((bxx::multi_array<int32_t>*)(_value.array)) = left()->value().i32;
         break;
-    case I64_A:
+    case NLS_I64_A:
         ((bxx::multi_array<int64_t>*)(_value.array))->link();
         *((bxx::multi_array<int64_t>*)(_value.array)) = left()->value().i64;
         break;
-    case R32_A:
+    case NLS_R32_A:
         ((bxx::multi_array<float>*)(_value.array))->link();
         *((bxx::multi_array<float>*)(_value.array)) = left()->value().r32;
         break;
-    case R64_A:
+    case NLS_R64_A:
         ((bxx::multi_array<double>*)(_value.array))->link();
         *((bxx::multi_array<double>*)(_value.array)) = left()->value().r64;
         break;
@@ -519,7 +519,7 @@ Assign::Assign(Node* left, Node* right) : Node(left, right) {
 string Assign::dot_label(void) { return "Assign"; }
 
 Alias::Alias(Node* left, Node* right) : Node(left, right) {
-    if ((left->vtype() != UNDEFINED) && (left->vtype() != right->vtype())) {
+    if ((left->vtype() != NLS_UND) && (left->vtype() != right->vtype())) {
         stringstream ss;
         ss << "Aliasing " << right->txt();
         ss << " to " << left->str() << " " << left->txt();
@@ -537,7 +537,7 @@ Alias::Alias(Node* left, Node* right) : Node(left, right) {
         throw logic_error(ss.str());
     }
 
-    if (left->vtype() == UNDEFINED) {   // Derive the type of IDENT from right
+    if (left->vtype() == NLS_UND) {   // Derive the type of IDENT from right
         left->vtype(right->vtype());    
         left->stype(VAR);
     }
@@ -558,7 +558,7 @@ string Args::dot_label(void) { return "Args"; }
 string Args::dot_shape(void) { return "diamond"; }
 
 Param::Param(Node* left, Node* right) : Node(left, right) {
-    if (left->vtype() == UNDEFINED) {   // Derive the type
+    if (left->vtype() == NLS_UND) {   // Derive the type
         left->vtype(right->vtype());    
     }
     vtype(right->vtype());

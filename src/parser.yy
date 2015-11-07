@@ -57,7 +57,7 @@ extern "C" void assert_undefined(nls::Node* node);
 %token COMMA COLON SEMICOLON
 
 %token <node> COMMENT
-%token <node> INT32 INT64 REAL32 REAL64 STRING BUL IDENT
+%token <node> INT32 INT64 REAL32 REAL64 STRING BOOL IDENT
 %token RETURN FUNCTION WHILE WHEN IS OTHERWISE RECORD
 
 %type <node> input block stmts stmt expr scalar val shape range ident
@@ -249,7 +249,7 @@ scalar: INT32  { $$ = $1; }
     | INT64  { $$ = $1; }
     | REAL32 { $$ = $1; }
     | REAL64 { $$ = $1; }
-    | BUL { $$ = $1; }
+    | BOOL { $$ = $1; }
 ;
 val: scalar { $$ = $1; }
     | STRING { $$ = $1; }

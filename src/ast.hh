@@ -4,50 +4,51 @@
 #include <cstddef>
 #include <sstream>
 #include <iostream>
+#include <complex>
 #include <bxx/bohrium.hpp>
 
 namespace nls {
 
 union Value {
+    bool bul;
     int32_t i32;
     int64_t i64;
     float r32;
     double r64;
-    bool bul;
-    std::string* str;
     void* array;
+    std::string* str;
 };
 typedef union Value Value;
 
-enum VType {
-    UNDEFINED = 0,
+enum VType : uint64_t {
+    NLS_UND = 0,
 
-    BUL = 1,
-    I32 = 2,
-    I64 = 4,
-    R32 = 8,
-    R64 = 16,
-    C64 = 32,
-    C128 = 64,
+    NLS_BUL = 1,
+    NLS_I32 = 2,
+    NLS_I64 = 4,
+    NLS_R32 = 8,
+    NLS_R64 = 16,
+    NLS_C64 = 32,
+    NLS_C128 = 64,
 
-    BUL_A = 128,
-    I32_A = 256,
-    I64_A = 512,
-    R32_A = 1024,
-    R64_A = 2048,
-    C64_A = 4096,
-    C128_A = 8192,
+    NLS_BUL_A = 128,
+    NLS_I32_A = 256,
+    NLS_I64_A = 512,
+    NLS_R32_A = 1024,
+    NLS_R64_A = 2048,
+    NLS_C64_A = 4096,
+    NLS_C128_A = 8192,
 
-    STR = 16384
+    NLS_STR = 16384
 };
 typedef enum VType VType;
 
-#define SCALAR  (BUL    |I32    |I64    |R32    |R64    |C64    |C128)
-#define ARRAY   (BUL_A  |I32_A  |I64_A  |R32_A  |R64_A  |C64_A  |C128_A)
+#define SCALAR  (NLS_BUL    |NLS_I32    |NLS_I64    |NLS_R32    |NLS_R64    |NLS_C64    |NLS_C128)
+#define ARRAY   (NLS_BUL_A  |NLS_I32_A  |NLS_I64_A  |NLS_R32_A  |NLS_R64_A  |NLS_C64_A  |NLS_C128_A)
 
 std::string VType_text(VType vtype);
 
-enum SType {
+enum SType : uint32_t {
     VAR,
     FUNC,
     MOD,

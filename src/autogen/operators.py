@@ -34,11 +34,11 @@ def binary_logic_sigs(vtypes):
     )]
 
 vtypes = [
-    ("bul", "BUL"),
-    ("i32",  "I32"),
-    ("i64",  "I64"),
-    ("r32",  "R32"),
-    ("r64",  "R64")
+    ("bul",  "NLS_BUL", "bool"),
+    ("i32",  "NLS_I32", "int32_t"),
+    ("i64",  "NLS_I64", "int64_t"),
+    ("r32",  "NLS_R32", "float"),
+    ("r64",  "NLS_R64", "double")
 ]
 
 vtype2enum = dict(vtypes)
