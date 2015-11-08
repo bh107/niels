@@ -6,6 +6,9 @@
 #include <iostream>
 #include <complex>
 #include <bxx/bohrium.hpp>
+#include <ast_vtype_auto.hh>
+#include <ast_unary_ops_auto.hh>
+#include <ast_binary_ops_auto.hh>
 
 namespace nls {
 
