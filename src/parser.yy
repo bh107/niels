@@ -149,7 +149,7 @@ function:
     assert_undefined(env, $id);
     
     $$ = new nls::Function($id, $fb);
-    env.symbolTable()->put($id->str(), $$);
+    env.symbolTable().put($id->name(), $$);
 }
 ;
 
@@ -232,11 +232,10 @@ stmt:
 }
 | ident ASSIGN expr {
     try {
-        nls::Node* identNode = env.symbolTable()->getIdent($1);
-        $$ = new nls::Assign($1, $3);
-        if (!identNode) {
-            env.symbolTable()->put($1->str(), $1);
+        if (!$1->defined()) {
+            env.symbolTable().put($1->name(), $1);
         }
+        $$ = new nls::Assign($1, $3);
     } catch (exception& e) {
         yyerror(env, e.what());
     }
@@ -245,11 +244,10 @@ stmt:
     assert_defined(env, $3);
 
     try {
-        nls::Node* identNode = env.symbolTable()->getIdent($1);
-        $$ = new nls::Alias($1, $3);
-        if (!identNode) {   // Add Alias to symbol table
-            env.symbolTable()->put($1->str(), $1);
+        if (!$1->defined()) {   // Add Alias to symbol table
+            env.symbolTable().put($1->name(), $1);
         }
+        $$ = new nls::Alias($1, $3);
     } catch (exception& e) {
         yyerror(env, e.what());
     }
@@ -304,7 +302,7 @@ range:
 
 ident:
   IDENT {
-    env.symbolTable()->getIdent($1);
+    env.symbolTable().getIdent($1);
     $$ = $1;
 }
 ;
@@ -313,7 +311,7 @@ attr:
   ident[id] ASSIGN scalar[s] NL {
     assert_undefined(env, $id);
     $$ = new nls::Attr($id, $s);
-    env.symbolTable()->put($id->str(), $$);
+    env.symbolTable().put($id->name(), $$);
 }
 ;
 
@@ -330,19 +328,19 @@ record: RECORD ident[id] scopeBegin LBRACE NL attrs[a] RBRACE scopeEnd {
         assert_undefined(env, $id);
         
         $$ = new nls::RecDef($id, $a);
-        env.symbolTable()->put($id->str(), $$);
+        env.symbolTable().put($id->name(), $$);
     }
 ;
 
 param: ident[id] {
         assert_undefined(env, $id);
         $$ = new nls::Param($1, new nls::Undefined());
-        env.symbolTable()->put($1->str(), $$);
+        env.symbolTable().put($1->name(), $$);
     }
     | ident[id] COLON scalar[s] {
         assert_undefined(env, $id);
         $$ = new nls::Param($1, $3);
-        env.symbolTable()->put($1->str(), $$);
+        env.symbolTable().put($1->name(), $$);
     }
 ;
 params: %empty { $$ = new nls::Empty(); }
@@ -366,7 +364,7 @@ expr:
 | range { $$ = $1; }
 | ident {
     assert_defined(env, $1);
-    $$ = $1;
+    $$ = env.symbolTable().getIdent($1);
 }
 | LPAREN expr RPAREN { $$ = $2; }
 | ident LPAREN args RPAREN {
@@ -413,7 +411,7 @@ void yyerror(nls::Driver& env, const char *s) {
 void assert_defined(nls::Driver& env, nls::Node* node) {
     if (!node->defined()) {
         stringstream ss;
-        ss << "Identifier(" << node->str() << ") is not defined";
+        ss << "Identifier(" << node->name() << ") is not defined";
         yyerror(env, ss.str().c_str());
     }
 }
@@ -421,7 +419,7 @@ void assert_defined(nls::Driver& env, nls::Node* node) {
 void assert_undefined(nls::Driver& env, nls::Node* node) {
     if (node->defined()) {
         stringstream ss;
-        ss << "Identifier(" << node->str() << ") used elsewhere.";
+        ss << "Identifier(" << node->name() << ") used elsewhere.";
         yyerror(env, ss.str().c_str());
     }
 }

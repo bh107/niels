@@ -86,6 +86,9 @@ public:
     std::string dot_relation(void);
     std::string txt(void);
 
+    std::string& name(void);
+    void name(const std::string& val);
+
     virtual void eval(void);
 
     virtual std::string dot_shape(void);
@@ -101,6 +104,8 @@ protected:
 
     Node* _left;
     Node* _right;
+
+    std::string _name;
 };
 
 }

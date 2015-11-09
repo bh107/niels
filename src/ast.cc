@@ -22,57 +22,18 @@ string Str::dot_label(void) { return *_value.str; }
 string Str::dot_shape(void) { return "house"; }
 string Str::dot_color(void) { return "#5aae61"; }
 
-Ident::Ident(const char* name) : Node()
+Ident::Ident(const std::string& name) : Node()
 {
-    _value.str = new string(name);
+    _name = name;
 }
-string Ident::dot_label(void) { return *_value.str; }
+string Ident::dot_label(void) { return name(); }
 string Ident::dot_shape(void) { return "hexagon"; }
 string Ident::dot_color(void) { return "#fee0b6"; }
 
 Query::Query(Node* left) : Node(left) {}
 void Query::eval(void)
 {
-    left()->eval();
-
-    switch(left()->vtype()) {
-    case NLS_UND:
-        cout << "I have no idea what it is..." << endl;
-    case NLS_STR:
-        cout << *(left()->value().str) << endl;
-        break;
-    case NLS_I32:
-        cout << left()->value().i32 << endl;
-        break;
-    case NLS_I64:
-        cout << left()->value().i64 << endl;
-        break;
-    case NLS_R32:
-        cout << left()->value().r32 << endl;
-        break;
-    case NLS_R64:
-        cout << left()->value().r64 << endl;
-        break;
-    case NLS_BUL:
-        cout << boolalpha << left()->value().bul << endl;
-        break;
-
-    case NLS_I32_A:
-        cout << *((bxx::multi_array<int32_t>*)(left()->value().array)) << endl;
-        break;
-    case NLS_I64_A:
-        cout << *((bxx::multi_array<int64_t>*)(left()->value().array)) << endl;
-        break;
-    case NLS_R32_A:
-        cout << *((bxx::multi_array<float>*)(left()->value().array)) << endl;
-        break;
-    case NLS_R64_A:
-        cout << *((bxx::multi_array<double>*)(left()->value().array)) << endl;
-        break;
-    case NLS_BUL_A:
-        cout << *((bxx::multi_array<bool>*)(left()->value().array)) << endl;
-        break;
-    }
+    cout << left()->txt();
 
     if (typeid(*left()) == typeid(As)) { // TODO: Find a better way to clean up...
         switch(left()->vtype()) {
@@ -167,7 +128,7 @@ Assign::Assign(Node* left, Node* right) : Node(left, right) {
     if (left->defined() && (left->vtype() != right->vtype())) {
         stringstream ss;
         ss << "Assigning " << right->txt();
-        ss << " to " << left->str() << " " << left->txt();
+        ss << " to " << left->name() << " " << left->txt();
         ss << " is not supported.";
 
         throw logic_error(ss.str());
@@ -176,7 +137,7 @@ Assign::Assign(Node* left, Node* right) : Node(left, right) {
     if (left->known() && (left->stype() != VAR)) {
         stringstream ss;
         ss << "Assigning " << right->txt();
-        ss << " to " << left->str() << " " << left->txt();
+        ss << " to " << left->name() << " " << left->txt();
         ss << " is not supported.";
 
         throw logic_error(ss.str());
@@ -188,13 +149,17 @@ Assign::Assign(Node* left, Node* right) : Node(left, right) {
     }
     vtype(left->vtype());               // IDENT determines type
 }
+void Assign::eval(void)
+{
+    left()->value(right()->value());
+}
 string Assign::dot_label(void) { return "Assign"; }
 
 Alias::Alias(Node* left, Node* right) : Node(left, right) {
     if ((left->vtype() != NLS_UND) && (left->vtype() != right->vtype())) {
         stringstream ss;
         ss << "Aliasing " << right->txt();
-        ss << " to " << left->str() << " " << left->txt();
+        ss << " to " << left->name() << " " << left->txt();
         ss << " is not supported.";
 
         throw logic_error(ss.str());
@@ -203,7 +168,7 @@ Alias::Alias(Node* left, Node* right) : Node(left, right) {
     if ((left->stype() != UNKNOWN) && (left->stype() != VAR)) {
         stringstream ss;
         ss << "Aliasing " << right->txt();
-        ss << " to " << left->str() << " " << left->txt();
+        ss << " to " << left->name() << " " << left->txt();
         ss << " is not supported.";
 
         throw logic_error(ss.str());

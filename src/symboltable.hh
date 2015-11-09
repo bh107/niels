@@ -27,24 +27,13 @@ public:
     void put(std::string, Node* node);
     std::map<std::string, Node*>& symbols(void);
 
-    /**
-     *  SymbolTable scopes.
-     */
-    SymbolTable* parent(void);
-    void parent(SymbolTable* symbolTable);
-
-    SymbolTable* child(void);
-    void child(SymbolTable* symbolTable);
-
-    SymbolTable* sibling(void);
-    void sibling(SymbolTable* symbolTable);
-
     std::string dot(void);
 
+    std::string& scope(void);
+    void scope(const std::string& val);
+
 private:
-    SymbolTable* _parent;
-    SymbolTable* _child;
-    SymbolTable* _sibling;
+    std::string _scope;
 
     std::map<std::string, Node*> _symbols;    
 };

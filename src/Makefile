@@ -6,7 +6,12 @@ run:
 	cd build && cmake ../ && make
 
 test:
-	./build/niels
+	./build/niels input.nls
+
+graph:
+	./build/niels input.nls artifacts/graph.dot
+	dot -T pdf artifacts/graph.dot > artifacts/graph.pdf
+	chromium-browser artifacts/graph.pdf
 
 clean:
 	rm -fr build

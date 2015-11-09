@@ -30,7 +30,7 @@ public:
 
 class Ident : public Node {
 public:
-    Ident(const char* val);
+    Ident(const std::string& name);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -55,6 +55,7 @@ public:
 class Assign : public Node {
 public:
     Assign(Node* left, Node* right);
+    void eval(void);
     std::string dot_label(void);
 };
 

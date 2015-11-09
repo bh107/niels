@@ -1,3 +1,4 @@
+#include <utils.hh>
 #include <driver.hh>
 #include <parser.hh>
 
@@ -7,13 +8,11 @@ namespace nls {
 Driver::Driver(void)
     : _trace_scanning(false), _trace_parsing(false), _fewer_noops(true)
 {
-    _symbolTable = new SymbolTable();
 }
 
 Driver::Driver(bool trace_scanning, bool trace_parsing, bool fewer_noops)
     : _trace_scanning(trace_scanning), _trace_parsing(trace_parsing), _fewer_noops(fewer_noops)
 {
-    _symbolTable = new SymbolTable();
 }
 
 Driver::~Driver(void)
@@ -31,6 +30,18 @@ int Driver::parse(const string& filename)
     return res;
 }
 
+void Driver::eval(Node* node)
+{
+    if (NULL==node) {
+        return;
+    }
+    eval(node->left());
+    eval(node->right());
+    cout << "Evaluating: " << node->dot_label() << endl;
+    node->eval();
+    cout << node->txt() << endl;
+}
+
 //
 // NOTE: scanBegin and scanEnd are defined in scanner.ll
 //
@@ -45,38 +56,18 @@ void Driver::error(int yylineno, const std::string& m)
     std::cerr << "Error near line " << yylineno << ": " << m << endl;
 }
 
-
-
 void Driver::scopeBegin(void)
 {
-    SymbolTable* childScope = new nls::SymbolTable();
-    childScope->parent(_symbolTable);
-
-    if (_symbolTable->child()) {
-        SymbolTable* sibling = _symbolTable->child();
-        while(sibling->sibling()) {
-            sibling = sibling->sibling();
-        }
-        sibling->sibling(childScope);
-    } else {
-        _symbolTable->child(childScope);
-    }
-    _symbolTable = childScope;
+    _symbolTable.scope(_symbolTable.scope()+".");
 }
 
 void Driver::scopeEnd(void)
 {
-    _symbolTable = _symbolTable->parent();
 }
 
-SymbolTable* Driver::symbolTable(void)
+SymbolTable& Driver::symbolTable(void)
 {
     return _symbolTable;
-}
-
-void Driver::symbolTable(SymbolTable* table)
-{
-    _symbolTable = table;
 }
 
 void Driver::ast(Node* node)
@@ -102,6 +93,18 @@ bool Driver::traceParsing(void)
 bool Driver::fewerNoops(void)
 {
     return _fewer_noops;
+}
+
+string Driver::dot(void)
+{
+    stringstream ss;                        // CReate dot
+    ss << "graph {" << endl;
+    ss << "graph[ordering=out]" << endl;
+    ss << symbolTable().dot() << endl;
+    ss << nls::dot(ast()) << endl;
+    ss << "}" << endl;
+
+    return ss.str();
 }
 
 }

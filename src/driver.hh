@@ -17,11 +17,12 @@ public:
 
     int parse(const std::string& filename);
 
+    void eval(Node* node);
+
     void error(const std::string& m);
     void error(int yylineno, const std::string& m);
 
-    SymbolTable* symbolTable(void);
-    void symbolTable(SymbolTable* table);
+    SymbolTable& symbolTable(void);
 
     void ast(Node* node);
     Node* ast(void);
@@ -33,8 +34,10 @@ public:
     bool traceParsing(void);
     bool fewerNoops(void);
 
+    std::string dot(void);
+
 private:
-    SymbolTable* _symbolTable;
+    SymbolTable _symbolTable;
     Node* _ast;
 
     std::string _filename;

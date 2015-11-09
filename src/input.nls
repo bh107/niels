@@ -1,1 +1,5 @@
-!? 1 + 1
+hej <- 3+3
+der <- 4+4.5
+cool <- hej + der
+
+? cool + 1

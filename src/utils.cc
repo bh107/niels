@@ -54,15 +54,5 @@ string dot(Node* node) {
             dot(node->right());
 }
 
-string dot(SymbolTable* symbolTable) {
-
-    if (NULL==symbolTable) {
-        return "";
-    }
-    return symbolTable->dot()          + \
-           dot(symbolTable->sibling()) + \
-           dot(symbolTable->child());
-}
-
 }
 

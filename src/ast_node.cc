@@ -7,14 +7,14 @@ using namespace std;
 namespace nls {
 
 Node::Node(void)
-    : _stype(UNKNOWN), _vtype(NLS_UND), _left(NULL), _right(NULL)
+    : _stype(UNKNOWN), _vtype(NLS_UND), _left(NULL), _right(NULL), _name("anonymous")
 {
 }
 Node::Node(Node* left)
-    : _stype(UNKNOWN), _vtype(left->vtype()), _left(left), _right(NULL)
+    : _stype(UNKNOWN), _vtype(left->vtype()), _left(left), _right(NULL), _name("anonymous")
 {
 }
-Node::Node(Node* left, Node* right) : _stype(UNKNOWN), _vtype(NLS_UND), _left(left), _right(right)
+Node::Node(Node* left, Node* right) : _stype(UNKNOWN), _vtype(NLS_UND), _left(left), _right(right), _name("anonymous")
 {
     _vtype = left->vtype() >= right->vtype() ? left->vtype() : right->vtype();
 }
@@ -87,7 +87,52 @@ string Node::dot(void)
 string Node::txt(void)
 {
     stringstream ss;
-    ss << SType_text(stype()) << " of " << VType_text(vtype());
+    ss << VType_text(vtype());
+
+    switch(stype()) {
+    case VAR:
+        switch(vtype()) {
+        case NLS_UND:
+            ss << "I have no idea what it is..." ;
+        case NLS_STR:
+            ss << *(value().str) ;
+            break;
+        case NLS_I32:
+            ss << value().i32 ;
+            break;
+        case NLS_I64:
+            ss << value().i64 ;
+            break;
+        case NLS_R32:
+            ss << scientific <<value().r32 ;
+            break;
+        case NLS_R64:
+            ss << scientific << value().r64 ;
+            break;
+        case NLS_BUL:
+            ss << boolalpha << value().bul ;
+            break;
+
+        case NLS_I32_A:
+            ss << *((bxx::multi_array<int32_t>*)(value().array)) ;
+            break;
+        case NLS_I64_A:
+            ss << *((bxx::multi_array<int64_t>*)(value().array)) ;
+            break;
+        case NLS_R32_A:
+            ss << *((bxx::multi_array<float>*)(value().array)) ;
+            break;
+        case NLS_R64_A:
+            ss << *((bxx::multi_array<double>*)(value().array)) ;
+            break;
+        case NLS_BUL_A:
+            ss << *((bxx::multi_array<bool>*)(value().array)) ;
+            break;
+        }
+        break;
+        default:
+            ss << SType_text(stype());
+    }
 
     return ss.str();
 }
@@ -100,6 +145,16 @@ void Node::vtype(VType vtype)
 VType Node::vtype(void)
 {
     return _vtype;
+}
+
+string& Node::name(void)
+{
+    return _name;
+}
+
+void Node::name(const string& val)
+{
+    _name = val;
 }
 
 string& Node::str(void)

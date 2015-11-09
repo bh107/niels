@@ -18,7 +18,6 @@ std::string tos(T val)
 }
 
 std::string dot(Node* node);
-std::string dot(SymbolTable* node);
 
 }
 #endif

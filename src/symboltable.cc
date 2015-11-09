@@ -6,41 +6,11 @@ using namespace std;
 
 namespace nls {
 
-SymbolTable::SymbolTable(void) : _symbols() {}
-
-SymbolTable* SymbolTable::parent(void)
-{
-    return _parent;
-}
-
-void SymbolTable::parent(SymbolTable* symbolTable)
-{
-    _parent = symbolTable;
-}
-
-SymbolTable* SymbolTable::child(void)
-{
-    return _child;
-}
-
-void SymbolTable::child(SymbolTable* symbolTable)
-{
-    _child = symbolTable;
-}
-
-SymbolTable* SymbolTable::sibling(void)
-{
-    return _sibling;
-}
-
-void SymbolTable::sibling(SymbolTable* symbolTable)
-{
-    _sibling = symbolTable;
-}
+SymbolTable::SymbolTable(void) : _symbols(), _scope("root") {}
 
 Node* SymbolTable::getIdent(Node* ident)
 {
-    map<string, Node*>::iterator it = _symbols.find(ident->str());
+    map<string, Node*>::iterator it = _symbols.find(ident->name());
     if (it != _symbols.end()) {
         ident->stype(it->second->stype());
         ident->vtype(it->second->vtype());
@@ -65,6 +35,15 @@ void SymbolTable::put(string ident, Node* node)
     _symbols[ident] = node;
 }
 
+void SymbolTable::scope(const std::string& val)
+{
+    _scope = val;
+}
+
+std::string& SymbolTable::scope(void)
+{
+    return _scope;
+}
 
 string SymbolTable::dot(void)
 {

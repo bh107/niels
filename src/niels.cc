@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <driver.hh>
 #include <utils.hh>
 
@@ -6,21 +7,26 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    nls::Driver drv;
+    nls::Driver driver;
 
-    drv.parse("input.nls");
+    string filename = "-";
+
+    if (argc>1) {
+        filename = argv[1];
+    }
    
-    if (argc>2) {
-        cout << "graph {" << endl;
-        cout << "graph[ordering=out]" << endl;
-        
-        nls::SymbolTable* table = drv.symbolTable();
-        while(table->parent()) {  // Go to top-level
-            table = table->parent();
+    driver.parse(filename);    // Parsing
+    // TODO: Syntax check
+    // TODO: Type check
+
+    driver.eval(driver.ast());    // TODO: evaluation
+    
+    if (argc>2) {           // Dump dot
+        ofstream dotfile(argv[2]);
+        if (dotfile.is_open()) {
+            dotfile << driver.dot() << endl;
+            dotfile.close();
         }
-        cout << nls::dot(table) << endl;
-        cout << nls::dot(drv.ast()) << endl;
-        cout << "}" << endl;
     }
 }
 
