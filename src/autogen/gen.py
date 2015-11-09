@@ -3,9 +3,11 @@ import itertools
 import argparse
 import pprint
 import glob
-import mako
 import json
 import os
+
+from mako.template import Template
+from niels import camelize, vtype2enum, vtype2ctype
 
 def inner_declr(name, expr, sig):
     ninput = len(sig)-1
@@ -79,30 +81,55 @@ def operator_func(name, expr, sigs):
     return func.format(name=name)
 
 def vtype_hh(nls):
-    return ""
+    tmpl = Template(filename=os.sep.join(["templates", "ast_vtype_hh.tpl"]))
+    return tmpl.render(vtypes=nls["vtypes"])
 
 def vtype_cc(nls):
-    return ""
+    tmpl = Template(filename=os.sep.join(["templates", "ast_vtype_cc.tpl"]))
+    return tmpl.render(vtypes=nls["vtypes"])
 
 def unary_ops_hh(nls):
-    return ""
+    ops = [(name, camelize(name), expr, sigs, k) for k in nls["operators"] 
+                           for name, expr, sigs in nls["operators"][k] if len(sigs[0])==2]
+
+    return Template(filename=os.sep.join(["templates", "ast_unary_ops_hh.tpl"])).render(
+        operators=ops
+    )
 
 def unary_ops_cc(nls):
-    return ""
+    ops = [(name, camelize(name), expr, sigs, k) for k in nls["operators"] 
+                           for name, expr, sigs in nls["operators"][k] if len(sigs[0])==2]
+
+    return Template(filename=os.sep.join(["templates", "ast_unary_ops_cc.tpl"])).render(
+        operators=ops,
+        vtype2enum=vtype2enum
+    )
 
 def binary_ops_hh(nls):
-    return ""
+    ops = [(name, camelize(name), expr, sigs, k) for k in nls["operators"] 
+                           for name, expr, sigs in nls["operators"][k] if len(sigs[0])==3]
+
+    return Template(filename=os.sep.join(["templates", "ast_binary_ops_hh.tpl"])).render(
+        operators=ops,
+        vtype2enum=vtype2enum
+    )
 
 def binary_ops_cc(nls):
-    return ""
+    ops = [(name, camelize(name), expr, sigs, k) for k in nls["operators"] 
+                           for name, expr, sigs in nls["operators"][k] if len(sigs[0])==3]
+
+    return Template(filename=os.sep.join(["templates", "ast_binary_ops_cc.tpl"])).render(
+        operators=ops,
+        vtype2enum=vtype2enum
+    )
 
 generators = {
     "ast_vtype_auto.hh": vtype_hh,
     "ast_vtype_auto.cc": vtype_cc,
+    "ast_binary_ops_auto.hh": binary_ops_hh,
+    "ast_binary_ops_auto.cc": binary_ops_cc,
     "ast_unary_ops_auto.hh": unary_ops_hh,
     "ast_unary_ops_auto.cc": unary_ops_cc,
-    "ast_binary_ops_auto.hh": binary_ops_hh,
-    "ast_binary_ops_auto.cc": binary_ops_cc
 }
 
 def cmake(autogen_path):

@@ -26,6 +26,7 @@ set(HDR "${HDR};${CMAKE_CURRENT_SOURCE_DIR}/driver.hh")
 set(HDR "${HDR};${CMAKE_CURRENT_SOURCE_DIR}/symboltable.hh")
 set(HDR "${HDR};${CMAKE_CURRENT_SOURCE_DIR}/utils.hh")
 
+set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/niels.cc")
 set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/ast.cc")
 set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/ast_node.cc")
 set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/ast_vtype_auto.cc")

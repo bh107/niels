@@ -1,8 +1,8 @@
 #ifndef NIELS_AST_H
 #define NIELS_AST_H
 #include <cinttypes>
-#include <sstream>
 #include <iostream>
+#include <sstream>
 #include <bxx/bohrium.hpp>
 #include <ast_node.hh>
 #include <ast_vtype_auto.hh>
@@ -10,56 +10,6 @@
 #include <ast_binary_ops_auto.hh>
 
 namespace nls {
-
-class Int32 : public Node {
-public:
-    Int32(void);
-    Int32(int32_t val);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-    std::string dot_color(void);
-};
-
-class Int64 : public Node {
-public:
-    Int64(void);
-    Int64(int64_t val);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-    std::string dot_color(void);
-};
-
-class Real32 : public Node {
-public:
-    Real32(void);
-    Real32(float val);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-    std::string dot_color(void);
-};
-
-class Real64 : public Node {
-public:
-    Real64(void);
-    Real64(double val);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-    std::string dot_color(void);
-};
-
-class Bool : public Node {
-public:
-    Bool(void);
-    Bool(bool val);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-    std::string dot_color(void);
-};
 
 class Str : public Node {
 public:
@@ -78,9 +28,6 @@ public:
     std::string dot_shape(void);
 };
 
-//
-// Identifiers
-//
 class Ident : public Node {
 public:
     Ident(const char* val);
@@ -90,82 +37,10 @@ public:
     std::string dot_color(void);
 };
 
-//
-// Unary Arithmetic Operators
-//
-class Neg : public Node {
-public:
-    Neg(Node* left);
-    std::string dot_label(void);
-};
-
-class Inv : public Node {
-public:
-    Inv(Node* left);
-    std::string dot_label(void);
-};
-
-//
-// Query
-//
 class Query : public Node {
 public:
     Query(Node* left);
 
-    void eval(void);
-    std::string dot_label(void);
-};
-
-//
-// Binary Arithmetic Operators
-//
-class Add : public Node {
-public:
-    Add(Node* left, Node* right);
-
-    void eval(void);
-    std::string dot_label(void);
-};
-
-class Sub : public Node {
-public:
-    Sub(Node* left, Node* right);
-    void eval(void);
-    std::string dot_label(void);
-};
-
-class Mul : public Node {
-public:
-    Mul(Node* left, Node* right);
-    void eval(void);
-    std::string dot_label(void);
-};
-
-class Mod : public Node {
-public:
-    Mod(Node* left, Node* right);
-
-    void eval(void);
-    std::string dot_label(void);
-};
-
-class Div : public Node {
-public:
-    Div(Node* left, Node* right);
-    void eval(void);
-    std::string dot_label(void);
-};
-
-class Pow : public Node {
-public:
-    Pow(Node* left, Node* right);
-    void eval(void);
-    std::string dot_label(void);
-};
-
-class LThan : public Node {
-public:
-    LThan(Node* left, Node* right);
     void eval(void);
     std::string dot_label(void);
 };
@@ -432,7 +307,6 @@ public:
     std::string dot_label(void);
     std::string dot_shape(void);
 };
-
 
 }
 #endif

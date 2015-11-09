@@ -51,7 +51,7 @@ nls = {
             ("mul", "in1->value().{in1_t} * in2->value().{in2_t}",      binary_sigs(vtypes)),
             ("mod", "in1->value().{in1_t} % in2->value().{in2_t}",      binary_sigs(vtypes[0:3])),
             ("div", "in1->value().{in1_t} / in2->value().{in2_t}",      binary_sigs(vtypes)),
-            ("pow", "pow(in1->value().{in1_t}, in1->value().{in2_t})",  binary_sigs(vtypes)),
+            ("pow", "pow(in1->value().{in1_t}, in2->value().{in2_t})",  binary_sigs(vtypes)),
         ],
         "comparison": [
             ("lthan",       "in1->value().{in1_t} < in2->value().{in2_t}",  binary_logic_sigs(vtypes)),

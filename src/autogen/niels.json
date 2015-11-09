@@ -2074,7 +2074,7 @@
       ], 
       [
         "pow", 
-        "pow(in1->value().{in1_t}, in1->value().{in2_t})", 
+        "pow(in1->value().{in1_t}, in2->value().{in2_t})", 
         [
           [
             "bul", 

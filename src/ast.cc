@@ -2,76 +2,10 @@
 #include <exception>
 #include <iomanip>
 #include <ast.hh>
-#include <symboltable.hh>
 
 using namespace std;
 
 namespace nls {
-
-#include "scalar_ops.cc"
-
-//
-// Literals
-//
-Int32::Int32(void) : Node() {
-    _value.i32 = 0;
-    _vtype = NLS_I32;
-}
-Int32::Int32(int32_t val) : Node() {
-    _value.i32 = val;
-    _vtype = NLS_I32;
-}
-string Int32::dot_label(void) { stringstream ss; ss << _value.i32; return ss.str(); }
-string Int32::dot_shape(void) { return "house"; }
-string Int32::dot_color(void) { return "#d9f0d3"; }
-
-Int64::Int64(void) : Node() {
-    _value.i64 = 0;
-    _vtype = NLS_I64;
-}
-Int64::Int64(int64_t val) : Node() {
-    _value.i64 = val;
-    _vtype = NLS_I64;
-}
-string Int64::dot_label(void) { stringstream ss; ss << _value.i64; return ss.str(); }
-string Int64::dot_shape(void) { return "house"; }
-string Int64::dot_color(void) { return "#d9f0d3"; }
-
-Real32::Real32(void) : Node() {
-    _value.r32 = 0.0;
-    _vtype = NLS_R32;
-}
-Real32::Real32(float val) : Node() {
-    _value.r32 = val;
-    _vtype = NLS_R32;
-}
-string Real32::dot_label(void) { stringstream ss; ss << fixed << setprecision(2) << _value.r32; return ss.str(); }
-string Real32::dot_shape(void) { return "house"; }
-string Real32::dot_color(void) { return "#d9f0d3"; }
-
-Real64::Real64(void) : Node() {
-    _value.r64 = 0.0;
-    _vtype = NLS_R64;
-}
-Real64::Real64(double val) : Node() {
-    _value.r64 = val;
-    _vtype = NLS_R64;
-}
-string Real64::dot_label(void) { stringstream ss; ss << fixed << setprecision(2) << _value.r64; return ss.str(); }
-string Real64::dot_shape(void) { return "house"; }
-string Real64::dot_color(void) { return "#d9f0d3"; }
-
-Bool::Bool(void) : Node() {
-    _value.bul = false;
-    _vtype = NLS_BUL;
-}
-Bool::Bool(bool val) : Node() {
-    _value.bul = val;
-    _vtype = NLS_BUL;
-}
-string Bool::dot_label(void) { stringstream ss; ss << boolalpha << _value.bul; return ss.str(); }
-string Bool::dot_shape(void) { return "house"; }
-string Bool::dot_color(void) { return "#d9f0d3"; }
 
 Comment::Comment(const char* comment) : Node() {
     _value.str = new string(comment);
@@ -161,89 +95,6 @@ void Query::eval(void)
     }
 }
 string Query::dot_label(void) { return "Query"; }
-
-Neg::Neg(Node* left) : Node(left) {}
-string Neg::dot_label(void) { return "Neg"; }
-
-Inv::Inv(Node* left) : Node(left) {}
-string Inv::dot_label(void) { return "Inv"; }
-
-Add::Add(Node* left, Node* right) : Node(left, right) {}
-
-void Add::eval(void)
-{
-    left()->eval();
-    right()->eval();
-
-    nls_operator_add(this, left(), right());
-}
-string Add::dot_label(void) { return "Add"; }
-
-Sub::Sub(Node* left, Node* right) : Node(left, right) {}
-void Sub::eval(void)
-{
-    left()->eval();
-    right()->eval();
-
-    nls_operator_sub(this, left(), right());
-}
-string Sub::dot_label(void) { return "Sub"; }
-
-Mul::Mul(Node* left, Node* right) : Node(left, right) {}
-void Mul::eval(void)
-{
-    left()->eval();
-    right()->eval();
-
-    nls_operator_mul(this, left(), right());
-}
-string Mul::dot_label(void) { return "Mul"; }
-
-Mod::Mod(Node* left, Node* right) : Node(left, right) {}
-void Mod::eval(void)
-{
-    left()->eval();
-    right()->eval();
-
-    nls_operator_mod(this, left(), right());
-}
-string Mod::dot_label(void) { return "Mod"; }
-
-Pow::Pow(Node* left, Node* right) : Node(left, right) {}
-void Pow::eval(void)
-{
-    left()->eval();
-    right()->eval();
-
-    nls_operator_pow(this, left(), right());
-}
-string Pow::dot_label(void) { return "Pow"; }
-
-Div::Div(Node* left, Node* right) : Node(left, right) {}
-void Div::eval(void)
-{
-    left()->eval();
-    right()->eval();
-
-    nls_operator_div(this, left(), right());
-}
-string Div::dot_label(void) { return "Div"; }
-
-LThan::LThan(Node* left, Node* right) : Node(left, right) {
-    if ((vtype() & SCALAR)>0) {
-        vtype(NLS_BUL);
-    } else {
-        vtype(NLS_BUL_A);
-    }
-}
-void LThan::eval(void)
-{
-    left()->eval();
-    right()->eval();
-
-    nls_operator_lthan(this, left(), right());
-}
-string LThan::dot_label(void) { return "LThan"; }
 
 As::As(Node* left, Node* right) : Node(left, right) {
 
