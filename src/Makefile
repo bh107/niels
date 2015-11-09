@@ -11,3 +11,5 @@ test:
 clean:
 	rm -fr build
 	rm -f *.dot
+	rm -f *_auto.cc
+	rm -f *_auto.hh

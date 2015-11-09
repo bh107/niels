@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 #include <map>
-#include "ast.hh"
+#include <ast.hh>
 
 namespace nls {
 

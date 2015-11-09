@@ -1,10 +1,13 @@
 #ifndef NIELS_UTILS_H
 #define NIELS_UTILS_H
 #include <sstream>
-#include "ast.hh"
-#include "symboltable.hh"
+#include <ast.hh>
+#include <symboltable.hh>
 
 namespace nls {
+
+std::string SType_text(SType stype);
+std::string VType_text(VType vtype);
 
 template <typename T>
 std::string tos(T val)
@@ -13,8 +16,6 @@ std::string tos(T val)
     ss << val;
     return ss.str();
 }
-
-void eval(Node* node);
 
 std::string dot(Node* node);
 std::string dot(SymbolTable* node);

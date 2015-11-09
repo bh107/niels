@@ -1,7 +1,7 @@
 #ifndef NIELS_DRIVER_H
 #define NIELS_DRIVER_H
-#include "ast.hh"
-#include "symboltable.hh"
+#include <ast.hh>
+#include <symboltable.hh>
 
 namespace nls {
 
