@@ -1,22 +1,10 @@
 /*
     This is a comment
 */
-yoyoy(1,3,2)
-col <- 1 as (3,3)
-? col + col
-hej <- 10
-while(hej > 0) {
-    hej <- hej - 1
-    ? hej
-    when(hej>4) {
-        ? "Hej is larger than four"
-    } otherwise {
-        ? "Hej is less or equal to four"
-    }
-}
+foo <- 1 as (3,3)
+bar <- 2 as (3,3)
+jazz <- foo + bar
+? jazz
 
-function jazzy(x:i64, y:i64) {
-    return x % y;
-}
 
 

@@ -17,7 +17,7 @@ public:
 
     int parse(const std::string& filename);
 
-    void eval(Node* node);
+    void walk(Node* node);
 
     void error(const std::string& m);
     void error(int yylineno, const std::string& m);
@@ -27,7 +27,7 @@ public:
     void ast(Node* node);
     Node* ast(void);
 
-    void scopeBegin();
+    void scopeBegin(const std::string& name);
     void scopeEnd();
 
     bool traceScanning(void);

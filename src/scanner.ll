@@ -7,7 +7,7 @@ scanner.ll
 
 using namespace std;
 stringstream _comment;
-#define YY_DECL extern "C++" int yylex()
+#define YY_DECL extern "C++" int yylex(nls::Driver& env)
 
 %}
 %option noyywrap

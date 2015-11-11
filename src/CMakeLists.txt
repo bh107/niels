@@ -38,6 +38,7 @@ set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/utils.cc")
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/ast_unary_ops_auto.hh ${CMAKE_CURRENT_SOURCE_DIR}/ast_vtype_auto.hh ${CMAKE_CURRENT_SOURCE_DIR}/ast_vtype_auto.cc ${CMAKE_CURRENT_SOURCE_DIR}/ast_binary_ops_auto.hh ${CMAKE_CURRENT_SOURCE_DIR}/ast_binary_ops_auto.cc ${CMAKE_CURRENT_SOURCE_DIR}/ast_unary_ops_auto.cc
 
+    COMMAND ./niels.py > niels.json
     COMMAND ./gen.py --generator=ast_vtype_auto.hh > ${CMAKE_CURRENT_SOURCE_DIR}/ast_vtype_auto.hh
     COMMAND ./gen.py --generator=ast_vtype_auto.cc > ${CMAKE_CURRENT_SOURCE_DIR}/ast_vtype_auto.cc
     COMMAND ./gen.py --generator=ast_unary_ops_auto.hh > ${CMAKE_CURRENT_SOURCE_DIR}/ast_unary_ops_auto.hh

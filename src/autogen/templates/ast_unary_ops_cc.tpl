@@ -9,15 +9,19 @@ ${aname}::${aname}(Node* left) : Node(left)
 {
     %if ktype == "comparison" or ktype == "logical":
     vtype(NLS_BUL);
+    %elif ktype == "arithmetic" or ktype == "bitwise":
+    _vtype = left->vtype();
+    %else:
+    FORGOT SOMETHING
     %endif
+
+    stype(EXPR);
 }
-void ${aname}::eval(void)
+void ${aname}::eval(Driver& env)
 {
     Node* res = this;
     Node* in1 = left();
-
-    in1->eval();                // Recursive evaluate inputs
-
+    
     VType res_t = res->vtype(); // Evaluate *this
     VType in1_t = in1->vtype();
     uint64_t mask = (res_t << 16) + in1_t;

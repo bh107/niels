@@ -33,7 +33,8 @@ string SType_text(SType stype)
 {
     switch(stype) {
         case VAR:       return "variable";
-        case FUNC:      return "function";
+        case FUN:       return "function";
+        case REC:       return "record";
         case MOD:       return "module";
         case COLL:      return "collection";
         case UNKNOWN:   return "unknown";

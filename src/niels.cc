@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     // TODO: Syntax check
     // TODO: Type check
 
-    driver.eval(driver.ast());    // TODO: evaluation
+    driver.walk(driver.ast());    // TODO: evaluation
     
     if (argc>2) {           // Dump dot
         ofstream dotfile(argv[2]);

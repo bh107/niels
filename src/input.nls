@@ -1,5 +1,5 @@
-hej <- 3+3
-der <- 4+4.5
-cool <- hej + der
+/*
+    Fancy smansy fancy
+*/
 
-? cool + 1
+? 1 as (3,3) + 2 as (3,3)

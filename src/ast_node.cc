@@ -16,7 +16,7 @@ Node::Node(Node* left)
 }
 Node::Node(Node* left, Node* right) : _stype(UNKNOWN), _vtype(NLS_UND), _left(left), _right(right), _name("anonymous")
 {
-    _vtype = left->vtype() >= right->vtype() ? left->vtype() : right->vtype();
+    //_vtype = left->vtype() >= right->vtype() ? left->vtype() : right->vtype();
 }
 
 Node* Node::left(void)
@@ -45,7 +45,7 @@ void Node::append(Node* node)
     next->right(node);
 }
 
-void Node::eval(void)
+void Node::eval(Driver& env)
 {
 
 }
@@ -61,6 +61,7 @@ string Node::dot_relation(void)
     if (_right) {
         ss << "N" << this << " -- N" << _right
            << "[label=\"" << VType_text(_right->vtype())  << "\""
+           << ",penwidth=3"
            << "]" << endl;
 
         if ((typeid(*this) == typeid(StmtList)) or \
@@ -87,51 +88,40 @@ string Node::dot(void)
 string Node::txt(void)
 {
     stringstream ss;
-    ss << VType_text(vtype());
 
-    switch(stype()) {
-    case VAR:
-        switch(vtype()) {
-        case NLS_UND:
-            ss << "I have no idea what it is..." ;
-        case NLS_STR:
-            ss << *(value().str) ;
-            break;
-        case NLS_I32:
-            ss << value().i32 ;
-            break;
-        case NLS_I64:
-            ss << value().i64 ;
-            break;
-        case NLS_R32:
-            ss << scientific <<value().r32 ;
-            break;
-        case NLS_R64:
-            ss << scientific << value().r64 ;
-            break;
-        case NLS_BUL:
-            ss << boolalpha << value().bul ;
-            break;
-
-        case NLS_I32_A:
-            ss << *((bxx::multi_array<int32_t>*)(value().array)) ;
-            break;
-        case NLS_I64_A:
-            ss << *((bxx::multi_array<int64_t>*)(value().array)) ;
-            break;
-        case NLS_R32_A:
-            ss << *((bxx::multi_array<float>*)(value().array)) ;
-            break;
-        case NLS_R64_A:
-            ss << *((bxx::multi_array<double>*)(value().array)) ;
-            break;
-        case NLS_BUL_A:
-            ss << *((bxx::multi_array<bool>*)(value().array)) ;
-            break;
-        }
+    switch(vtype()) {
+    case NLS_UND:
+        ss << "I have no idea what it is..." ;
+    case NLS_STR:
+        ss << *(value().str) ;
         break;
-        default:
-            ss << SType_text(stype());
+    case NLS_I32:
+        ss << value().i32 ;
+        break;
+    case NLS_I64:
+        ss << value().i64 ;
+        break;
+    case NLS_R32:
+        ss << scientific <<value().r32 ;
+        break;
+    case NLS_R64:
+        ss << scientific << value().r64 ;
+        break;
+    case NLS_BUL:
+        ss << boolalpha << value().bul ;
+        break;
+
+    case NLS_BUL_A:
+        break;
+    case NLS_I32_A:
+        break;
+    case NLS_I64_A:
+        ss << *(value().i64_a);
+        break;
+    case NLS_R32_A:
+        break;
+    case NLS_R64_A:
+        break;
     }
 
     return ss.str();

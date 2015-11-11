@@ -3,8 +3,17 @@
 #include <complex>
 #include <cinttypes>
 #include <ast_node.hh>
+#include <bxx/bohrium.hpp>
 
 namespace nls {
+
+class Driver;
+
+typedef bxx::multi_array<bool> bul_a_type;
+typedef bxx::multi_array<int32_t> i32_a_type;
+typedef bxx::multi_array<int64_t> i64_a_type;
+typedef bxx::multi_array<float> r32_a_type;
+typedef bxx::multi_array<double> r64_a_type;
 
 union Value {
     bool bul;
@@ -12,7 +21,11 @@ union Value {
     int64_t i64;
     float r32;
     double r64;
-    void* array;
+    bxx::multi_array<bool>* bul_a;
+    bxx::multi_array<int32_t>* i32_a;
+    bxx::multi_array<int64_t>* i64_a;
+    bxx::multi_array<float>* r32_a;
+    bxx::multi_array<double>* r64_a;
     std::string* str;
 };
 typedef union Value Value;
@@ -44,12 +57,14 @@ typedef enum VType VType;
 #define ARRAY   (NLS_BUL_A  |NLS_I32_A  |NLS_I64_A  |NLS_R32_A  |NLS_R64_A  |NLS_C64_A  |NLS_C128_A)
 
 enum SType : uint32_t {
-    VAR,
-    FUNC,
-    MOD,
-    COLL,
+    UNKNOWN,
 
-    UNKNOWN
+    VAR,
+    EXPR,
+    REC,
+    FUN,
+    MOD,
+    COLL
 };
 typedef enum SType SType;
 
@@ -61,7 +76,6 @@ public:
 
     Node* left(void);
     Node* right(void);
-
     void left(Node* left);
     void right(Node* right);
 
@@ -89,7 +103,7 @@ public:
     std::string& name(void);
     void name(const std::string& val);
 
-    virtual void eval(void);
+    virtual void eval(Driver& env);
 
     virtual std::string dot_shape(void);
     virtual std::string dot_label(void);

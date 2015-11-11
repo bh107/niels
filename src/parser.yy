@@ -14,7 +14,7 @@
 
 using namespace std;
 
-extern "C++" int yylex();
+extern "C++" int yylex(nls::Driver& env);
 extern "C++" int yyparse(nls::Driver& env);
 extern "C++" FILE *yyin;
 
@@ -23,7 +23,7 @@ extern "C++" void assert_defined(nls::Driver& env, nls::Node* node);
 extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 
 %}
-%parse-param { nls::Driver& env}
+%param { nls::Driver& env }
 %union {
     nls::Node*   node;
     char* str;
@@ -77,7 +77,7 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 %token RETURN FUNCTION WHILE WHEN IS OTHERWISE RECORD
 
 %type <node> input block stmts stmt expr scalar val shape range ident
-%type <node> args param params function function_block return
+%type <node> args param params function function_head function_body return
 %type <node> while when is otherwise cases
 %type <node> import
 %type <node> record attr attrs noop
@@ -95,7 +95,7 @@ input:
 
 scopeBegin:
   %empty {
-    env.scopeBegin();
+    env.scopeBegin("anon");
 }
 ;
 
@@ -138,18 +138,25 @@ return:
 }
 ;
 
-function_block:
-  scopeBegin LPAREN params[p] RPAREN block[b] scopeEnd {
+function_body:
+  LPAREN params[p] RPAREN block[b] scopeEnd {
     $$ = new nls::FunctionDef($p, $b);
 }
 ;
 
-function:
-  FUNCTION ident[id] function_block[fb] {
+function_head:
+    FUNCTION ident[id] {
     assert_undefined(env, $id);
-    
-    $$ = new nls::Function($id, $fb);
+
+    $$ = new nls::Function($id);
     env.symbolTable().put($id->name(), $$);
+    env.scopeBegin($id->name());
+}
+
+function:
+  function_head[h] function_body[b] scopeEnd {
+    $h->right($b);
+    $$ = $h;
 }
 ;
 
@@ -364,7 +371,7 @@ expr:
 | range { $$ = $1; }
 | ident {
     assert_defined(env, $1);
-    $$ = env.symbolTable().getIdent($1);
+    $$ = $1;
 }
 | LPAREN expr RPAREN { $$ = $2; }
 | ident LPAREN args RPAREN {

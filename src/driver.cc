@@ -30,16 +30,46 @@ int Driver::parse(const string& filename)
     return res;
 }
 
-void Driver::eval(Node* node)
+void Driver::walk(Node* node)
 {
     if (NULL==node) {
         return;
     }
-    eval(node->left());
-    eval(node->right());
-    cout << "Evaluating: " << node->dot_label() << endl;
-    node->eval();
-    cout << node->txt() << endl;
+
+    if ((typeid(*node) == typeid(WhenBool)) or (typeid(*node) == typeid(When))) {
+        walk(node->left());
+        nls::Node* cases = node;
+        while(cases->right()) {
+            cases = cases->right();
+            Node* caseNode = cases->left();
+            if (typeid(*caseNode) == typeid(Otherwise)) {
+                walk(caseNode->right());
+                break;
+            } else {
+                if (caseNode->left()->value().r64 == node->left()->value().r64) {
+                    walk(caseNode->right());
+                    break;
+                }
+            }
+        }
+    } else if (typeid(*node) == typeid(While)) {
+        Node* condNode = node->left();
+        walk(condNode);
+        while(condNode->value().bul) {
+            walk(node->right());
+            walk(condNode);
+        }
+    } else if (typeid(*node) == typeid(As)) {
+        walk(node->left());
+        node->eval(*this);
+    } else if (typeid(*node) == typeid(Query)) {
+        walk(node->left());
+        node->eval(*this);
+    } else {
+        walk(node->left());
+        walk(node->right());
+        node->eval(*this);
+    }
 }
 
 //
@@ -56,13 +86,20 @@ void Driver::error(int yylineno, const std::string& m)
     std::cerr << "Error near line " << yylineno << ": " << m << endl;
 }
 
-void Driver::scopeBegin(void)
+void Driver::scopeBegin(const std::string& val)
 {
-    _symbolTable.scope(_symbolTable.scope()+".");
+    _symbolTable.scope(_symbolTable.scope()+"::"+val);
 }
 
 void Driver::scopeEnd(void)
 {
+    string parentScope = _symbolTable.scope();
+    size_t found = parentScope.rfind("::");
+    if (found) {
+        parentScope = parentScope.substr(0, found);
+        _symbolTable.scope(parentScope);
+    }
+    
 }
 
 SymbolTable& Driver::symbolTable(void)

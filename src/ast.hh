@@ -31,7 +31,7 @@ public:
 class Ident : public Node {
 public:
     Ident(const std::string& name);
-
+    void eval(Driver& env);
     std::string dot_label(void);
     std::string dot_shape(void);
     std::string dot_color(void);
@@ -41,21 +41,21 @@ class Query : public Node {
 public:
     Query(Node* left);
 
-    void eval(void);
+    void eval(Driver& env);
     std::string dot_label(void);
 };
 
 class As : public Node {
 public:
     As(Node* left, Node* right);
-    void eval(void);
+    void eval(Driver& env);
     std::string dot_label(void);
 };
 
 class Assign : public Node {
 public:
     Assign(Node* left, Node* right);
-    void eval(void);
+    void eval(Driver& env);
     std::string dot_label(void);
 };
 
@@ -115,7 +115,7 @@ public:
 
 class Function : public Node {
 public:
-    Function(Node* left, Node* right);
+    Function(Node* left);
 
     std::string dot_label(void);
     std::string dot_shape(void);

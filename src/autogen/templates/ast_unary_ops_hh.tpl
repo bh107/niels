@@ -9,7 +9,7 @@ namespace nls {
 class ${aname} : public Node {
 public:
     ${aname}(Node* in1);
-    void eval(void);
+    void eval(Driver& env);
     std::string dot_label(void);
 };
 
@@ -18,4 +18,3 @@ public:
 }
 
 #endif
-

@@ -8,12 +8,15 @@ namespace nls {
 
 SymbolTable::SymbolTable(void) : _symbols(), _scope("root") {}
 
-Node* SymbolTable::getIdent(Node* ident)
+Node* SymbolTable::getIdent(Node* node)
 {
-    map<string, Node*>::iterator it = _symbols.find(ident->name());
+    stringstream scopedIdent;
+    scopedIdent << scope() << "::" << node->name();
+
+    map<string, Node*>::iterator it = _symbols.find(scopedIdent.str());
     if (it != _symbols.end()) {
-        ident->stype(it->second->stype());
-        ident->vtype(it->second->vtype());
+        node->stype(it->second->stype());
+        node->vtype(it->second->vtype());
         return it->second;
     } else {
         return NULL;
@@ -22,7 +25,10 @@ Node* SymbolTable::getIdent(Node* ident)
 
 Node* SymbolTable::lookup(string ident)
 {
-    map<string, Node*>::iterator it = _symbols.find(ident);
+    stringstream scopedIdent;
+    scopedIdent << scope() << "::" << ident;
+
+    map<string, Node*>::iterator it = _symbols.find(scopedIdent.str());
     if (it != _symbols.end()) {
         return it->second;
     } else {
@@ -32,7 +38,10 @@ Node* SymbolTable::lookup(string ident)
 
 void SymbolTable::put(string ident, Node* node)
 {
-    _symbols[ident] = node;
+    stringstream scopedIdent;
+    scopedIdent << scope() << "::" << ident;
+
+    _symbols[scopedIdent.str()] = node;
 }
 
 void SymbolTable::scope(const std::string& val)

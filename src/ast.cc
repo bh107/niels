@@ -2,6 +2,7 @@
 #include <exception>
 #include <iomanip>
 #include <ast.hh>
+#include <driver.hh>
 
 using namespace std;
 
@@ -26,40 +27,46 @@ Ident::Ident(const std::string& name) : Node()
 {
     _name = name;
 }
+void Ident::eval(Driver& env)
+{
+    Node* identNode = env.symbolTable().getIdent(this);
+    if (identNode) {
+        _value = identNode->value();
+    }
+}
 string Ident::dot_label(void) { return name(); }
 string Ident::dot_shape(void) { return "hexagon"; }
 string Ident::dot_color(void) { return "#fee0b6"; }
 
 Query::Query(Node* left) : Node(left) {}
-void Query::eval(void)
+void Query::eval(Driver& env)
 {
-    cout << left()->txt();
-
-    if (typeid(*left()) == typeid(As)) { // TODO: Find a better way to clean up...
-        switch(left()->vtype()) {
-        case NLS_I32_A:
-            delete ((bxx::multi_array<int32_t>*)(left()->value().array)); 
-            break;
+    Node* exprNode = left();
+    
+    cout << exprNode->txt() << endl;
+    
+    switch(exprNode->stype()) {
+    case VAR:
+    case FUN:
+    case REC:
+        break;
+    case EXPR:
+        switch(exprNode->vtype()) {
         case NLS_I64_A:
-            delete ((bxx::multi_array<int64_t>*)(left()->value().array));
+            delete exprNode->value().i64_a;
+            exprNode->value().i64_a = NULL;
             break;
-        case NLS_R32_A:
-            delete ((bxx::multi_array<float>*)(left()->value().array));
-            break;
-        case NLS_R64_A:
-            delete ((bxx::multi_array<double>*)(left()->value().array));
-            break;
-        case NLS_BUL_A:
-            delete ((bxx::multi_array<bool>*)(left()->value().array));
-            break;
-        }       
+        }
+        break;
+    default:
+        break;
     }
 }
 string Query::dot_label(void) { return "Query"; }
 
 As::As(Node* left, Node* right) : Node(left, right) {
 
-    switch(left->vtype()) {
+    switch(left->vtype()) { // Derive the type
     case NLS_BUL: vtype(NLS_BUL_A); break;
     case NLS_I32: vtype(NLS_I32_A); break;
     case NLS_I64: vtype(NLS_I64_A); break;
@@ -75,8 +82,11 @@ As::As(Node* left, Node* right) : Node(left, right) {
     case NLS_R64_A: throw logic_error("Array of arrays is unsupported.");
     case NLS_UND: throw logic_error("Cannot construct array of undefined.");
     }
-
-    uint64_t rank = 0;
+    stype(EXPR);
+}
+void As::eval(Driver& env)
+{
+    uint64_t rank = 0;  // Process meta-data
     int64_t shape[16];
     Node* shapeNode = this;
     uint64_t nelements = 1;
@@ -87,37 +97,19 @@ As::As(Node* left, Node* right) : Node(left, right) {
         rank++;
     }
 
-    //
-    // NOTE: At this stage the multi_array<T> type does not matter since
-    //       the type is not used until link() is called.
-    //       Linkage is postponed until evaluation.
-    _value.array = new bxx::multi_array<double>((const uint64_t)rank, (const int64_t*)shape);
-
-}
-void As::eval(void)
-{
-    left()->eval();
-
-    switch(vtype()) {
+    switch(vtype()) {   // Construct the array operation
     case NLS_BUL_A:
-        ((bxx::multi_array<bool>*)(_value.array))->link();
-        *((bxx::multi_array<bool>*)(_value.array)) = left()->value().bul;
         break;
     case NLS_I32_A:
-        ((bxx::multi_array<int32_t>*)(_value.array))->link();
-        *((bxx::multi_array<int32_t>*)(_value.array)) = left()->value().i32;
         break;
     case NLS_I64_A:
-        ((bxx::multi_array<int64_t>*)(_value.array))->link();
-        *((bxx::multi_array<int64_t>*)(_value.array)) = left()->value().i64;
+        _value.i64_a = new i64_a_type((const uint64_t)rank, (const int64_t*)shape);
+        _value.i64_a->link();
+        *(_value.i64_a) = left()->value().i64;
         break;
     case NLS_R32_A:
-        ((bxx::multi_array<float>*)(_value.array))->link();
-        *((bxx::multi_array<float>*)(_value.array)) = left()->value().r32;
         break;
     case NLS_R64_A:
-        ((bxx::multi_array<double>*)(_value.array))->link();
-        *((bxx::multi_array<double>*)(_value.array)) = left()->value().r64;
         break;
     }
 }
@@ -127,8 +119,8 @@ Assign::Assign(Node* left, Node* right) : Node(left, right) {
 
     if (left->defined() && (left->vtype() != right->vtype())) {
         stringstream ss;
-        ss << "Assigning " << right->txt();
-        ss << " to " << left->name() << " " << left->txt();
+        ss << "Assigning " << right->name();
+        ss << " to " << left->name();
         ss << " is not supported.";
 
         throw logic_error(ss.str());
@@ -136,8 +128,8 @@ Assign::Assign(Node* left, Node* right) : Node(left, right) {
 
     if (left->known() && (left->stype() != VAR)) {
         stringstream ss;
-        ss << "Assigning " << right->txt();
-        ss << " to " << left->name() << " " << left->txt();
+        ss << "Assigning " << right->name();
+        ss << " to " << left->name();
         ss << " is not supported.";
 
         throw logic_error(ss.str());
@@ -147,11 +139,11 @@ Assign::Assign(Node* left, Node* right) : Node(left, right) {
         left->vtype(right->vtype());    
         left->stype(VAR);
     }
-    vtype(left->vtype());               // IDENT determines type
 }
-void Assign::eval(void)
+void Assign::eval(Driver& env)
 {
-    left()->value(right()->value());
+    Node* var = env.symbolTable().getIdent(left());
+    var->value(right()->value());
 }
 string Assign::dot_label(void) { return "Assign"; }
 
@@ -215,8 +207,8 @@ Return::Return(Node* left) : Node(left) {}
 string Return::dot_label(void) { return "Return"; }
 string Return::dot_shape(void) { return "box"; }
 
-Function::Function(Node* left, Node* right) : Node(left, right) {
-    _stype = FUNC;
+Function::Function(Node* left) : Node(left) {
+    stype(FUN);
 }
 string Function::dot_label(void) { return "Function"; }
 string Function::dot_shape(void) { return "parallelogram"; }
