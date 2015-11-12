@@ -1,0 +1,6 @@
+hej <- 10
+while(hej>0) {
+    hej <- hej - 1
+    ? hej
+}
+

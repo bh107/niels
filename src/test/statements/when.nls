@@ -1,0 +1,5 @@
+when(1>0) {
+    ? "One is greater than 0"
+} otherwise {
+    ? "One is NOT greater than 0"
+}
