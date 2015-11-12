@@ -7,7 +7,7 @@ import json
 import os
 
 from mako.template import Template
-from niels import camelize, vtype2enum, vtype2ctype
+from niels import camelize
 
 def inner_declr(name, expr, sig):
     ninput = len(sig)-1
@@ -82,18 +82,33 @@ def operator_func(name, expr, sigs):
 
 def vtype_hh(nls):
     tmpl = Template(filename=os.sep.join(["templates", "ast_vtype_hh.tpl"]))
-    return tmpl.render(vtypes=nls["vtypes"])
+
+    return tmpl.render(
+        vtypes=nls["vtypes"],
+        vtype2ast=nls["vtype2ast"],
+        vtype2enum=nls["vtype2enum"],
+        vtype2ctype=nls["vtype2ctype"],
+    )
 
 def vtype_cc(nls):
     tmpl = Template(filename=os.sep.join(["templates", "ast_vtype_cc.tpl"]))
-    return tmpl.render(vtypes=nls["vtypes"])
+    return tmpl.render(
+        vtypes=nls["vtypes"],
+        vtype2ast=nls["vtype2ast"],
+        vtype2enum=nls["vtype2enum"],
+        vtype2ctype=nls["vtype2ctype"],
+    )
 
 def unary_ops_hh(nls):
     ops = [(name, camelize(name), expr, sigs, k) for k in nls["operators"] 
                            for name, expr, sigs in nls["operators"][k] if len(sigs[0])==2]
 
     return Template(filename=os.sep.join(["templates", "ast_unary_ops_hh.tpl"])).render(
-        operators=ops
+        operators=ops,
+        vtypes=nls["vtypes"],
+        vtype2ast=nls["vtype2ast"],
+        vtype2enum=nls["vtype2enum"],
+        vtype2ctype=nls["vtype2ctype"],
     )
 
 def unary_ops_cc(nls):
@@ -102,7 +117,10 @@ def unary_ops_cc(nls):
 
     return Template(filename=os.sep.join(["templates", "ast_unary_ops_cc.tpl"])).render(
         operators=ops,
-        vtype2enum=vtype2enum
+        vtypes=nls["vtypes"],
+        vtype2ast=nls["vtype2ast"],
+        vtype2enum=nls["vtype2enum"],
+        vtype2ctype=nls["vtype2ctype"],
     )
 
 def binary_ops_hh(nls):
@@ -111,7 +129,10 @@ def binary_ops_hh(nls):
 
     return Template(filename=os.sep.join(["templates", "ast_binary_ops_hh.tpl"])).render(
         operators=ops,
-        vtype2enum=vtype2enum
+        vtypes=nls["vtypes"],
+        vtype2ast=nls["vtype2ast"],
+        vtype2enum=nls["vtype2enum"],
+        vtype2ctype=nls["vtype2ctype"],
     )
 
 def binary_ops_cc(nls):
@@ -120,7 +141,10 @@ def binary_ops_cc(nls):
 
     return Template(filename=os.sep.join(["templates", "ast_binary_ops_cc.tpl"])).render(
         operators=ops,
-        vtype2enum=vtype2enum
+        vtypes=nls["vtypes"],
+        vtype2ast=nls["vtype2ast"],
+        vtype2enum=nls["vtype2enum"],
+        vtype2ctype=nls["vtype2ctype"],
     )
 
 generators = {

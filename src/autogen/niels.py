@@ -1,7 +1,59 @@
 #!/usr/bin/env python
 import itertools
 import pprint
-import json
+import json as json
+import yaml
+
+def nls2json(obj, level=0):
+    """A formatter easing the human readability of niels.json."""
+
+    INDENT = 3
+    SPACE = " "
+    NEWLINE = "\n"
+
+    def pod_iter(subject):
+        """Assumes subject is an iter of tuples or list."""
+        count = 0
+        for e in subject:
+            if isinstance(e, list) or isinstance(e, tuple):
+                count += 1
+        return count == 0
+
+    ret = ""
+    if isinstance(obj, dict):
+        ret += "{" + NEWLINE
+        comma = ""
+        for k, v in sorted(obj.items()):
+            ret += comma
+            comma = ",\n"
+            ret += SPACE * INDENT * (level+1)
+            ret += '"' + str(k) + '":' + SPACE
+            ret += nls2json(v, level + 1)
+
+        ret += NEWLINE + SPACE * INDENT * level + "}"
+    elif isinstance(obj, basestring):
+        ret += '"' + obj + '"'
+    elif isinstance(obj, list) and pod_iter(obj):
+        ret += "[" + ", ".join([nls2json(e, level+1) for e in obj]) + "]"
+    elif isinstance(obj, list):
+        ret += "[" + ", ".join([
+            NEWLINE + SPACE * INDENT * level + nls2json(e, level+1) for e in obj
+        ]) + "]"
+    elif isinstance(obj, tuple) and pod_iter(obj):
+        ret += "[" + ", ".join([nls2json(e, level+1) for e in obj]) + "]"
+    elif isinstance(obj, tuple):
+        ret += "[" + ", ".join([
+            NEWLINE + SPACE * INDENT * level + nls2json(e, level+1) for e in obj
+        ]) + "]"
+    elif isinstance(obj, bool):
+        ret += "true" if obj else "false"
+    elif isinstance(obj, int):
+        ret += str(obj)
+    elif isinstance(obj, float):
+        ret += '%.7g' % obj
+    else:
+        raise TypeError("Unknown type '%s' for json serialization" % str(type(obj)))
+    return ret
 
 def unary_sigs(vtypes):
     sigs = set()
@@ -25,24 +77,27 @@ def binary_logic_sigs(vtypes):
     return [("bul", in1, in2) for in1, in2 in itertools.product(vtypes, repeat=2)]
 
 def camelize(text):
+    """Returns Node names such as i64 -> R64 and less_than -> LessThan."""
     return "".join([w.lower().capitalize() for w in text.split("_")])
 
 def enumize(text):
+    """Returns ENUM names from vtype. E.g. i64 -> NLS_I64."""
     return "NLS_%s" % text.upper()
 
-def podify(vtype, ctype):
-    return (vtype, enumize(vtype), ctype, camelize(vtype))
+"""
+vtypes = ["bul", "i32", "i64", "r32", "r64", "bul_a", "i32_a", "i64_a", "r32_a", "r64_a"]
+ctypes = ["bool", "int32_t", "int64_t", "float", "double", "bxx::multi_array<bool>", "bxx::multi_array<int32_t>", "bxx::multi_array<int64_t>", "bxx::multi_array<float>", "bxx::multi_array<double>"]
+"""
 
 vtypes = ["bul", "i32", "i64", "r32", "r64"]
 ctypes = ["bool", "int32_t", "int64_t", "float", "double"]
 
-nls_pods = [podify(vtype, ctype) for vtype, ctype in zip(vtypes, ctypes)]
-
-vtype2enum  = {vtype: vtype_enum  for vtype, vtype_enum, vtype_ctype, vtype_node in nls_pods}
-vtype2ctype = {vtype: vtype_ctype for vtype, vtype_enum, vtype_ctype, vtype_node in nls_pods}
-
 nls = {
-    "vtypes": nls_pods,
+    "vtypes": vtypes,
+
+    "vtype2enum": {vtype: enumize(vtype) for vtype in vtypes},
+    "vtype2ctype": {vtype: ctype for vtype, ctype in zip(vtypes, ctypes)},
+    "vtype2ast": {vtype: camelize(vtype) for vtype in vtypes},
 
     "operators": {
         "arithmetic": [
@@ -80,4 +135,4 @@ nls = {
 }
 
 if __name__ == "__main__":
-    print json.dumps(nls, indent=2, separators=(", ", ": "))
+    print nls2json(nls)

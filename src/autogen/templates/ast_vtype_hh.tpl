@@ -4,12 +4,17 @@
 
 namespace nls {
 
-%for vtype, vtype_enum, vtype_ctype, vtype_ast in vtypes:
+%for vtype in vtypes:
+<%
+ast = vtype2ast[vtype]
+enum = vtype2enum[vtype]
+ctype = vtype2ctype[vtype]
+%>
 
-class ${vtype_ast} : public Node {
+class ${ast} : public Node {
 public:
-    ${vtype_ast}(void);
-    ${vtype_ast}(${vtype_ctype} val);
+    ${ast}(void);
+    ${ast}(${ctype} val);
 
     std::string dot_label(void);
     std::string dot_shape(void);
