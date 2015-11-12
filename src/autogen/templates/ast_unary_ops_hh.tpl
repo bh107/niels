@@ -4,11 +4,11 @@
 
 namespace nls {
 
-%for name, aname, expr, sigs, ktype in operators:
+%for k, op, ninput, exprs in operators:
 
-class ${aname} : public Node {
+class ${op2node[op]} : public Node {
 public:
-    ${aname}(Node* in1);
+    ${op2node[op]}(Node* in1);
     void eval(Driver& env);
     std::string dot_label(void);
 };

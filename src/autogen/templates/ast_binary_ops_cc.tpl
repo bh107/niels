@@ -23,20 +23,20 @@ string op_vtype_error(Node* res, Node* left, Node* right)
     return ss.str();
 }
 
-%for name, aname, expr, sigs, ktype in operators:
+%for k, op, ninput, exprs in operators:
 
-${aname}::${aname}(Node* left, Node* right) : Node(left, right)
+${op2node[op]}::${op2node[op]}(Node* left, Node* right) : Node(left, right)
 {
-    %if ktype == "comparison" or ktype == "logical":
+    %if k == "comparison" or k == "logical":
     vtype(NLS_BUL);
-    %elif ktype == "arithmetic" or ktype == "bitwise":
+    %elif k == "arithmetic" or k == "bitwise":
     _vtype = left->vtype() >= right->vtype() ? left->vtype() : right->vtype();
     %else:
     FORGOT SOMETHING
     %endif
     stype(EXPR);
 }
-void ${aname}::eval(Driver& env)
+void ${op2node[op]}::eval(Driver& env)
 {
     Node* res = this;
     Node* in1 = left();
@@ -47,6 +47,9 @@ void ${aname}::eval(Driver& env)
     VType in2_t = in2->vtype();
     uint64_t mask = (res_t << 32) + (in1_t << 16) + in2_t;
     switch(mask) {
+    <%
+    expr, sigs = exprs["scalar"]
+    %>
     %for res_vtype, in1_vtype, in2_vtype in sigs:
     case (${vtype2enum[res_vtype]} << 32) + (${vtype2enum[in1_vtype]} << 16) + ${vtype2enum[in2_vtype]}:
         res->value().${res_vtype} = ${expr.format(in1_t=in1_vtype, in2_t=in2_vtype)};
@@ -59,7 +62,7 @@ void ${aname}::eval(Driver& env)
     }
 
 }
-string ${aname}::dot_label(void) { return "${aname}"; }
+string ${op2node[op]}::dot_label(void) { return "${op2node[op]}"; }
 %endfor
 
 }

@@ -3,13 +3,13 @@
 using namespace std;
 namespace nls {
 
-%for name, aname, expr, sigs, ktype in operators:
+%for k, op, ninput, exprs in operators:
 
-${aname}::${aname}(Node* left) : Node(left)
+${op2node[op]}::${op2node[op]}(Node* left) : Node(left)
 {
-    %if ktype == "comparison" or ktype == "logical":
+    %if k == "comparison" or k == "logical":
     vtype(NLS_BUL);
-    %elif ktype == "arithmetic" or ktype == "bitwise":
+    %elif k == "arithmetic" or k == "bitwise":
     _vtype = left->vtype();
     %else:
     FORGOT SOMETHING
@@ -17,7 +17,7 @@ ${aname}::${aname}(Node* left) : Node(left)
 
     stype(EXPR);
 }
-void ${aname}::eval(Driver& env)
+void ${op2node[op]}::eval(Driver& env)
 {
     Node* res = this;
     Node* in1 = left();
@@ -26,6 +26,9 @@ void ${aname}::eval(Driver& env)
     VType in1_t = in1->vtype();
     uint64_t mask = (res_t << 16) + in1_t;
     switch(mask) {
+    <%
+    expr, sigs = exprs["scalar"]
+    %>
     %for res_vtype, in1_vtype in sigs:
     case (${vtype2enum[res_vtype]} << 16) + ${vtype2enum[in1_vtype]}:
         res->value().${res_vtype} = ${expr.format(in1_t=in1_vtype)};
@@ -37,7 +40,7 @@ void ${aname}::eval(Driver& env)
         break;
     }
 }
-string ${aname}::dot_label(void) { return "${aname}"; }
+string ${op2node[op]}::dot_label(void) { return "${op2node[op]}"; }
 %endfor
 
 }

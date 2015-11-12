@@ -9,77 +9,20 @@ import os
 from mako.template import Template
 from niels import camelize
 
-def inner_declr(name, expr, sig):
-    ninput = len(sig)-1
-    res_t = sig[0]
-    in1_t = sig[1] if ninput > 0 else  None
-    in2_t = sig[2] if ninput > 1 else  None
+def cmake(autogen_path):
+    """
+    Create OUTPUT and DEPENDS strings for cmake custom target.
+    Run this function manually to update CMakelists.txt
+    """
 
-    declr = "void nls_{name}_{res_t}_%s(Node* res, %s)" % (
-        "_".join(["{in%d_t}" % i for i in xrange(1, ninput+1)]),
-        ", ".join(["Node* in%d" % i for i in xrange(1, ninput+1)])
-    )
-    return declr.format(name=name, res_t=res_t, in1_t=in1_t, in2_t=in2_t)
+    output = " ".join(["${CMAKE_CURRENT_SOURCE_DIR}/%s" % gen for gen in generators])
+    depends = " ".join(["${CMAKE_CURRENT_SOURCE_DIR}/%s/%s"% (path, filename) for path, dirs, files in os.walk(autogen_path) for filename in (fn for fn in files if not fn.startswith("."))])
 
-def inner_expr(name, expr, sig):
+    return "OUTPUT %s\n\nDEPENDS %s" % (output, depends)
 
-    ninput = len(sig)-1
-
-    res_t = sig[0]
-    in1_t = sig[1] if ninput > 0 else  None
-    in2_t = sig[2] if ninput > 1 else  None
-
-    body = "res->value().{res_t} = %s" % expr
-
-    return body.format(
-        res_t=res_t, 
-        in1_t=in1_t, 
-        in2_t=in2_t
-    )
-
-def inner_func(name, expr, sig):
-    return inner_declr(name, expr, sig)+"\n{\n    "+inner_expr(name, expr, sig) +";\n}"
-
-def operator_func(name, expr, sigs):
-
-    ninput = len(sigs[0])-1
-
-    declr = "void nls_operator_{name}(Node* res, %s)" % (
-        ", ".join(["Node* in%d" % i for i in xrange(1, ninput+1)])
-    )
-    body = ["\n{{"]
-    body.append(" "*4 + "VType res_t = res->vtype();")
-    for i in xrange(1, ninput+1):
-        body.append(" "*4 + "VType in%d_t = in%d->vtype();" % (i,i))
-
-    if (ninput == 2):
-        body.append(" "*4 + "uint64_t mask = (res_t << 32) + (in1_t << 16) + in2_t;")
-    elif (ninput == 1):
-        body.append(" "*4 + "uint64_t mask = (res_t << 16) + in1_t;")
-
-    body.append(" "*4 +"switch(mask) {{")
-    for sig in sigs:
-        res_t = sig[0]
-        in1_t = sig[1] if ninput > 0 else  None
-        in2_t = sig[2] if ninput > 1 else  None
-
-        case = " "*4 + "case "
-        if (ninput == 2):
-            case += "(%s << 32 ) + (%s << 16) + %s" % (
-                vtype2enum[res_t], vtype2enum[in1_t], vtype2enum[in2_t]
-            )
-        elif (ninput == 1):
-            case += "(%s << 16) + %s" % (vtype2enum[res_t], vtype2enum[in1_t])
-        case += ":"
-        body.append(case)
-        body.append(" "*8 +"%s;" % inner_expr(name, expr, sig))
-        body.append(" "*8 +"break;")
-    body.append(" "*4 + "}}")
-    body.append("}}")
-
-    func = declr + "\n".join(body)
-    return func.format(name=name)
-
+#
+# Construct vtype nodes which the scanner can construct.
+#
 def vtype_hh(nls):
     tmpl = Template(filename=os.sep.join(["templates", "ast_vtype_hh.tpl"]))
 
@@ -88,6 +31,7 @@ def vtype_hh(nls):
         vtype2ast=nls["vtype2ast"],
         vtype2enum=nls["vtype2enum"],
         vtype2ctype=nls["vtype2ctype"],
+        op2node=nls["op2node"],
     )
 
 def vtype_cc(nls):
@@ -97,23 +41,28 @@ def vtype_cc(nls):
         vtype2ast=nls["vtype2ast"],
         vtype2enum=nls["vtype2enum"],
         vtype2ctype=nls["vtype2ctype"],
+        op2node=nls["op2node"],
     )
 
-def unary_ops_hh(nls):
-    ops = [(name, camelize(name), expr, sigs, k) for k in nls["operators"] 
-                           for name, expr, sigs in nls["operators"][k] if len(sigs[0])==2]
+#
+# Construct expr nodes for the grammar to construct
+#
 
+def unary_ops_hh(nls):
+
+    ops = [op for op in nls["operators"] if op[2] == 1]
+    
     return Template(filename=os.sep.join(["templates", "ast_unary_ops_hh.tpl"])).render(
         operators=ops,
         vtypes=nls["vtypes"],
         vtype2ast=nls["vtype2ast"],
         vtype2enum=nls["vtype2enum"],
         vtype2ctype=nls["vtype2ctype"],
+        op2node=nls["op2node"],
     )
 
 def unary_ops_cc(nls):
-    ops = [(name, camelize(name), expr, sigs, k) for k in nls["operators"] 
-                           for name, expr, sigs in nls["operators"][k] if len(sigs[0])==2]
+    ops = [op for op in nls["operators"] if op[2] == 1]
 
     return Template(filename=os.sep.join(["templates", "ast_unary_ops_cc.tpl"])).render(
         operators=ops,
@@ -121,11 +70,11 @@ def unary_ops_cc(nls):
         vtype2ast=nls["vtype2ast"],
         vtype2enum=nls["vtype2enum"],
         vtype2ctype=nls["vtype2ctype"],
+        op2node=nls["op2node"],
     )
 
 def binary_ops_hh(nls):
-    ops = [(name, camelize(name), expr, sigs, k) for k in nls["operators"] 
-                           for name, expr, sigs in nls["operators"][k] if len(sigs[0])==3]
+    ops = [op for op in nls["operators"] if op[2] == 2]
 
     return Template(filename=os.sep.join(["templates", "ast_binary_ops_hh.tpl"])).render(
         operators=ops,
@@ -133,11 +82,11 @@ def binary_ops_hh(nls):
         vtype2ast=nls["vtype2ast"],
         vtype2enum=nls["vtype2enum"],
         vtype2ctype=nls["vtype2ctype"],
+        op2node=nls["op2node"],
     )
 
 def binary_ops_cc(nls):
-    ops = [(name, camelize(name), expr, sigs, k) for k in nls["operators"] 
-                           for name, expr, sigs in nls["operators"][k] if len(sigs[0])==3]
+    ops = [op for op in nls["operators"] if op[2] == 2]
 
     return Template(filename=os.sep.join(["templates", "ast_binary_ops_cc.tpl"])).render(
         operators=ops,
@@ -145,6 +94,7 @@ def binary_ops_cc(nls):
         vtype2ast=nls["vtype2ast"],
         vtype2enum=nls["vtype2enum"],
         vtype2ctype=nls["vtype2ctype"],
+        op2node=nls["op2node"],
     )
 
 generators = {
@@ -155,13 +105,6 @@ generators = {
     "ast_unary_ops_auto.hh": unary_ops_hh,
     "ast_unary_ops_auto.cc": unary_ops_cc,
 }
-
-def cmake(autogen_path):
-    """Create OUTPUT and DEPENDS strings for cmake custom target."""
-    output = " ".join(["${CMAKE_CURRENT_SOURCE_DIR}/%s" % gen for gen in generators])
-    depends = " ".join(["${CMAKE_CURRENT_SOURCE_DIR}/%s/%s"% (path, filename) for path, dirs, files in os.walk(autogen_path) for filename in (fn for fn in files if not fn.startswith("."))])
-
-    return "OUTPUT %s\n\nDEPENDS %s" % (output, depends)
 
 def main():
     parser = argparse.ArgumentParser(description='Autogenerate code based on niels.json.')

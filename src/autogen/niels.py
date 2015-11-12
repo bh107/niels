@@ -95,44 +95,132 @@ ctypes = ["bool", "int32_t", "int64_t", "float", "double"]
 nls = {
     "vtypes": vtypes,
 
-    "vtype2enum": {vtype: enumize(vtype) for vtype in vtypes},
-    "vtype2ctype": {vtype: ctype for vtype, ctype in zip(vtypes, ctypes)},
-    "vtype2ast": {vtype: camelize(vtype) for vtype in vtypes},
+    "vtype2enum":   {vtype: enumize(vtype) for vtype in vtypes},
+    "vtype2ctype":  {vtype: ctype for vtype, ctype in zip(vtypes, ctypes)},
+    "vtype2ast":    {vtype: camelize(vtype) for vtype in vtypes},
 
-    "operators": {
-        "arithmetic": [
-            ("add", "in1->value().{in1_t} + in2->value().{in2_t}",      binary_sigs(vtypes)), 
-            ("sub", "in1->value().{in1_t} - in2->value().{in2_t}",      binary_sigs(vtypes)),
-            ("mul", "in1->value().{in1_t} * in2->value().{in2_t}",      binary_sigs(vtypes)),
-            ("mod", "in1->value().{in1_t} % in2->value().{in2_t}",      binary_sigs(vtypes[0:3])),
-            ("div", "in1->value().{in1_t} / in2->value().{in2_t}",      binary_sigs(vtypes)),
-            ("pow", "pow(in1->value().{in1_t}, in2->value().{in2_t})",  binary_sigs(vtypes)),
-        ],
-        "comparison": [
-            ("lthan",       "in1->value().{in1_t} < in2->value().{in2_t}",  binary_logic_sigs(vtypes)),
-            ("gthan",       "in1->value().{in1_t} > in2->value().{in2_t}",  binary_logic_sigs(vtypes)),
-            ("equal",       "in1->value().{in1_t} == in2->value().{in2_t}", binary_logic_sigs(vtypes)),
-            ("not_equal",   "in1->value().{in1_t} != in2->value().{in2_t}", binary_logic_sigs(vtypes)),
-            ("lthan_equal", "in1->value().{in1_t} <= in2->value().{in2_t}", binary_logic_sigs(vtypes)),
-            ("gthan_equal", "in1->value().{in1_t} >= in2->value().{in2_t}", binary_logic_sigs(vtypes))
-        ],
-        "logical": [
-            ("and", "in1->value().{in1_t} && in2->value().{in2_t}", binary_logic_sigs(vtypes)),
-            ("or",  "in1->value().{in1_t} || in2->value().{in2_t}", binary_logic_sigs(vtypes)),
-            ("xor", "in1->value().{in1_t} || in2->value().{in2_t}", binary_logic_sigs(vtypes)),
-            ("not", "!in1->value().{in1_t}",                        unary_logic_sigs(vtypes)),
-        ],
-        "bitwise": [
-            ("bw_lshift", "in1->value().{in1_t} << in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
-            ("bw_rshift", "in1->value().{in1_t} >> in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
+    "operators": [
+        ("arithmetic", "add", 2, {
+            "scalar":   ("in1->value().{in1_t} + in2->value().{in2_t}", binary_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }), 
+        ("arithmetic", "sub", 2, {
+            "scalar":   ("in1->value().{in1_t} - in2->value().{in2_t}", binary_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("arithmetic", "mul", 2, {
+            "scalar":   ("in1->value().{in1_t} * in2->value().{in2_t}", binary_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("arithmetic", "mod", 2, {
+            "scalar":   ("in1->value().{in1_t} % in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("arithmetic", "div", 2, {
+            "scalar":   ("in1->value().{in1_t} / in2->value().{in2_t}", binary_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("arithmetic", "pow", 2, {
+            "scalar":   ("pow(in1->value().{in1_t}, in2->value().{in2_t})",  binary_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
 
-            ("bw_and",  "in1->value().{in1_t} & in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
-            ("bw_or",   "in1->value().{in1_t} | in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
-            ("bw_xor",  "in1->value().{in1_t} ^ in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
-            ("bw_not",  "~ in1->value().{in1_t}", unary_sigs(vtypes[0:3])),
-        ]
-    }
+        ("comparison", "lthan", 2, {
+            "scalar":   ("in1->value().{in1_t} < in2->value().{in2_t}",  binary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("comparison", "gthan", 2, {
+            "scalar":   ("in1->value().{in1_t} > in2->value().{in2_t}",  binary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("comparison", "equal", 2, {
+            "scalar":   ("in1->value().{in1_t} == in2->value().{in2_t}", binary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("comparison", "not_equal", 2, {
+            "scalar":   ("in1->value().{in1_t} != in2->value().{in2_t}", binary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("comparison", "lthan_equal", 2, {
+            "scalar":   ("in1->value().{in1_t} <= in2->value().{in2_t}", binary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("comparison", "gthan_equal", 2, {
+            "scalar":   ("in1->value().{in1_t} >= in2->value().{in2_t}", binary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+
+        ("logical", "and", 2, {
+            "scalar":   ("in1->value().{in1_t} && in2->value().{in2_t}", binary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("logical", "or", 2, {
+            "scalar":   ("in1->value().{in1_t} || in2->value().{in2_t}", binary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("logical", "xor", 2, {
+            "scalar":   ("in1->value().{in1_t} || in2->value().{in2_t}", binary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("logical", "not", 1, {
+            "scalar":   ("!in1->value().{in1_t}", unary_logic_sigs(vtypes)),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+
+        ("bitwise", "bw_lshift", 2, {
+            "scalar": ("in1->value().{in1_t} << in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("bitwise", "bw_rshift", 2, {
+            "scalar": ("in1->value().{in1_t} >> in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+
+        ("bitwise", "bw_and", 2, {
+            "scalar": ("in1->value().{in1_t} & in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("bitwise", "bw_or", 2, {
+            "scalar": ("in1->value().{in1_t} | in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("bitwise", "bw_xor", 2, {
+            "scalar": ("in1->value().{in1_t} ^ in2->value().{in2_t}", binary_sigs(vtypes[0:3])),
+            "array":    ("", []),
+            "complex":  ("", [])
+        }),
+        ("bitwise", "bw_not", 1, {
+            "scalar": ("~ in1->value().{in1_t}", unary_sigs(vtypes[0:3])),
+            "array":    ("", []),
+            "complex":  ("", [])
+        })
+    ]
 }
+
+op2node = {}
+for k, name, ninput, exprs in nls["operators"]:
+    op2node[name] = camelize(name)
+nls["op2node"] = op2node
 
 if __name__ == "__main__":
     print nls2json(nls)
