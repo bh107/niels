@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from subprocess import Popen, PIPE
 import unittest
+import argparse
 import os
 import re
 
@@ -41,26 +42,42 @@ def cls_factory(cname, tests=[]):
 
     return Foo
 
-#
-# Dynamically construct unittest.TestCase classes
-#
-for root, dirs, files in os.walk("."):  # Find tests
-    tests = []
+def produce_classes(root):
+    """
+    Look in root for .nls files and construct test classes for them.
+    """
+    
+    #
+    # Dynamically construct unittest.TestCase classes
+    #
+    classes = {}
+    for root, dirs, files in os.walk(root):  # Find tests
+        tests = []
 
-    for filename in (fn for fn in files if fn.endswith(".nls")):
-        bname, ext = os.path.splitext(os.path.basename(filename))
-        test = "test_%s" % bname
-        tests.append(test)
+        for filename in (fn for fn in files if fn.endswith(".nls")):
+            bname, ext = os.path.splitext(os.path.basename(filename))
+            test = "test_%s" % bname
+            tests.append(test)
 
-    if tests:                           # Create a class for the directory
-        cname = "%sTest" % "".join([
-            txt.capitalize() for txt in root.split(os.sep)[1:]
-        ])
-        cls = cls_factory(cname, tests)
-        for test in tests:              # Create a test-method for each .nls file
-            setattr(cls, test, cls.goodTest)
-        locals()[cname] = cls           # Force class into local scope
-        del cls                         # Make sure the last class does not bleed out
+        if tests:                           # Create a class for the directory
+            cname = "%sTest" % "".join([
+                txt.capitalize() for txt in root.split(os.sep)[1:]
+            ])
+            cls = cls_factory(cname, tests)
+            for test in tests:              # Create a test-method for each .nls file
+                setattr(cls, test, cls.goodTest)
+            classes[cname] = cls
+    return classes
 
 if __name__ == '__main__':
-    unittest.main()
+
+    root = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(root)
+
+    classes = produce_classes(".")  # Construct test-classes
+    for cname in classes:           # Expose them in local scope
+        cls = classes[cname]
+        locals()[cname] = cls
+        del cls                     # Avoid dual definition
+
+    unittest.main()                 # Run class tests

@@ -31,3 +31,4 @@ addons:
 script:
   - pip install cython --user
   - mkdir bdir && cd bdir && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j4 && make install
+  - source util/setenv.bash && make
