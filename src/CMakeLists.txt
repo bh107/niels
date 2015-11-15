@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 
-set(BOHRIUM_LIB "$ENV{HOME}/.local/lib" )
-set(BOHRIUM_INC "$ENV{HOME}/.local/include" )
+set(BOHRIUM_LIB "$ENV{HOME}/.local/lib" CACHE STRING "Bohrium lib path")
+set(BOHRIUM_INC "$ENV{HOME}/.local/include" CACHE STRING "Bohrium inc path")
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
