@@ -11,7 +11,6 @@ addons:
       - python
       - python-numpy
       - python-cheetah
-      - python-mako
       - cython
       - swig
       - cmake
@@ -30,6 +29,8 @@ addons:
       - bison
 
 script:
+  - pip install --upgrade pip --user
+  - pip install mako --user
   - source util/setenv.bash
-  - source bhdep.sh
+  - source util/bhdep.sh
   - cd util && make
