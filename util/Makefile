@@ -1,6 +1,6 @@
-all: run test
+all: build test
 
-run:
+build:
 	mkdir -p build
 	touch build/empty
 	cd build && cmake ../../src && make
