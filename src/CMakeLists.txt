@@ -3,11 +3,10 @@ cmake_minimum_required(VERSION 2.8)
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 
-
 set(BOHRIUM_LIB "$ENV{HOME}/.local/lib" )
 set(BOHRIUM_INC "$ENV{HOME}/.local/include" )
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories("${BOHRIUM_INC}/")
@@ -66,5 +65,4 @@ add_executable(niels
     ${BISON_NielsParser_OUTPUTS}
     ${FLEX_NielsScanner_OUTPUTS}
 )
-
 target_link_libraries(niels bh bhc)
