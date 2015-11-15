@@ -32,5 +32,5 @@ script:
   - pip install --upgrade pip --user
   - pip install mako --user
   - source util/setenv.bash
-  - source util/bhdep.sh
+  - source util/deps.sh
   - cd util && make
