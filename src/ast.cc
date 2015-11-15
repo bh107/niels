@@ -52,9 +52,9 @@ void Query::eval(Driver& env)
         break;
     case EXPR:
         switch(exprNode->vtype()) {
-        case NLS_I64_A:
-            delete exprNode->value().i64_a;
-            exprNode->value().i64_a = NULL;
+        case NLS_R64_A:
+            delete exprNode->value().r64_a;
+            exprNode->value().r64_a = NULL;
             break;
         }
         break;
@@ -103,13 +103,14 @@ void As::eval(Driver& env)
     case NLS_I32_A:
         break;
     case NLS_I64_A:
-        _value.i64_a = new i64_a_type((const uint64_t)rank, (const int64_t*)shape);
-        _value.i64_a->link();
-        *(_value.i64_a) = left()->value().i64;
         break;
     case NLS_R32_A:
         break;
     case NLS_R64_A:
+        _value.r64_a = new r64_a_type((const uint64_t)rank, (const int64_t*)shape);
+        _value.r64_a->link();
+        *(_value.r64_a) = left()->value().r64;
+
         break;
     }
 }

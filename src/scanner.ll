@@ -97,6 +97,23 @@ stringstream _comment;
 "is"        { return IS; }
 "otherwise" { return OTHERWISE; }
 
+[0-9]+\.?[0-9]*i {
+    yylval.node = new nls::C128(new std::complex<double>(0, atof(yytext)));
+    return COMPLEX128;
+}
+[0-9]+\.?[0-9]*I {
+    yylval.node = new nls::C128(new std::complex<double>(0, atof(yytext)));
+    return COMPLEX128;
+}
+"c64" {
+    yylval.node = new nls::C64(new std::complex<float>(0,0));
+    return COMPLEX64;
+}
+"c128" {
+    yylval.node = new nls::C128(new std::complex<double>(0,0));
+    return COMPLEX128;
+}
+
 "true" {
     yylval.node = new nls::Bul(true);
     return BOOL;

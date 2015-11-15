@@ -21,11 +21,19 @@ union Value {
     int64_t i64;
     float r32;
     double r64;
+
+    std::complex<float>* c64;
+    std::complex<double>* c128;
+
     bxx::multi_array<bool>* bul_a;
     bxx::multi_array<int32_t>* i32_a;
     bxx::multi_array<int64_t>* i64_a;
     bxx::multi_array<float>* r32_a;
     bxx::multi_array<double>* r64_a;
+
+    bxx::multi_array<std::complex<float> >* c64_a;
+    bxx::multi_array<std::complex<double> >* c128_a;
+
     std::string* str;
 };
 typedef union Value Value;

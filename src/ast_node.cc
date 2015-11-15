@@ -90,38 +90,64 @@ string Node::txt(void)
     stringstream ss;
 
     switch(vtype()) {
-    case NLS_UND:
-        ss << "I have no idea what it is..." ;
-    case NLS_STR:
-        ss << *(value().str) ;
+
+    case NLS_BUL:
+        ss << boolalpha << value().bul;
         break;
     case NLS_I32:
-        ss << value().i32 ;
+        ss << value().i32;
         break;
     case NLS_I64:
-        ss << value().i64 ;
+        ss << value().i64;
         break;
     case NLS_R32:
-        ss << scientific <<value().r32 ;
+        ss << scientific << value().r32;
         break;
     case NLS_R64:
-        ss << scientific << value().r64 ;
+        ss << scientific << value().r64;
         break;
-    case NLS_BUL:
-        ss << boolalpha << value().bul ;
+
+    case NLS_C64:
+        ss << "(" << value().c64->real() << "+" << value().c64->imag() << "i)";
+        break;
+    case NLS_C128:
+        ss << "(" << value().c128->real() << "+" << value().c128->imag() << "I)";
         break;
 
     case NLS_BUL_A:
+        ss << *(value().bul_a);
         break;
     case NLS_I32_A:
+        ss << *(value().i32_a);
         break;
     case NLS_I64_A:
         ss << *(value().i64_a);
         break;
     case NLS_R32_A:
+        ss << *(value().r32_a);
         break;
     case NLS_R64_A:
+        ss << *(value().r64_a);
         break;
+
+    case NLS_C64_A:
+        ss << *(value().c64_a);
+        break;
+    case NLS_C128_A:
+        ss << *(value().c128_a);
+        break;
+
+    case NLS_STR:
+        ss << *(value().str) ;
+        break;
+
+    case NLS_UND:
+        ss << "I have no idea what the value of this is..." ;
+        break;
+
+    default:
+        ss << "You forgot something.";
+
     }
 
     return ss.str();

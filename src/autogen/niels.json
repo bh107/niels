@@ -26,13 +26,18 @@
    "operators": [
    ["arithmetic", "add", 2, {
             "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "*res->value().{res_t} = bh_add(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["bul_a", "bul_a", "bul_a"], 
+               ["c128_a", "c128_a", "c128_a"], 
+               ["c64_a", "c64_a", "c64_a"], 
+               ["i32_a", "i32_a", "i32_a"], 
+               ["i64_a", "i64_a", "i64_a"], 
+               ["r32_a", "r32_a", "r32_a"], 
+               ["r64_a", "r64_a", "r64_a"]]],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} + in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} + in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -62,13 +67,18 @@
          }], 
    ["arithmetic", "sub", 2, {
             "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "*res->value().{res_t} = bxx::bh_subtract(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["bul_a", "bul_a", "bul_a"], 
+               ["c128_a", "c128_a", "c128_a"], 
+               ["c64_a", "c64_a", "c64_a"], 
+               ["i32_a", "i32_a", "i32_a"], 
+               ["i64_a", "i64_a", "i64_a"], 
+               ["r32_a", "r32_a", "r32_a"], 
+               ["r64_a", "r64_a", "r64_a"]]],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} - in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} - in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -98,13 +108,18 @@
          }], 
    ["arithmetic", "mul", 2, {
             "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "*res->value().{res_t} = bxx::bh_multiply(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["bul_a", "bul_a", "bul_a"], 
+               ["c128_a", "c128_a", "c128_a"], 
+               ["c64_a", "c64_a", "c64_a"], 
+               ["i32_a", "i32_a", "i32_a"], 
+               ["i64_a", "i64_a", "i64_a"], 
+               ["r32_a", "r32_a", "r32_a"], 
+               ["r64_a", "r64_a", "r64_a"]]],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} * in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} * in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -134,13 +149,13 @@
          }], 
    ["arithmetic", "mod", 2, {
             "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "*res->value().{res_t} = bxx::bh_mod(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["i32_a", "i32_a", "i32_a"], 
+               ["i64_a", "i64_a", "i64_a"]]],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} % in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} % in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -153,14 +168,10 @@
                ["i64", "i64", "i64"]]]
          }], 
    ["arithmetic", "div", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} / in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} / in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -189,14 +200,10 @@
                ["r64", "r64", "r64"]]]
          }], 
    ["arithmetic", "pow", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "pow(in1->value().{in1_t}, in2->value().{in2_t})", 
+            "res->value().{res_t} = pow(in1->value().{in1_t}, in2->value().{in2_t})", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -225,14 +232,10 @@
                ["r64", "r64", "r64"]]]
          }], 
    ["comparison", "lthan", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} < in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} < in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["bul", "bul", "i32"], 
@@ -261,14 +264,10 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "gthan", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} > in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} > in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["bul", "bul", "i32"], 
@@ -297,14 +296,10 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "equal", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} == in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} == in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["bul", "bul", "i32"], 
@@ -333,14 +328,10 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "not_equal", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} != in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} != in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["bul", "bul", "i32"], 
@@ -369,14 +360,10 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "lthan_equal", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} <= in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} <= in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["bul", "bul", "i32"], 
@@ -405,14 +392,10 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "gthan_equal", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} >= in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} >= in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["bul", "bul", "i32"], 
@@ -441,14 +424,10 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["logical", "and", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} && in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} && in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["bul", "bul", "i32"], 
@@ -477,14 +456,10 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["logical", "or", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} || in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} || in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["bul", "bul", "i32"], 
@@ -513,14 +488,10 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["logical", "xor", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} || in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} || in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["bul", "bul", "i32"], 
@@ -549,14 +520,10 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["logical", "not", 1, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "!in1->value().{in1_t}", 
+            "res->value().{res_t} = !in1->value().{in1_t}", 
             [
                ["bul", "bul"], 
                ["bul", "i32"], 
@@ -565,14 +532,10 @@
                ["bul", "r64"]]]
          }], 
    ["bitwise", "bw_lshift", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} << in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} << in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -585,14 +548,10 @@
                ["i64", "i64", "i64"]]]
          }], 
    ["bitwise", "bw_rshift", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} >> in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} >> in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -605,14 +564,10 @@
                ["i64", "i64", "i64"]]]
          }], 
    ["bitwise", "bw_and", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} & in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} & in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -625,14 +580,10 @@
                ["i64", "i64", "i64"]]]
          }], 
    ["bitwise", "bw_or", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} | in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} | in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -645,14 +596,10 @@
                ["i64", "i64", "i64"]]]
          }], 
    ["bitwise", "bw_xor", 2, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "in1->value().{in1_t} ^ in2->value().{in2_t}", 
+            "res->value().{res_t} = in1->value().{in1_t} ^ in2->value().{in2_t}", 
             [
                ["bul", "bul", "bul"], 
                ["i32", "bul", "i32"], 
@@ -665,14 +612,10 @@
                ["i64", "i64", "i64"]]]
          }], 
    ["bitwise", "bw_not", 1, {
-            "array": [
-            "", 
-            []],
-            "complex": [
-            "", 
-            []],
+            "array": ["", []],
+            "complex": ["", []],
             "scalar": [
-            "~ in1->value().{in1_t}", 
+            "res->value().{res_t} = ~ in1->value().{in1_t}", 
             [
                ["bul", "bul"], 
                ["i32", "bul"], 
@@ -683,24 +626,56 @@
          }]],
    "vtype2ast": {
       "bul": "Bul",
+      "bul_a": "BulA",
+      "c128": "C128",
+      "c128_a": "C128A",
+      "c64": "C64",
+      "c64_a": "C64A",
       "i32": "I32",
+      "i32_a": "I32A",
       "i64": "I64",
+      "i64_a": "I64A",
       "r32": "R32",
-      "r64": "R64"
+      "r32_a": "R32A",
+      "r64": "R64",
+      "r64_a": "R64A"
    },
    "vtype2ctype": {
       "bul": "bool",
+      "bul_a": "bxx::multi_array<bool>*",
+      "c128": "std::complex<double>*",
+      "c128_a": "bxx::multi_array<std::complex<double> >*",
+      "c64": "std::complex<float>*",
+      "c64_a": "bxx::multi_array<std::complex<float> >*",
       "i32": "int32_t",
+      "i32_a": "bxx::multi_array<int32_t>*",
       "i64": "int64_t",
+      "i64_a": "bxx::multi_array<int64_t>*",
       "r32": "float",
-      "r64": "double"
+      "r32_a": "bxx::multi_array<float>*",
+      "r64": "double",
+      "r64_a": "bxx::multi_array<double>*"
    },
    "vtype2enum": {
       "bul": "NLS_BUL",
+      "bul_a": "NLS_BUL_A",
+      "c128": "NLS_C128",
+      "c128_a": "NLS_C128_A",
+      "c64": "NLS_C64",
+      "c64_a": "NLS_C64_A",
       "i32": "NLS_I32",
+      "i32_a": "NLS_I32_A",
       "i64": "NLS_I64",
+      "i64_a": "NLS_I64_A",
       "r32": "NLS_R32",
-      "r64": "NLS_R64"
+      "r32_a": "NLS_R32_A",
+      "r64": "NLS_R64",
+      "r64_a": "NLS_R64_A"
    },
-   "vtypes": ["bul", "i32", "i64", "r32", "r64"]
+   "vtypes": ["bul", "i32", "i64", "r32", "r64", "c64", "c128", "bul_a", "i32_a", "i64_a", "r32_a", "r64_a", "c64_a", "c128_a"],
+   "vtypes_grouped": {
+      "array": ["bul_a", "i32_a", "i64_a", "r32_a", "r64_a", "c64_a", "c128_a"],
+      "complex": ["c64", "c128"],
+      "scalar": ["bul", "i32", "i64", "r32", "r64"]
+   }
 }

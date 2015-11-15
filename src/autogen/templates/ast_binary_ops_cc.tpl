@@ -52,7 +52,40 @@ void ${op2node[op]}::eval(Driver& env)
     %>
     %for res_vtype, in1_vtype, in2_vtype in sigs:
     case (${vtype2enum[res_vtype]} << 32) + (${vtype2enum[in1_vtype]} << 16) + ${vtype2enum[in2_vtype]}:
-        res->value().${res_vtype} = ${expr.format(in1_t=in1_vtype, in2_t=in2_vtype)};
+        ${expr.format(res_t=res_vtype, in1_t=in1_vtype, in2_t=in2_vtype)};
+        break;
+    %endfor
+
+    <%
+    expr, sigs = exprs["array"]
+    %>
+    %for res_vtype, in1_vtype, in2_vtype in sigs:
+    case (${vtype2enum[res_vtype]} << 32) + (${vtype2enum[in1_vtype]} << 16) + ${vtype2enum[in2_vtype]}:
+        res->value().${res_vtype} = new ${vtype2ctype[res_vtype][:-1]}();
+
+        ${expr.format(res_t=res_vtype, in1_t=in1_vtype, in2_t=in2_vtype)};
+        res->value().${res_vtype}->setTemp(false);
+
+        if (in1->stype() == EXPR) {
+            delete in1->value().${in1_vtype};
+            in1->value().${in1_vtype} = NULL;
+        }
+        if (in2->stype() == EXPR) {
+            delete in2->value().${in2_vtype};
+            in2->value().${in2_vtype} = NULL;
+        }
+        break;
+    %endfor
+
+    <%
+    expr, sigs = exprs["complex"]
+    %>
+    %for res_vtype, in1_vtype, in2_vtype in sigs:
+    case (${vtype2enum[res_vtype]} << 32) + (${vtype2enum[in1_vtype]} << 16) + ${vtype2enum[in2_vtype]}:
+        res->value().${res_vtype} = new ${vtype2ctype[res_vtype][:-1]}();
+
+        ${expr.format(res_t=res_vtype, in1_t=in1_vtype, in2_t=in2_vtype)};
+
         break;
     %endfor
     

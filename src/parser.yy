@@ -73,10 +73,10 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 %token COLON        ":"
 %token SEMICOLON    ";"
 
-%token <node> COMMENT BOOL INT32 INT64 REAL32 REAL64 STRING IDENT
+%token <node> COMMENT BOOL INT32 INT64 REAL32 REAL64 COMPLEX64 COMPLEX128 STRING IDENT
 %token RETURN FUNCTION WHILE WHEN IS OTHERWISE RECORD
 
-%type <node> input block stmts stmt expr scalar val shape range ident
+%type <node> input block stmts stmt expr scalar val complex shape range ident
 %type <node> args param params function function_head function_body return
 %type <node> while when is otherwise cases
 %type <node> import
@@ -268,11 +268,26 @@ stmt:
 | import { $$ = $1; }
 ;
 
+complex:
+  COMPLEX64 { $$ = $1; }
+| COMPLEX128 { $$ = $1; }
+| COMPLEX64[c] LPAREN REAL64[r] COMMA REAL64[i] RPAREN {
+    $c->value().c64->real($r->value().r64);
+    $c->value().c64->imag($i->value().r64);
+    $$ = $c;
+}
+| COMPLEX128[c] LPAREN REAL64[r] COMMA REAL64[i] RPAREN {
+    $c->value().c128->real($r->value().r64);
+    $c->value().c128->imag($i->value().r64);
+    $$ = $c;
+}
+
 scalar:
   INT32  { $$ = $1; }
 | INT64  { $$ = $1; }
 | REAL32 { $$ = $1; }
 | REAL64 { $$ = $1; }
+| complex { $$ = $1; }
 | BOOL { $$ = $1; }
 ;
 
