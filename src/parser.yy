@@ -1,4 +1,3 @@
-%require "3.0.2"
 %define parse.error verbose
 %{
 #include <cinttypes>
