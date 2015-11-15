@@ -2,7 +2,6 @@
 import itertools
 import pprint
 import json as json
-import yaml
 
 def nls2json(obj, level=0):
     """A formatter easing the human readability of niels.json."""

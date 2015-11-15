@@ -29,6 +29,10 @@ addons:
       - bison
 
 script:
-  - pip install cython --user
-  - mkdir bdir && cd bdir && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j4 && make install
-  - source util/setenv.bash && make
+  - pip install --upgrade pip --user
+  - pip install mako --user
+  - source util/setenv.bash
+  - source util/deps.cmake.sh
+  - source util/deps.bison.sh
+  - source util/deps.bohrium.sh
+  - cd util && make
