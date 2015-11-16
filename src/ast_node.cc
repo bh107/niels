@@ -209,8 +209,48 @@ bool Node::known(void)
 }
 
 Node::~Node(void) {
-    if (vtype() == NLS_STR) {
-        delete _value.str;
+    switch(vtype()) {
+    case NLS_BUL_A:
+        if (_value.bul_a) {
+            delete _value.bul_a;
+            _value.bul_a = NULL;
+        }
+        break;
+
+    case NLS_I32_A:
+        if (_value.i32_a) {
+            delete _value.i32_a;
+            _value.i32_a = NULL;
+        }
+        break;
+
+    case NLS_I64_A:
+        if (_value.i64_a) {
+            delete _value.i64_a;
+            _value.i64_a = NULL;
+        }
+        break;
+
+    case NLS_R32_A:
+        if (_value.r32_a) {
+            delete _value.r32_a;
+            _value.r32_a = NULL;
+        }
+        break;
+
+    case NLS_R64_A:
+        if (_value.r64_a) {
+            delete _value.r64_a;
+            _value.r64_a = NULL;
+        }
+        break;
+
+    case NLS_STR:
+        if (_value.str) {
+            delete _value.str;
+        }
+        _value.str = NULL;
+        break;
     }
 }
 string Node::dot_shape(void) { return "box"; }

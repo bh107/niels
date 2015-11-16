@@ -99,7 +99,6 @@ void Driver::scopeEnd(void)
         parentScope = parentScope.substr(0, found);
         _symbolTable.scope(parentScope);
     }
-    
 }
 
 SymbolTable& Driver::symbolTable(void)

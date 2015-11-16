@@ -8,6 +8,16 @@ namespace nls {
 
 SymbolTable::SymbolTable(void) : _symbols(), _scope("root") {}
 
+SymbolTable::~SymbolTable(void)
+{
+    // Delete nodes in symboltable
+    for(map<string, Node*>::iterator it=_symbols.begin();
+        it != _symbols.end();
+        ++it) {
+        delete it->second;
+    }
+}
+
 Node* SymbolTable::getIdent(Node* node)
 {
     stringstream scopedIdent;

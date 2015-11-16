@@ -26,15 +26,23 @@ void ${op2node[op]}::eval(Driver& env)
     VType in1_t = in1->vtype();
     uint64_t mask = (res_t << 16) + in1_t;
     switch(mask) {
-    %for etype in exprs:
+    
     <%
-    expr, sigs = exprs[etype]
+    expr, sigs = exprs["kk"]
     %>
     %for res_vtype, in1_vtype in sigs:
     case (${vtype2enum[res_vtype]} << 16) + ${vtype2enum[in1_vtype]}:
         ${expr.format(res_t=res_vtype, in1_t=in1_vtype)};
         break;
     %endfor
+
+    <%
+    expr, sigs = exprs["aa"]
+    %>
+    %for res_vtype, in1_vtype in sigs:
+    case (${vtype2enum[res_vtype]} << 16) + ${vtype2enum[in1_vtype]}:
+        ${expr.format(res_t=res_vtype, in1_t=in1_vtype)};
+        break;
     %endfor
 
     default:

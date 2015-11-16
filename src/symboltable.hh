@@ -13,6 +13,7 @@ namespace nls {
 class SymbolTable {
 public:
     SymbolTable(void);
+    ~SymbolTable(void);
 
     Node* lookup(std::string ident);
 
