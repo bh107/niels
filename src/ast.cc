@@ -52,11 +52,39 @@ void Query::eval(Driver& env)
         break;
     case EXPR:
         switch(exprNode->vtype()) {
+        case NLS_BUL_A:
+            delete exprNode->value().bul_a;
+            exprNode->value().bul_a = NULL;
+            break;
+
+        case NLS_I32_A:
+            delete exprNode->value().i32_a;
+            exprNode->value().r32_a = NULL;
+            break;
+        case NLS_I64_A:
+            delete exprNode->value().i64_a;
+            exprNode->value().r64_a = NULL;
+            break;
+
+        case NLS_R32_A:
+            delete exprNode->value().r32_a;
+            exprNode->value().r32_a = NULL;
+            break;
         case NLS_R64_A:
             delete exprNode->value().r64_a;
             exprNode->value().r64_a = NULL;
             break;
+
+        case NLS_C64_A:
+            delete exprNode->value().c64_a;
+            exprNode->value().c64_a = NULL;
+            break;
+        case NLS_C128_A:
+            delete exprNode->value().c128_a;
+            exprNode->value().c128_a = NULL;
+            break;
         }
+
         break;
     default:
         break;
@@ -99,18 +127,29 @@ void As::eval(Driver& env)
 
     switch(vtype()) {   // Construct the array operation
     case NLS_BUL_A:
+        _value.bul_a = new bul_a_type((const uint64_t)rank, (const int64_t*)shape);
+        _value.bul_a->link();
+        *(_value.bul_a) = left()->value().bul;
         break;
     case NLS_I32_A:
+        _value.i32_a = new i32_a_type((const uint64_t)rank, (const int64_t*)shape);
+        _value.i32_a->link();
+        *(_value.i32_a) = left()->value().i32;
         break;
     case NLS_I64_A:
+        _value.i64_a = new i64_a_type((const uint64_t)rank, (const int64_t*)shape);
+        _value.i64_a->link();
+        *(_value.i64_a) = left()->value().i64;
         break;
     case NLS_R32_A:
+        _value.r32_a = new r32_a_type((const uint64_t)rank, (const int64_t*)shape);
+        _value.r32_a->link();
+        *(_value.r32_a) = left()->value().r32;
         break;
     case NLS_R64_A:
         _value.r64_a = new r64_a_type((const uint64_t)rank, (const int64_t*)shape);
         _value.r64_a->link();
         *(_value.r64_a) = left()->value().r64;
-
         break;
     }
 }

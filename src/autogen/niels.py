@@ -175,65 +175,109 @@ nls = {
         }),
         ("arithmetic", "div", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} / in2->value().{in2_t}", binary_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_divide(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                binary_repeat_sigs(vtypes_grouped["array"][1:])
+            ),
+            "complex":  ("", []),
         }),
         ("arithmetic", "pow", 2, {
             "scalar":   ("res->value().{res_t} = pow(in1->value().{in1_t}, in2->value().{in2_t})",  binary_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_divide(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                binary_repeat_sigs(vtypes_grouped["array"][1:])
+            ),
+            "complex":  ("", []),
         }),
 
         ("comparison", "lthan", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} < in2->value().{in2_t}",  binary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_less(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3])]
+            ),
+            "complex":  ("", []),
         }),
+
         ("comparison", "gthan", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} > in2->value().{in2_t}",  binary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_greater(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3])]
+            ),
+            "complex":  ("", []),
         }),
+
         ("comparison", "equal", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} == in2->value().{in2_t}", binary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_equal(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3])]
+            ),
+            "complex":  ("", []),
         }),
+
         ("comparison", "not_equal", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} != in2->value().{in2_t}", binary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_not_equal(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3])]
+            ),
+            "complex":  ("", []),
         }),
+
         ("comparison", "lthan_equal", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} <= in2->value().{in2_t}", binary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_less_equal(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3])]
+            ),
+            "complex":  ("", []),
         }),
+
         ("comparison", "gthan_equal", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} >= in2->value().{in2_t}", binary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_greater_equal(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3])]
+            ),
+            "complex":  ("", []),
         }),
 
         ("logical", "and", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} && in2->value().{in2_t}", binary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_logical_and(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                [("bul_a", "bul_a", "bul_a")]
+            ),
+            "complex":  ("", []),
         }),
+        
         ("logical", "or", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} || in2->value().{in2_t}", binary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_logical_or(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                [("bul_a", "bul_a", "bul_a")]
+            ),
+            "complex":  ("", []),
         }),
+
         ("logical", "xor", 2, {
             "scalar":   ("res->value().{res_t} = in1->value().{in1_t} || in2->value().{in2_t}", binary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_logical_xor(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                [("bul_a", "bul_a", "bul_a")]
+            ),
+            "complex":  ("", []),
         }),
+
         ("logical", "not", 1, {
             "scalar":   ("res->value().{res_t} = !in1->value().{in1_t}", unary_logic_sigs(vtypes_grouped["scalar"])),
-            "array":    ("", []),
-            "complex":  ("", [])
+            "array":    (
+                "*res->value().{res_t} = bxx::bh_logical_not(*in1->value().{in1_t})",
+                [("bul_a", "bul_a")]
+            ),
+            "complex":  ("", []),
         }),
 
         ("bitwise", "bw_lshift", 2, {
@@ -241,6 +285,7 @@ nls = {
             "array":    ("", []),
             "complex":  ("", [])
         }),
+
         ("bitwise", "bw_rshift", 2, {
             "scalar": ("res->value().{res_t} = in1->value().{in1_t} >> in2->value().{in2_t}", binary_sigs(vtypes_grouped["scalar"][0:3])),
             "array":    ("", []),
@@ -252,16 +297,19 @@ nls = {
             "array":    ("", []),
             "complex":  ("", [])
         }),
+
         ("bitwise", "bw_or", 2, {
             "scalar": ("res->value().{res_t} = in1->value().{in1_t} | in2->value().{in2_t}", binary_sigs(vtypes_grouped["scalar"][0:3])),
             "array":    ("", []),
             "complex":  ("", [])
         }),
+
         ("bitwise", "bw_xor", 2, {
             "scalar": ("res->value().{res_t} = in1->value().{in1_t} ^ in2->value().{in2_t}", binary_sigs(vtypes_grouped["scalar"][0:3])),
             "array":    ("", []),
             "complex":  ("", [])
         }),
+
         ("bitwise", "bw_not", 1, {
             "scalar": ("res->value().{res_t} = ~ in1->value().{in1_t}", unary_sigs(vtypes_grouped["scalar"][0:3])),
             "array":    ("", []),

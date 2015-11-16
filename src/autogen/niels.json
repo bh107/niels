@@ -168,7 +168,15 @@
                ["i64", "i64", "i64"]]]
          }], 
    ["arithmetic", "div", 2, {
-            "array": ["", []],
+            "array": [
+            "*res->value().{res_t} = bxx::bh_divide(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["c128_a", "c128_a", "c128_a"], 
+               ["c64_a", "c64_a", "c64_a"], 
+               ["i32_a", "i32_a", "i32_a"], 
+               ["i64_a", "i64_a", "i64_a"], 
+               ["r32_a", "r32_a", "r32_a"], 
+               ["r64_a", "r64_a", "r64_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} / in2->value().{in2_t}", 
@@ -200,7 +208,15 @@
                ["r64", "r64", "r64"]]]
          }], 
    ["arithmetic", "pow", 2, {
-            "array": ["", []],
+            "array": [
+            "*res->value().{res_t} = bxx::bh_divide(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["c128_a", "c128_a", "c128_a"], 
+               ["c64_a", "c64_a", "c64_a"], 
+               ["i32_a", "i32_a", "i32_a"], 
+               ["i64_a", "i64_a", "i64_a"], 
+               ["r32_a", "r32_a", "r32_a"], 
+               ["r64_a", "r64_a", "r64_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = pow(in1->value().{in1_t}, in2->value().{in2_t})", 
@@ -232,7 +248,11 @@
                ["r64", "r64", "r64"]]]
          }], 
    ["comparison", "lthan", 2, {
-            "array": ["", []],
+            "array": [
+            "*res->value().{res_t} = bxx::bh_less(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["bul_a", "i32_a", "i32_a"], 
+               ["bul_a", "i64_a", "i64_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} < in2->value().{in2_t}", 
@@ -264,7 +284,11 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "gthan", 2, {
-            "array": ["", []],
+            "array": [
+            "*res->value().{res_t} = bxx::bh_greater(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["bul_a", "i32_a", "i32_a"], 
+               ["bul_a", "i64_a", "i64_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} > in2->value().{in2_t}", 
@@ -296,7 +320,11 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "equal", 2, {
-            "array": ["", []],
+            "array": [
+            "*res->value().{res_t} = bxx::bh_equal(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["bul_a", "i32_a", "i32_a"], 
+               ["bul_a", "i64_a", "i64_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} == in2->value().{in2_t}", 
@@ -328,7 +356,11 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "not_equal", 2, {
-            "array": ["", []],
+            "array": [
+            "*res->value().{res_t} = bxx::bh_not_equal(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["bul_a", "i32_a", "i32_a"], 
+               ["bul_a", "i64_a", "i64_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} != in2->value().{in2_t}", 
@@ -360,7 +392,11 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "lthan_equal", 2, {
-            "array": ["", []],
+            "array": [
+            "*res->value().{res_t} = bxx::bh_less_equal(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["bul_a", "i32_a", "i32_a"], 
+               ["bul_a", "i64_a", "i64_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} <= in2->value().{in2_t}", 
@@ -392,7 +428,11 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["comparison", "gthan_equal", 2, {
-            "array": ["", []],
+            "array": [
+            "*res->value().{res_t} = bxx::bh_greater_equal(*in1->value().{in1_t}, *in2->value().{in2_t})", 
+            [
+               ["bul_a", "i32_a", "i32_a"], 
+               ["bul_a", "i64_a", "i64_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} >= in2->value().{in2_t}", 
@@ -424,7 +464,8 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["logical", "and", 2, {
-            "array": ["", []],
+            "array": ["*res->value().{res_t} = bxx::bh_logical_and(*in1->value().{in1_t}, *in2->value().{in2_t})", [
+               ["bul_a", "bul_a", "bul_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} && in2->value().{in2_t}", 
@@ -456,7 +497,8 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["logical", "or", 2, {
-            "array": ["", []],
+            "array": ["*res->value().{res_t} = bxx::bh_logical_or(*in1->value().{in1_t}, *in2->value().{in2_t})", [
+               ["bul_a", "bul_a", "bul_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} || in2->value().{in2_t}", 
@@ -488,7 +530,8 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["logical", "xor", 2, {
-            "array": ["", []],
+            "array": ["*res->value().{res_t} = bxx::bh_logical_xor(*in1->value().{in1_t}, *in2->value().{in2_t})", [
+               ["bul_a", "bul_a", "bul_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = in1->value().{in1_t} || in2->value().{in2_t}", 
@@ -520,7 +563,8 @@
                ["bul", "r64", "r64"]]]
          }], 
    ["logical", "not", 1, {
-            "array": ["", []],
+            "array": ["*res->value().{res_t} = bxx::bh_logical_not(*in1->value().{in1_t})", [
+               ["bul_a", "bul_a"]]],
             "complex": ["", []],
             "scalar": [
             "res->value().{res_t} = !in1->value().{in1_t}", 
