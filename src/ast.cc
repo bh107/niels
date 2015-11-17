@@ -214,7 +214,40 @@ Alias::Alias(Node* left, Node* right) : Node(left, right) {
 }
 string Alias::dot_label(void) { return "Alias"; }
 
-Range::Range(bool lb_open, bool ub_open, Node* left, Node* right) : Node(left, right) {}
+Range::Range(bool lb_open, bool ub_open, Node* left, Node* right)
+    : Node(left, right), _lb_open(lb_open), _ub_open(ub_open)
+{
+    vtype(NLS_I64_A);
+    stype(EXPR);
+
+    if ((left->vtype() != NLS_I64) || (right->vtype() != NLS_I64)) {
+        throw logic_error("Booo");
+    }
+}
+void Range::eval(Driver& env)
+
+{
+    int64_t lower = left()->value().i64;
+    if (_lb_open) {
+        lower++;
+    }
+    int64_t upper = right()->value().i64;
+    if (_ub_open) {
+        upper--;
+    }
+
+    int64_t nelements = upper-lower+1;
+    uint64_t rank = 1;
+    int64_t shape[16];
+    shape[0] = nelements;
+
+    value().i64_a = new bxx::multi_array<int64_t>((const uint64_t)rank, (const int64_t*)shape);
+    value().i64_a->link();
+    bxx::bh_range(*value().i64_a);
+    value().i64_a->setTemp(false);
+
+    bxx::bh_add(*value().i64_a, *value().i64_a, lower);
+}
 string Range::dot_label(void) { return "Range"; }
 string Range::dot_shape(void) { return "trapezium"; }
 

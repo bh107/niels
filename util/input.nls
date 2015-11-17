@@ -1,5 +1,6 @@
-/*
-    Fancy smansy fancy
-*/
+n <- 10
 
-? 1 as (3,3) lshift 4
+? [0..n]
+? ]0..n]
+? [0..n[
+? ]0..n[

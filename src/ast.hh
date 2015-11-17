@@ -69,8 +69,13 @@ class Range : public Node {
 public:
     Range(bool lb_open, bool ub_open, Node* left, Node* right);
 
+    void eval(Driver& env);
     std::string dot_label(void);
     std::string dot_shape(void);
+
+private:
+    bool _lb_open;
+    bool _ub_open;
 };
 
 class Args : public Node {

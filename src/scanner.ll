@@ -84,6 +84,7 @@ stringstream _comment;
 "}"     { return RBRACE; }
 ":"     { return COLON; }
 ";"     { return SEMICOLON; }
+".."    { return DOTDOT; }
 
 "import" { return IMPORT; }
 

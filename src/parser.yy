@@ -71,6 +71,7 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 %token COMMA        ","
 %token COLON        ":"
 %token SEMICOLON    ";"
+%token DOTDOT       ".."
 
 %token <node> COMMENT BOOL INT32 INT64 REAL32 REAL64 COMPLEX64 COMPLEX128 STRING IDENT
 %token RETURN FUNCTION WHILE WHEN IS OTHERWISE RECORD
@@ -304,19 +305,19 @@ shape:
 ;
 
 range:
-  LBRACK expr SEMICOLON expr RBRACK {
+  LBRACK expr DOTDOT expr RBRACK {
     $$ = new nls::Range(false, false, $2, $4);
 }
-| LBRACK expr SEMICOLON expr LBRACK {
+| LBRACK expr DOTDOT expr LBRACK {
     $$ = new nls::Range(false, true, $2, $4);
 }
-| RBRACK expr SEMICOLON expr RBRACK {
+| RBRACK expr DOTDOT expr RBRACK {
     $$ = new nls::Range(true, false, $2, $4);
 }
-| RBRACK expr SEMICOLON expr LBRACK {
+| RBRACK expr DOTDOT expr LBRACK {
     $$ = new nls::Range(true, true, $2, $4);
 }
-| expr SEMICOLON expr {
+| expr DOTDOT expr {
     $$ = new nls::Range(false, false, $1, $3);
 }
 ;
@@ -420,6 +421,7 @@ expr:
 
 | val AS LPAREN shape RPAREN {      $$ = new nls::As($1, $4);   }
 | ident AS LPAREN shape RPAREN {    $$ = new nls::As($1, $4);   }
+| range AS LPAREN shape RPAREN {    $$ = new nls::As($1, $4);   }
 ;
 
 %%
