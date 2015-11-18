@@ -158,9 +158,9 @@ public:
     std::string dot_shape(void);
 };
 
-class RecDef : public Node {
+class Record : public Node {
 public:
-    RecDef(Node* left, Node* right);
+    Record(Node* left);
 
     std::string dot_label(void);
     std::string dot_shape(void);

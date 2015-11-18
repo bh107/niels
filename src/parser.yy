@@ -91,14 +91,13 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 %type <node> range
 %type <node> ident
 %type <node> input
-%type <node> args
-%type <node> function function_head function_body params param
 %type <node> return
 %type <node> while
 %type <node> when is otherwise cases
 %type <node> import
-//%type <node> record attr attrs
-//%type <node> scopeBegin
+%type <node> args
+%type <node> function function_head function_body params param
+%type <node> record record_head record_body attr attrs
 %type <node> scopeEnd
 
 %%
@@ -110,14 +109,6 @@ input:
     env.ast($$);
 }
 ;
-
-/*
-scopeBegin:
-  %empty {
-    env.scopeBegin("anon");
-}
-;
-*/
 
 scopeEnd:
   %empty {
@@ -277,9 +268,8 @@ ident:
 }
 ;
 
-/*
 attr:
-  ident[id] ASSIGN scalar[s] NL {
+  ident[id] ASSIGN scalar[s] {
     assert_undefined(env, $id);
     $$ = new nls::Attr($id, $s);
     env.symbolTable().put($id->name(), $$);
@@ -289,20 +279,34 @@ attr:
 attrs:
   %empty { $$ = new nls::Empty(); }
 | attr { $$ = new nls::AttrList($1); }
-| attrs attr {
-    $1->right(new nls::AttrList($2));
+| attrs NL attr {
+    $1->right(new nls::AttrList($3));
     $$ = $1;
 }
 ;
 
-record: RECORD ident[id] scopeBegin LBRACE NL attrs[a] RBRACE scopeEnd {
-        assert_undefined(env, $id);
-        
-        $$ = new nls::RecDef($id, $a);
-        env.symbolTable().put($id->name(), $$);
-    }
+record_head:
+  RECORD ident[id] {
+    assert_undefined(env, $id);
+
+    $$ = new nls::Record($id);
+    env.symbolTable().put($id->name(), $$);
+    env.scopeBegin($id->name());
+}
 ;
-*/
+
+record_body:
+  LBRACE NL attrs[a] NL RBRACE {
+    $$ = $a;
+}
+;
+
+record:
+  record_head[r] record_body[b] scopeEnd {
+    $r->right($b);
+    $$ = $r;
+}
+;
 
 param: ident[id] {
         assert_undefined(env, $id);
@@ -416,7 +420,7 @@ stmt:
     }
 }
 | function { $$ = $1; }
-//| record { $$ = $1; }
+| record { $$ = $1; }
 | return { $$ = $1; }
 | while { $$ = $1; }
 | when { $$ = $1; }

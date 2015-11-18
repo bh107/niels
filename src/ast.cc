@@ -305,9 +305,11 @@ AttrList::AttrList(Node* left) : Node(left) {}
 string AttrList::dot_label(void) { return "AttrList"; }
 string AttrList::dot_shape(void) { return "parallelogram"; }
 
-RecDef::RecDef(Node* left, Node* right) : Node(left, right) {}
-string RecDef::dot_label(void) { return "RecDef"; }
-string RecDef::dot_shape(void) { return "parallelogram"; }
+Record::Record(Node* left) : Node(left) {
+    stype(REC);
+}
+string Record::dot_label(void) { return "Record"; }
+string Record::dot_shape(void) { return "parallelogram"; }
 
 Collection::Collection(Node* left, Node* right) : Node(left, right) { }
 string Collection::dot_label(void) { return "Collection"; }
