@@ -1,4 +1,1 @@
-record jazz {
-    foo <- i32
-    bar <- r64
-}
+? 3

@@ -26,6 +26,7 @@ string VType_text(VType vtype)
         case NLS_C128_A: return "c128[]";
 
         case NLS_STR: return "string";
+        default: return "FORGOTTEN vtype!";
     }
 }
 
@@ -35,9 +36,13 @@ string SType_text(SType stype)
         case VAR:       return "variable";
         case FUN:       return "function";
         case REC:       return "record";
+        case ATTR:      return "attribute";
+        case ARG:       return "argument";
+        case PARAM:     return "parameter";
         case MOD:       return "module";
         case COLL:      return "collection";
         case UNKNOWN:   return "unknown";
+        default: return "FORGOTTEN stype!";
     }
 }
 

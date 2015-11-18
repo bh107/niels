@@ -77,7 +77,7 @@ string Node::dot(void)
     stringstream ss;
     ss << "N" << this << "[";
     ss << "style=filled" << ",";
-    ss << "label=" << dot_label() << ",";
+    ss << "label=\"" << dot_label() << "\",";
     ss << "shape=" << dot_shape() << ",";
     ss << "fillcolor=\"" << dot_color() << "\"";
     ss << "]" << endl;

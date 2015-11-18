@@ -86,12 +86,12 @@ void Driver::error(int yylineno, const std::string& m)
     std::cerr << "Error near line " << yylineno << ": " << m << endl;
 }
 
-void Driver::scopeBegin(const std::string& val)
+void Driver::createScope(const std::string& val)
 {
     _symbolTable.scope(_symbolTable.scope()+"::"+val);
 }
 
-void Driver::scopeEnd(void)
+void Driver::exitScope(void)
 {
     string parentScope = _symbolTable.scope();
     size_t found = parentScope.rfind("::");

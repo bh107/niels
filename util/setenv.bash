@@ -7,6 +7,7 @@ if [ -d "doc" ] && [ -d "src" ] && [ -d "pygments" ] && [ -d "testing" ] && [ -d
    then
       echo "Updating PATH to include $PWD"
       export PATH="$PWD/util/build/":"$PATH"
+      export PATH="$PWD/bin/":"$PATH"
    else
       echo "Error: setenv must be sourced from within the Benchpress root directory"
 fi

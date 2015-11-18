@@ -67,10 +67,13 @@ typedef enum VType VType;
 enum SType : uint32_t {
     UNKNOWN,
 
-    VAR,
     EXPR,
+    VAR,
     REC,
+    ATTR,
     FUN,
+    ARG,
+    PARAM,
     MOD,
     COLL
 };
@@ -106,7 +109,7 @@ public:
 
     std::string dot(void);
     std::string dot_relation(void);
-    std::string txt(void);
+    virtual std::string txt(void);
 
     std::string& name(void);
     void name(const std::string& val);

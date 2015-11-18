@@ -27,8 +27,8 @@ public:
     void ast(Node* node);
     Node* ast(void);
 
-    void scopeBegin(const std::string& name);
-    void scopeEnd();
+    void createScope(const std::string& name);
+    void exitScope(void);
 
     bool traceScanning(void);
     bool traceParsing(void);

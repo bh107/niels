@@ -162,6 +162,15 @@ class Record : public Node {
 public:
     Record(Node* left);
 
+    std::string txt(void);
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Accessor : public Node {
+public:
+    Accessor(Node* left, Node* right);
+
     std::string dot_label(void);
     std::string dot_shape(void);
 };

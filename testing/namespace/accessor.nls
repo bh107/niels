@@ -1,0 +1,6 @@
+record foo {
+    jane <- i32
+    john <- r64
+}
+
+//? foo

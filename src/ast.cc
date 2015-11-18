@@ -16,8 +16,10 @@ string Comment::dot_label(void) { return "Comment"; }
 string Comment::dot_shape(void) { return "box"; }
 
 Str::Str(const char* val) : Node() {
-    _value.str = new string(val);
+    // Leading and ending " and ' are stripped from input
+    _value.str = new string(val+1, strlen(val)-2);
     _vtype = NLS_STR;
+    _stype = EXPR;
 }
 string Str::dot_label(void) { return *_value.str; }
 string Str::dot_shape(void) { return "house"; }
@@ -42,9 +44,23 @@ Query::Query(Node* left) : Node(left) {}
 void Query::eval(Driver& env)
 {
     Node* exprNode = left();
-    
-    cout << exprNode->txt() << endl;
-    
+
+    //
+    // Grab the textual representation of expr
+    switch(exprNode->stype()) {
+    case VAR:
+        cout << exprNode->txt() << endl;
+        break;
+    case EXPR:
+        cout << exprNode->txt() << endl;
+        break;
+    case REC:
+    default:
+        cout << "Don't know what to do about this thing..." << endl;
+    }
+
+    //
+    // Cleanup    
     switch(exprNode->stype()) {
     case VAR:
     case FUN:
@@ -255,7 +271,9 @@ Shape::Shape(Node* left) : Node(left) {}
 string Shape::dot_label(void) { return "Shape"; }
 string Shape::dot_shape(void) { return "trapezium"; }
 
-Args::Args(Node* left) : Node(left) {}
+Args::Args(Node* left) : Node(left) {
+    stype(ARG);
+}
 string Args::dot_label(void) { return "Args"; }
 string Args::dot_shape(void) { return "diamond"; }
 
@@ -264,6 +282,7 @@ Param::Param(Node* left, Node* right) : Node(left, right) {
         left->vtype(right->vtype());    
     }
     vtype(right->vtype());
+    stype(PARAM);
 }
 string Param::dot_label(void) { return "Param"; }
 string Param::dot_shape(void) { return "diamond"; }
@@ -297,6 +316,7 @@ string FunctionBody::dot_shape(void) { return "parallelogram"; }
 Attr::Attr(Node* left, Node* right) : Node(left, right) {
     left->vtype(right->vtype());
     vtype(right->vtype());
+    stype(ATTR);
 }
 string Attr::dot_label(void) { return "Attr"; }
 string Attr::dot_shape(void) { return "parallelogram"; }
@@ -307,9 +327,19 @@ string AttrList::dot_shape(void) { return "parallelogram"; }
 
 Record::Record(Node* left) : Node(left) {
     stype(REC);
+    name(left->name());
 }
 string Record::dot_label(void) { return "Record"; }
 string Record::dot_shape(void) { return "parallelogram"; }
+string Record::txt(void) {
+    stringstream ss;
+    ss << "record";
+    return ss.str();
+}
+
+Accessor::Accessor(Node* left, Node* right) : Node(left, right) { }
+string Accessor::dot_label(void) { return "Accessor"; }
+string Accessor::dot_shape(void) { return "parallelogram"; }
 
 Collection::Collection(Node* left, Node* right) : Node(left, right) { }
 string Collection::dot_label(void) { return "Collection"; }

@@ -38,6 +38,7 @@ stringstream _comment;
 }
 
 [ \t]   ; // Ignore whitespace
+\/\/.*  ; // Ignore single-line comments
 "@"     { return AT; }
 "?"     { return QUERY; }
 
@@ -85,6 +86,7 @@ stringstream _comment;
 ":"     { return COLON; }
 ";"     { return SEMICOLON; }
 ".."    { return DOTDOT; }
+"."     { return DOT; }
 
 "import" { return IMPORT; }
 
@@ -145,11 +147,7 @@ stringstream _comment;
     return INT64;
 }
 
-\".+\" {
-    yylval.node = new nls::Str(yytext);
-    return STRING;
-}
-'[a-zA-Z0-9]+' {
+\"[^\"]*\" {
     yylval.node = new nls::Str(yytext);
     return STRING;
 }

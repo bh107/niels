@@ -18,7 +18,7 @@ extern "C++" int yyparse(nls::Driver& env);
 extern "C++" FILE *yyin;
 
 extern "C++" void yyerror(nls::Driver& env, const char *s);
-extern "C++" void assert_defined(nls::Driver& env, nls::Node* node);
+extern "C++" void assert_known(nls::Driver& env, nls::Node* node);
 extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 
 %}
@@ -73,6 +73,7 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 %token COLON        ":"
 %token SEMICOLON    ";"
 %token DOTDOT       ".."
+%token DOT          "."
 %token <node> COMMENT BOOL INT32 INT64 REAL32 REAL64
 %token <node> COMPLEX64 COMPLEX128
 %token <node> STRING IDENT
@@ -80,17 +81,17 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 
 %left LPAREN
 
-%type <node> block
-%type <node> noop
-%type <node> stmts
-%type <node> stmt
-%type <node> expr
+%type <node> input
 %type <node> scalar
 %type <node> val
 %type <node> shape
 %type <node> range
 %type <node> ident
-%type <node> input
+%type <node> noop
+%type <node> expr
+%type <node> block
+%type <node> stmts
+%type <node> stmt
 %type <node> return
 %type <node> while
 %type <node> when is otherwise cases
@@ -98,7 +99,8 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 %type <node> args
 %type <node> function function_head function_body params param
 %type <node> record record_head record_body attr attrs
-%type <node> scopeEnd
+%type <node> accessor
+%type <node> exitScope
 
 %%
 
@@ -110,9 +112,9 @@ input:
 }
 ;
 
-scopeEnd:
+exitScope:
   %empty {
-    env.scopeEnd();
+    env.exitScope();
 }
 ;
 
@@ -147,7 +149,7 @@ return:
 ;
 
 function_body:
-  LPAREN params[p] RPAREN block[b] scopeEnd {
+  LPAREN params[p] RPAREN block[b] {
     $$ = new nls::FunctionDef($p, $b);
 }
 ;
@@ -158,11 +160,11 @@ function_head:
 
     $$ = new nls::Function($id);
     env.symbolTable().put($id->name(), $$);
-    env.scopeBegin($id->name());
+    env.createScope($id->name());
 }
 
 function:
-  function_head[h] function_body[b] scopeEnd {
+  function_head[h] function_body[b] exitScope {
     $h->right($b);
     $$ = $h;
 }
@@ -285,24 +287,24 @@ attrs:
 }
 ;
 
-record_head:
-  RECORD ident[id] {
-    assert_undefined(env, $id);
-
-    $$ = new nls::Record($id);
-    env.symbolTable().put($id->name(), $$);
-    env.scopeBegin($id->name());
-}
-;
-
 record_body:
   LBRACE NL attrs[a] NL RBRACE {
     $$ = $a;
 }
 ;
 
+record_head:
+  RECORD ident[id] {
+    assert_undefined(env, $id);
+
+    $$ = new nls::Record($id);
+    env.symbolTable().put($id->name(), $$);
+    env.createScope($id->name());
+}
+;
+
 record:
-  record_head[r] record_body[b] scopeEnd {
+  record_head[r] record_body[b] exitScope {
     $r->right($b);
     $$ = $r;
 }
@@ -335,17 +337,29 @@ args: %empty { $$ = new nls::Args(new nls::Empty()); }
     }
 ;
 
+accessor:
+  ident DOT ident {
+    $$ = new nls::Accessor($1, $3);
+}
+| accessor DOT ident {
+    $1->left()->name() += "::"+ $1->right()->name();
+    $1->right($3);
+    $$ = $1; 
+}
+;
+
 expr:
   val { $$ = $1; }
 | ident {
-    assert_defined(env, $1);
+    assert_known(env, $1);
     $$ = $1;
 }
 | range { $$ = $1; }
 | expr LPAREN args RPAREN {
-    assert_defined(env, $1);
+    assert_known(env, $1);
     $$ = new nls::Call($1, $3);
 }
+| accessor { $$ = $1; }
 | LPAREN expr RPAREN { $$ = $2; }
 | expr ADD expr  { $$ = new nls::Add($1, $3); }
 | expr SUB expr  { $$ = new nls::Sub($1, $3); }
@@ -408,7 +422,7 @@ stmt:
     }
 }
 | ident ALIAS ident {
-    assert_defined(env, $3);
+    assert_known(env, $3);
 
     try {
         if (!$1->defined()) {   // Add Alias to symbol table
@@ -435,8 +449,8 @@ void yyerror(nls::Driver& env, const char *s) {
     exit(-1);
 }
 
-void assert_defined(nls::Driver& env, nls::Node* node) {
-    if (!node->defined()) {
+void assert_known(nls::Driver& env, nls::Node* node) {
+    if (!node->known()) {
         stringstream ss;
         ss << "Identifier(" << node->name() << ") is not defined";
         yyerror(env, ss.str().c_str());
