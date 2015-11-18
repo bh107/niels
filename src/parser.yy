@@ -27,9 +27,6 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
     nls::Node*   node;
     char* str;
 }
-%right <operator> ALIAS     "="
-%right <operator> ASSIGN    "<-"
-%right <operator> AS        "as"
 
 %left <operator> ADD "+"
 %left <operator> SUB "-"
@@ -57,6 +54,10 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 %left <operator> BW_LSHIFT  "lshift"
 %left <operator> BW_RSHIFT  "rshift"
 
+%right <operator> AS "as"
+%right <operator> ALIAS     "="
+%right <operator> ASSIGN    "<-"
+
 %right <operator> QUERY "?"
 %right <operator> AT    "@"
 
@@ -72,16 +73,33 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 %token COLON        ":"
 %token SEMICOLON    ";"
 %token DOTDOT       ".."
-
-%token <node> COMMENT BOOL INT32 INT64 REAL32 REAL64 COMPLEX64 COMPLEX128 STRING IDENT
+%token <node> COMMENT BOOL INT32 INT64 REAL32 REAL64
+%token <node> COMPLEX64 COMPLEX128
+%token <node> STRING IDENT
 %token RETURN FUNCTION WHILE WHEN IS OTHERWISE RECORD
 
-%type <node> input block stmts stmt expr scalar val complex shape range ident
-%type <node> args param params function function_head function_body return
-%type <node> while when is otherwise cases
+%left LPAREN
+
+%type <node> block
+%type <node> noop
+%type <node> stmts
+%type <node> stmt
+%type <node> expr
+%type <node> scalar
+%type <node> val
+%type <node> shape
+%type <node> range
+%type <node> ident
+%type <node> input
+%type <node> args
+%type <node> function function_head function_body params param
+%type <node> return
+%type <node> while
+%type <node> when is otherwise cases
 %type <node> import
-%type <node> record attr attrs noop
-%type <node> scopeBegin scopeEnd
+//%type <node> record attr attrs
+//%type <node> scopeBegin
+%type <node> scopeEnd
 
 %%
 
@@ -93,11 +111,13 @@ input:
 }
 ;
 
+/*
 scopeBegin:
   %empty {
     env.scopeBegin("anon");
 }
 ;
+*/
 
 scopeEnd:
   %empty {
@@ -123,9 +143,6 @@ block:
 }
 | LBRACE expr[e] RBRACE {
     $$ = new nls::Block(new nls::Anon(), $e);
-}
-| LBRACE stmt[s] RBRACE {
-    $$ = new nls::Block(new nls::Anon(), $s);
 }
 | LBRACE stmts[s] RBRACE {
     $$ = new nls::Block(new nls::Anon(), $s);
@@ -215,79 +232,13 @@ when:
 }
 ;
 
-stmts:
-  stmt {
-    $$ = new nls::StmtList($1);
-    $$->left(NULL);
-    $$->right($1);
-}
-| stmts stmt {
-    if (env.fewerNoops() && ((typeid(*$2) == typeid(nls::Noop)))) {
-        $$ = $1;
-    } else {
-        $$ = new nls::StmtList($1, $2);
-    }
-}
-;
-
-stmt:
-  NL { $$ = new nls::Noop(); }
-| COMMENT { $$ = $1; }
-| expr NL { $$ = $1; }
-| QUERY expr  {
-    $$ = new nls::Query($2);
-}
-| ident ASSIGN expr {
-    try {
-        if (!$1->defined()) {
-            env.symbolTable().put($1->name(), $1);
-        }
-        $$ = new nls::Assign($1, $3);
-    } catch (exception& e) {
-        yyerror(env, e.what());
-    }
-}
-| ident ALIAS ident {
-    assert_defined(env, $3);
-
-    try {
-        if (!$1->defined()) {   // Add Alias to symbol table
-            env.symbolTable().put($1->name(), $1);
-        }
-        $$ = new nls::Alias($1, $3);
-    } catch (exception& e) {
-        yyerror(env, e.what());
-    }
-}
-| function { $$ = $1; }
-| record { $$ = $1; }
-| return { $$ = $1; }
-| when { $$ = $1; }
-| while { $$ = $1; }
-| block { $$ = $1; }
-| import { $$ = $1; }
-;
-
-complex:
-  COMPLEX64 { $$ = $1; }
-| COMPLEX128 { $$ = $1; }
-| COMPLEX64[c] LPAREN REAL64[r] COMMA REAL64[i] RPAREN {
-    $c->value().c64->real($r->value().r64);
-    $c->value().c64->imag($i->value().r64);
-    $$ = $c;
-}
-| COMPLEX128[c] LPAREN REAL64[r] COMMA REAL64[i] RPAREN {
-    $c->value().c128->real($r->value().r64);
-    $c->value().c128->imag($i->value().r64);
-    $$ = $c;
-}
-
 scalar:
   INT32  { $$ = $1; }
 | INT64  { $$ = $1; }
 | REAL32 { $$ = $1; }
 | REAL64 { $$ = $1; }
-| complex { $$ = $1; }
+| COMPLEX64 { $$ = $1; }
+| COMPLEX128 { $$ = $1; }
 | BOOL { $$ = $1; }
 ;
 
@@ -317,9 +268,6 @@ range:
 | RBRACK expr DOTDOT expr LBRACK {
     $$ = new nls::Range(true, true, $2, $4);
 }
-| expr DOTDOT expr {
-    $$ = new nls::Range(false, false, $1, $3);
-}
 ;
 
 ident:
@@ -329,6 +277,7 @@ ident:
 }
 ;
 
+/*
 attr:
   ident[id] ASSIGN scalar[s] NL {
     assert_undefined(env, $id);
@@ -353,6 +302,7 @@ record: RECORD ident[id] scopeBegin LBRACE NL attrs[a] RBRACE scopeEnd {
         env.symbolTable().put($id->name(), $$);
     }
 ;
+*/
 
 param: ident[id] {
         assert_undefined(env, $id);
@@ -383,23 +333,22 @@ args: %empty { $$ = new nls::Args(new nls::Empty()); }
 
 expr:
   val { $$ = $1; }
-| range { $$ = $1; }
 | ident {
     assert_defined(env, $1);
     $$ = $1;
 }
-| LPAREN expr RPAREN { $$ = $2; }
-| ident LPAREN args RPAREN {
+| range { $$ = $1; }
+| expr LPAREN args RPAREN {
     assert_defined(env, $1);
     $$ = new nls::Call($1, $3);
 }
+| LPAREN expr RPAREN { $$ = $2; }
 | expr ADD expr  { $$ = new nls::Add($1, $3); }
 | expr SUB expr  { $$ = new nls::Sub($1, $3); }
 | expr MUL expr  { $$ = new nls::Mul($1, $3); }
 | expr MOD expr  { $$ = new nls::Mod($1, $3); }
 | expr DIV expr  { $$ = new nls::Div($1, $3); }
 | expr POW expr  { $$ = new nls::Pow($1, $3); }
-
 | expr EQUAL expr       { $$ = new nls::Equal($1, $3); }
 | expr NOT_EQUAL expr   { $$ = new nls::NotEqual($1, $3); }
 | expr LTHAN expr       { $$ = new nls::Lthan($1, $3); }
@@ -419,9 +368,60 @@ expr:
 | expr BW_LSHIFT expr { $$ = new nls::BwLshift($1, $3); }
 | expr BW_RSHIFT expr { $$ = new nls::BwLshift($1, $3); }
 
-| val AS LPAREN shape RPAREN {      $$ = new nls::As($1, $4);   }
-| ident AS LPAREN shape RPAREN {    $$ = new nls::As($1, $4);   }
-| range AS LPAREN shape RPAREN {    $$ = new nls::As($1, $4);   }
+| expr AS LPAREN shape RPAREN { $$ = new nls::As($1, $4); }
+;
+
+stmts:
+  stmt {
+    $$ = new nls::StmtList($1);
+    $$->left(NULL);
+    $$->right($1);
+}
+| stmts stmt {
+    if (env.fewerNoops() && ((typeid(*$2) == typeid(nls::Noop)))) {
+        $$ = $1;
+    } else {
+        $$ = new nls::StmtList($1, $2);
+    }
+}
+;
+
+stmt:
+  NL { $$ = new nls::Noop(); }
+| COMMENT { $$ = $1; }
+| QUERY expr  {
+    $$ = new nls::Query($2);
+}
+| expr NL { $$ = $1; }
+| ident ASSIGN expr {
+    try {
+        if (!$1->defined()) {
+            env.symbolTable().put($1->name(), $1);
+        }
+        $$ = new nls::Assign($1, $3);
+    } catch (exception& e) {
+        yyerror(env, e.what());
+    }
+}
+| ident ALIAS ident {
+    assert_defined(env, $3);
+
+    try {
+        if (!$1->defined()) {   // Add Alias to symbol table
+            env.symbolTable().put($1->name(), $1);
+        }
+        $$ = new nls::Alias($1, $3);
+    } catch (exception& e) {
+        yyerror(env, e.what());
+    }
+}
+| function { $$ = $1; }
+//| record { $$ = $1; }
+| return { $$ = $1; }
+| while { $$ = $1; }
+| when { $$ = $1; }
+| block { $$ = $1; }
+| import { $$ = $1; }
 ;
 
 %%

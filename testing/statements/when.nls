@@ -3,3 +3,11 @@ when(1>0) {
 } otherwise {
     ? "One is NOT greater than 0"
 }
+
+when(3+4) is (1) {
+    ? "Expr is 1"
+} is (2) {
+    ? "Expr is 2"
+} otherwise {
+    ? "Expr is something other than 1 and 2"
+}
