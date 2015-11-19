@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+PROGRAM=$@
+BASENAME=$(basename $PROGRAM)
+NAME=${BASENAME%%.*}
+DOT="/tmp/${NAME}.dot"
+PDF="/tmp/${NAME}.pdf"
+
+niels $PROGRAM $DOT
+if [ -f $DOT ]; then
+    dot -T pdf $DOT > $PDF
+    if [ -f $PDF ]; then
+    evince $PDF
+    fi
+fi
