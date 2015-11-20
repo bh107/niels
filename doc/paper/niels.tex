@@ -114,6 +114,13 @@ Built-in declarative command-line parsing. Inspirated by Chapel and docopt.
 
 Mathematical ASCII notation, that is, not the extent of APL og unicode.
 Inspiration from ISO 80000-2 for set/range/interval notation.
+Ranges should something like [1..10] or [1;10].
+
+Faciliate a rich read-evaluation-print-loop (REPL) environment.
+Inspiration from IPython and facilitate the use of Jupyter.
+Convenient command-line interface.
+Inspiration from Chapel and param variables extended the concept with support for docopt.
+ - That is, module is documented and from documentation cli-parameters are extracted.
 
 \subsection{Grammar}
 
@@ -137,8 +144,10 @@ Phases:
 Text-scanner / lexer
 parser
 typechecker
-codegen
-
+scope tables
+resolution
+calling
+ffi
 
 The dragon book
 Ambigious grammar?
@@ -148,9 +157,41 @@ Parser generator or parser combinator?
 Parser algorithms LL, LALR(1), LR(1), GLR, lookahead and backtracking.
 Capabilities of the tool should match the requirements of the design.
 
-Choice of compiler-compiler, something that will generate C or C++. First off able to construct interpreters easily, secondly compilers. Something worth considering are requirements of the artifact produced by tools. Does it require another interpreter? Virtual machine? Runtime libraries?  Antlr\cite{cc:antlr} seems popular, however, version 4.5 does not support C/C++ as codegen target and various googling/stackoverflow revealed that support was buggy in previous version. So I concluded that the niceities of antlr 4 would not be available, in conclusion not much motivation for using it. Lex\cite{cc:lex}/Yacc\cite{cc:yacc} is a classic, however, unconveniently licences. Flex/Bison since it seems like it gets the job done, decent license, documented, and a wealth of community knowledge.
+Choice of compiler-compiler, something that will generate C or C++.
+First off able to construct interpreters easily, secondly compilers.
+Something worth considering are requirements of the artifact produced by tools.
+Does it require another interpreter? Virtual machine? Runtime libraries?
+Antlr\cite{cc:antlr} seems popular, however, version 4.5 does not support C/C++ as codegen target and various googling/stackoverflow revealed that support was buggy in previous version.
+So I concluded that the niceities of antlr 4 would not be available, in conclusion not much motivation for using it.
+Lex\cite{cc:lex}/Yacc\cite{cc:yacc} is a classic, however, unconveniently licences.
+Flex/Bison since it seems like it gets the job done, decent license, documented, and a wealth of community knowledge.
 
-Lemon\cite{cc:lemon} and parsec\cite{cc:parsec} might be interesting too.  One could of course also choose and implement it by hand, but I just want something well documented and supported. There is most likely better tools out there, something newer but to start out experimenting flex/bison should be fine. BNFC, the backus-naur-form converter, emits 
+Lemon\cite{cc:lemon} and parsec\cite{cc:parsec} might be interesting too.
+There is most likely better tools out there, something newer but to start out experimenting flex/bison should be fine.
+BNFC, the backus-naur-form converter, emits
+
+One could of course also choose and implement it by hand, but I just want something well documented and supported.
+Considering existing popular languages, what are their approaches? Interpreted languages Python, Ruby, and PHP. Not in the same category but a HPC language with a modern feel. Chapel, what is the implementation approach?
+
+\section{Implementation}
+
+Interpreted in the sense that native code generation is hidden from the user.
+
+Flex/Bison.
+
+Type promotion
+ * Implicit for scalar operations (cast to widest type)
+ * Explicit for array operations (convey cost to the user)
+   - Explicit type conversion for array-expressions
+     e.g. i32[] + float[] => error, require: float[](i32[]) + float[]
+ * Pseudo-broadcast array OP scalar operations
+ * Broadcast array OP operations
+     
+OO terms:
+
+ * Normalized Heterogenous AST, ref ANTRL (Terence P.)
+ * External visitor (evaluation / execution)
+ * Embedded visitor (pretty printing)
 
 \section{Performance Study}
 

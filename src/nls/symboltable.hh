@@ -1,9 +1,8 @@
 #ifndef NLS_SYMBOLTABLE_HH
 #define NLS_SYMBOLTABLE_HH
-#include <sstream>
 #include <string>
 #include <map>
-#include <ast.hh>
+#include <nls/ast/node.hh>
 
 namespace nls {
 

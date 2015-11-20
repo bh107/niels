@@ -30,7 +30,6 @@ typedef bxx::multi_array<std::complex<double> > c128_a_type;
 
 typedef std::string str_type;
 
-
 union Value {
     bool bul;
     int32_t i32;

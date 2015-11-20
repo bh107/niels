@@ -1,7 +1,7 @@
 #ifndef NLS_UTILS_HH
 #define NLS_UTILS_HH
 #include <sstream>
-#include <nls/ast/value.hh>
+#include <nls/value.hh>
 #include <nls/symboltable.hh>
 
 namespace nls {

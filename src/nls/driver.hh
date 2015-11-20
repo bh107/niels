@@ -18,15 +18,15 @@ public:
 
     int parse(const std::string& filename);
 
-    void walk(Node* node);
+    void walk(ast::Node* node);
 
     void error(const std::string& m);
     void error(int yylineno, const std::string& m);
 
     SymbolTable& symbolTable(void);
 
-    void ast(Node* node);
-    Node* ast(void);
+    void ast(ast::Node* node);
+    ast::Node* ast(void);
 
     void createScope(const std::string& name);
     void exitScope(void);
@@ -41,7 +41,7 @@ public:
 
 private:
     SymbolTable _symbolTable;
-    Node* _ast;
+    ast::Node* _ast;
 
     std::string _filename;
     bool _trace_scanning;

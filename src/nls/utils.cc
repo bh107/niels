@@ -1,4 +1,4 @@
-#include <utils.hh>
+#include <nls/utils.hh>
 
 using namespace std;
 
@@ -49,9 +49,9 @@ string SType_text(SType stype)
     }
 }
 
-//
-// Pretty Printing
-//
+/*
+ *  Pretty print the ast rooted at the given node.
+ */
 string dot(Node* node) {
 
     if (NULL==node) {
