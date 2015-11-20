@@ -1,7 +1,8 @@
-#ifndef NIELS_DRIVER_H
-#define NIELS_DRIVER_H
-#include <ast.hh>
-#include <symboltable.hh>
+#ifndef NLS_DRIVER_HH
+#define NLS_DRIVER_HH
+#include <string>
+#include <nls/ast/node.hh>
+#include <nls/symboltable.hh>
 
 namespace nls {
 
@@ -35,6 +36,8 @@ public:
     bool fewerNoops(void);
 
     std::string dot(void);
+
+    void eval(void);
 
 private:
     SymbolTable _symbolTable;

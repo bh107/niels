@@ -118,17 +118,9 @@ public:
     std::string dot_shape(void);
 };
 
-class Function : public Node {
-public:
-    Function(Node* left);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-};
-
 class FunctionDef : public Node {
 public:
-    FunctionDef(Node* left, Node* right);
+    FunctionDef(Node* left);
 
     std::string dot_label(void);
     std::string dot_shape(void);
@@ -161,6 +153,15 @@ public:
 class Record : public Node {
 public:
     Record(Node* left);
+
+    std::string txt(void);
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class RecordDef : public Node {
+public:
+    RecordDef(Node* left);
 
     std::string txt(void);
     std::string dot_label(void);

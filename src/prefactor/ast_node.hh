@@ -70,8 +70,9 @@ enum SType : uint32_t {
     EXPR,
     VAR,
     REC,
+    REC_DEF,
     ATTR,
-    FUN,
+    FUN_DEF,
     ARG,
     PARAM,
     MOD,
@@ -84,6 +85,8 @@ public:
     Node(void);
     Node(Node* left);
     Node(Node* left, Node* right);
+
+    virtual ~Node(void);
 
     Node* left(void);
     Node* right(void);
@@ -120,7 +123,8 @@ public:
     virtual std::string dot_label(void);
     virtual std::string dot_color(void);
     
-    virtual ~Node(void);
+    template <typename T>
+    void visit(T& visitor);
 
 protected:
     SType _stype;

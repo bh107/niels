@@ -92,6 +92,7 @@ stringstream _comment;
 
 "function" { return FUNCTION; }
 "record" { return RECORD; }
+"new" { return NEW; }
 
 "return" { return RETURN; }
 "while" { return WHILE; }

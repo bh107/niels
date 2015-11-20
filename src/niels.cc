@@ -1,7 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <driver.hh>
+#include <ast.hh>
 #include <utils.hh>
+#include <ast_evaluator.hh>
 
 using namespace std;
 
@@ -14,10 +16,14 @@ int main(int argc, char** argv) {
     if (argc>1) {
         filename = argv[1];
     }
-   
+
+    nls::Evaluator evaluator(driver);
+    
     driver.parse(filename);    // Parsing
     // TODO: Syntax check
     // TODO: Type check
+
+    driver.ast()->visit(evaluator);
 
     driver.walk(driver.ast());    // TODO: evaluation
     

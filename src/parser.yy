@@ -77,7 +77,8 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 %token <node> COMMENT BOOL INT32 INT64 REAL32 REAL64
 %token <node> COMPLEX64 COMPLEX128
 %token <node> STRING IDENT
-%token RETURN FUNCTION WHILE WHEN IS OTHERWISE RECORD
+%token RETURN FUNCTION WHILE WHEN IS OTHERWISE
+%token NEW RECORD
 
 %left LPAREN
 
@@ -150,7 +151,7 @@ return:
 
 function_body:
   LPAREN params[p] RPAREN block[b] {
-    $$ = new nls::FunctionDef($p, $b);
+    $$ = new nls::FunctionBody($p, $b);
 }
 ;
 
@@ -158,7 +159,7 @@ function_head:
     FUNCTION ident[id] {
     assert_undefined(env, $id);
 
-    $$ = new nls::Function($id);
+    $$ = new nls::FunctionDef($id);
     env.symbolTable().put($id->name(), $$);
     env.createScope($id->name());
 }
@@ -297,7 +298,7 @@ record_head:
   RECORD ident[id] {
     assert_undefined(env, $id);
 
-    $$ = new nls::Record($id);
+    $$ = new nls::RecordDef($id);
     env.symbolTable().put($id->name(), $$);
     env.createScope($id->name());
 }
@@ -359,6 +360,7 @@ expr:
     assert_known(env, $1);
     $$ = new nls::Call($1, $3);
 }
+| NEW ident { $$ = new nls::Record($2); }
 | accessor { $$ = $1; }
 | LPAREN expr RPAREN { $$ = $2; }
 | expr ADD expr  { $$ = new nls::Add($1, $3); }

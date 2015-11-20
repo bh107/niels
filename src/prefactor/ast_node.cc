@@ -142,12 +142,12 @@ string Node::txt(void)
         break;
 
     case NLS_UND:
-        ss << "I have no idea what the value of this is..." ;
+        ss << "Undefined." ;
         break;
 
     default:
         ss << "You forgot something.";
-
+        break;
     }
 
     return ss.str();
@@ -256,6 +256,12 @@ Node::~Node(void) {
 string Node::dot_shape(void) { return "box"; }
 string Node::dot_label(void) { return "b0rk3d"; }
 string Node::dot_color(void) { return "#e0e0e0"; }
+
+template <typename T>
+void Node::visit(T& visitor)
+{
+    visitor.visit(this);
+}
 
 }
 

@@ -1,4 +1,4 @@
-#include "utils.hh"
+#include <utils.hh>
 
 using namespace std;
 
@@ -26,6 +26,7 @@ string VType_text(VType vtype)
         case NLS_C128_A: return "c128[]";
 
         case NLS_STR: return "string";
+
         default: return "FORGOTTEN vtype!";
     }
 }
@@ -34,18 +35,19 @@ string SType_text(SType stype)
 {
     switch(stype) {
         case VAR:       return "variable";
-        case FUN:       return "function";
+        case FUN_DEF:   return "function def";
         case REC:       return "record";
+        case REC_DEF:   return "record def";
         case ATTR:      return "attribute";
         case ARG:       return "argument";
         case PARAM:     return "parameter";
         case MOD:       return "module";
         case COLL:      return "collection";
         case UNKNOWN:   return "unknown";
+
         default: return "FORGOTTEN stype!";
     }
 }
-
 
 //
 // Pretty Printing

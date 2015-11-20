@@ -47,25 +47,11 @@ void Query::eval(Driver& env)
 
     //
     // Grab the textual representation of expr
-    switch(exprNode->stype()) {
-    case VAR:
-        cout << exprNode->txt() << endl;
-        break;
-    case EXPR:
-        cout << exprNode->txt() << endl;
-        break;
-    case REC:
-    default:
-        cout << "Don't know what to do about this thing..." << endl;
-    }
+    cout << exprNode->txt() << endl;
 
     //
     // Cleanup    
     switch(exprNode->stype()) {
-    case VAR:
-    case FUN:
-    case REC:
-        break;
     case EXPR:
         switch(exprNode->vtype()) {
         case NLS_BUL_A:
@@ -299,13 +285,9 @@ Return::Return(Node* left) : Node(left) {}
 string Return::dot_label(void) { return "Return"; }
 string Return::dot_shape(void) { return "box"; }
 
-Function::Function(Node* left) : Node(left) {
-    stype(FUN);
+FunctionDef::FunctionDef(Node* left) : Node(left) {
+    stype(FUN_DEF);
 }
-string Function::dot_label(void) { return "Function"; }
-string Function::dot_shape(void) { return "parallelogram"; }
-
-FunctionDef::FunctionDef(Node* left, Node* right) : Node(left, right) {}
 string FunctionDef::dot_label(void) { return "FunctionDef"; }
 string FunctionDef::dot_shape(void) { return "parallelogram"; }
 
@@ -333,7 +315,19 @@ string Record::dot_label(void) { return "Record"; }
 string Record::dot_shape(void) { return "parallelogram"; }
 string Record::txt(void) {
     stringstream ss;
-    ss << "record";
+    ss << "Record";
+    return ss.str();
+}
+
+RecordDef::RecordDef(Node* left) : Node(left) {
+    stype(REC_DEF);
+    name(left->name());
+}
+string RecordDef::dot_label(void) { return "RecordDef"; }
+string RecordDef::dot_shape(void) { return "parallelogram"; }
+string RecordDef::txt(void) {
+    stringstream ss;
+    ss << "RecordDef";
     return ss.str();
 }
 
