@@ -1,5 +1,8 @@
 #include <string>
 #include <nls/ast/node.hh>
+#include <nls/ast/expr.hh>
+#include <nls/ast/stmt.hh>
+#include <nls/utils.hh>
 
 using namespace std;
 

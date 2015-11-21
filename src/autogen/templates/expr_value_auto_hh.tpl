@@ -1,8 +1,11 @@
-#ifndef NIELS_AST_VTYPE_HH
-#define NIELS_AST_VTYPE_HH
+#ifndef NLS_AST_EXPR_VTYPE_AUTO_HH
+#define NLS_AST_EXPR_VTYPE_AUTO_HH
 #include <cinttypes>
+#include <string>
+#include <nls/ast/node.hh>
 
 namespace nls {
+namespace ast {
 
 %for vtype in vtypes:
 <%
@@ -22,7 +25,7 @@ public:
 };
 %endfor
 
-}
+}}
 
 #endif
 

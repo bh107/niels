@@ -1,5 +1,5 @@
 #include <sstream>
-#include <ast_evaluator.hh>
+#include <nls/ast/evaluator.hh>
 
 using namespace std;
 namespace nls {
@@ -19,12 +19,6 @@ void Evaluator::visit(Node* node)
 {
     cout << "General EVAL case" << endl;
 }
-
-void Evaluator::visit(Add* node)
-{
-    cout << "e + e" << endl;
-}
-
 
 }}
 

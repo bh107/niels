@@ -2,7 +2,7 @@ scanner.ll
 %{
 #include <iostream>
 #include <string>
-#include <driver.hh>
+#include <nls/nls.hh>
 #include <parser.hh>
 
 using namespace std;
@@ -22,7 +22,7 @@ stringstream _comment;
 }
 <IN_COMMENT>{
     "*/"    {
-        yylval.node = new nls::Comment(_comment.str().c_str());
+        yylval.node = new nls::ast::Comment(_comment.str().c_str());
         _comment.str("");   // Reset the stream
         _comment.clear();
 
@@ -102,59 +102,59 @@ stringstream _comment;
 "otherwise" { return OTHERWISE; }
 
 "true" {
-    yylval.node = new nls::Bul(true);
+    yylval.node = new nls::ast::Bul(true);
     return BOOL;
 }
 "false" {
-    yylval.node = new nls::Bul(false);
+    yylval.node = new nls::ast::Bul(false);
     return BOOL;
 }
 "bool" {
-    yylval.node = new nls::Bul();
+    yylval.node = new nls::ast::Bul();
     return BOOL;
 }
 
 [0-9]+\.[0-9]+  {
-    yylval.node = new nls::R64(atof(yytext));
+    yylval.node = new nls::ast::R64(atof(yytext));
     return REAL64;
 }
 "r32" {
-    yylval.node = new nls::R32();
+    yylval.node = new nls::ast::R32();
     return REAL32;
 }
 "r64" {
-    yylval.node = new nls::R64();
+    yylval.node = new nls::ast::R64();
     return REAL64;
 }
 "real" {
-    yylval.node = new nls::R64();
+    yylval.node = new nls::ast::R64();
     return REAL64;
 }
 
 [0-9]+          {
-    yylval.node = new nls::I64(atol(yytext));
+    yylval.node = new nls::ast::I64(atol(yytext));
     return INT64;
 }
 "i32" {
-    yylval.node = new nls::I32();
+    yylval.node = new nls::ast::I32();
     return INT32;
 }
 "i64" {
-    yylval.node = new nls::I64();
+    yylval.node = new nls::ast::I64();
     return INT64;
 }
 "int" {
-    yylval.node = new nls::I64();
+    yylval.node = new nls::ast::I64();
     return INT64;
 }
 
 \"[^\"]*\" {
-    yylval.node = new nls::Str(yytext);
+    yylval.node = new nls::ast::Str(yytext);
     return STRING;
 }
 
 [a-zA-Z]+[a-zA-Z0-9]? {
-    yylval.node = new nls::Ident(yytext);
+    yylval.node = new nls::ast::Ident(yytext);
     return IDENT;
 }
 

@@ -1,4 +1,5 @@
 #include <nls/ast/expr.hh>
+#include <nls/driver.hh>
 
 using namespace std;
 
@@ -26,7 +27,7 @@ Ident::Ident(const std::string& name) : Node()
 {
     _name = name;
 }
-void Ident::eval(Driver& env)
+void Ident::eval(nls::Driver& env)
 {
     Node* identNode = env.symbolTable().getIdent(this);
     if (identNode) {
@@ -150,4 +151,5 @@ Accessor::Accessor(Node* left, Node* right) : Node(left, right) { }
 string Accessor::dot_label(void) { return "Accessor"; }
 string Accessor::dot_shape(void) { return "parallelogram"; }
 
+}}
 

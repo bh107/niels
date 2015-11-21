@@ -14,18 +14,11 @@ public:
     SymbolTable(void);
     ~SymbolTable(void);
 
-    Node* lookup(std::string ident);
+    ast::Node* lookup(std::string ident);
 
-    /**
-     * Assign stype and vtype to the given Ident node
-     * of the defining Ident instance in symbol table.
-     *
-     * @return NULL When no defining ident exist.
-     * @return Pointer to defining Ident instance.
-     */
-    Node* getIdent(Node* node);
-    void put(std::string, Node* node);
-    std::map<std::string, Node*>& symbols(void);
+    ast::Node* getIdent(ast::Node* node);
+    void put(std::string, ast::Node* node);
+    std::map<std::string, ast::Node*>& symbols(void);
 
     std::string dot(void);
 
@@ -35,7 +28,7 @@ public:
 private:
     std::string _scope;
 
-    std::map<std::string, Node*> _symbols;    
+    std::map<std::string, ast::Node*> _symbols;    
 };
 
 }

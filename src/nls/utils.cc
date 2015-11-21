@@ -52,7 +52,7 @@ string SType_text(SType stype)
 /*
  *  Pretty print the ast rooted at the given node.
  */
-string dot(Node* node) {
+string dot(ast::Node* node) {
 
     if (NULL==node) {
         return "";

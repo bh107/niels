@@ -1,8 +1,9 @@
-#include <ast.hh>
-#include <utils.hh>
+#include <nls/ast/expr_binary_auto.hh>
+#include <nls/utils.hh>
 
 using namespace std;
 namespace nls {
+namespace ast {
 
 string op_vtype_error(Node* res, Node* left)
 {
@@ -126,5 +127,5 @@ string ${op2node[op]}::dot_label(void) { return "${op2node[op]}"; }
 
 %endfor
 
-}
+}}
 

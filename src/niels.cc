@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <nls/driver.hh>
+#include <nls/nls.hh>
 
 using namespace std;
 

@@ -108,22 +108,6 @@ public:
     std::string dot_shape(void);
 };
 
-class Accessor : public Node {
-public:
-    Accessor(Node* left, Node* right);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-};
-
-class Shape : public Node {
-public:
-    Shape(Node* left);
-
-    std::string dot_label(void);
-    std::string dot_shape(void);
-};
-
 class Undefined : public Node {
 public:
     Undefined(void);

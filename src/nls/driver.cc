@@ -1,5 +1,8 @@
+#include <parser.hh>
 #include <nls/driver.hh>
 #include <nls/utils.hh>
+#include <nls/ast/stmt.hh>
+#include <nls/ast/expr.hh>
 
 using namespace std;
 namespace nls {
@@ -29,19 +32,19 @@ int Driver::parse(const string& filename)
     return res;
 }
 
-void Driver::walk(Node* node)
+void Driver::walk(ast::Node* node)
 {
     if (NULL==node) {
         return;
     }
 
-    if ((typeid(*node) == typeid(WhenBool)) or (typeid(*node) == typeid(When))) {
+    if ((typeid(*node) == typeid(ast::WhenBool)) or (typeid(*node) == typeid(ast::When))) {
         walk(node->left());
-        nls::Node* cases = node;
+        nls::ast::Node* cases = node;
         while(cases->right()) {
             cases = cases->right();
-            Node* caseNode = cases->left();
-            if (typeid(*caseNode) == typeid(Otherwise)) {
+            ast::Node* caseNode = cases->left();
+            if (typeid(*caseNode) == typeid(ast::Otherwise)) {
                 walk(caseNode->right());
                 break;
             } else {
@@ -51,17 +54,17 @@ void Driver::walk(Node* node)
                 }
             }
         }
-    } else if (typeid(*node) == typeid(While)) {
-        Node* condNode = node->left();
+    } else if (typeid(*node) == typeid(ast::While)) {
+        ast::Node* condNode = node->left();
         walk(condNode);
         while(condNode->value().bul) {
             walk(node->right());
             walk(condNode);
         }
-    } else if (typeid(*node) == typeid(As)) {
+    } else if (typeid(*node) == typeid(ast::As)) {
         walk(node->left());
         node->eval(*this);
-    } else if (typeid(*node) == typeid(Query)) {
+    } else if (typeid(*node) == typeid(ast::Query)) {
         walk(node->left());
         node->eval(*this);
     } else {
@@ -105,12 +108,12 @@ SymbolTable& Driver::symbolTable(void)
     return _symbolTable;
 }
 
-void Driver::ast(Node* node)
+void Driver::ast(ast::Node* node)
 {
     _ast = node;
 }
 
-Node* Driver::ast(void)
+ast::Node* Driver::ast(void)
 {
     return _ast;
 }

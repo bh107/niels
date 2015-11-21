@@ -1,7 +1,7 @@
-#ifndef NIELS_EVALUATOR_HH
-#define NIELS_EVALUATOR_HH
-#include <nls/driver.hh>
+#ifndef NIELS_AST_EVALUATOR_HH
+#define NIELS_AST_EVALUATOR_HH
 #include <nls/ast/visitor.hh>
+#include <nls/driver.hh>
 
 namespace nls {
 namespace ast {
@@ -13,7 +13,6 @@ public:
     ~Evaluator(void);
     
     void visit(Node* node);
-    void visit(Add* node);
 
 };
 

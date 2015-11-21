@@ -24,7 +24,7 @@ def cmake(autogen_path):
 # Construct vtype nodes which the scanner can construct.
 #
 def vtype_hh(nls):
-    tmpl = Template(filename=os.sep.join(["templates", "ast_vtype_hh.tpl"]))
+    tmpl = Template(filename=os.sep.join(["templates", "expr_value_auto_hh.tpl"]))
 
     return tmpl.render(
         vtypes=nls["vtypes"],
@@ -35,7 +35,7 @@ def vtype_hh(nls):
     )
 
 def vtype_cc(nls):
-    tmpl = Template(filename=os.sep.join(["templates", "ast_vtype_cc.tpl"]))
+    tmpl = Template(filename=os.sep.join(["templates", "expr_value_auto_cc.tpl"]))
     return tmpl.render(
         vtypes=nls["vtypes"],
         vtype2ast=nls["vtype2ast"],
@@ -48,11 +48,11 @@ def vtype_cc(nls):
 # Construct expr nodes for the grammar to construct
 #
 
-def unary_ops_hh(nls):
+def unary_hh(nls):
 
     ops = [op for op in nls["operators"] if op[2] == 1]
     
-    return Template(filename=os.sep.join(["templates", "ast_unary_ops_hh.tpl"])).render(
+    return Template(filename=os.sep.join(["templates", "expr_unary_auto_hh.tpl"])).render(
         operators=ops,
         vtypes=nls["vtypes"],
         vtype2ast=nls["vtype2ast"],
@@ -61,10 +61,10 @@ def unary_ops_hh(nls):
         op2node=nls["op2node"],
     )
 
-def unary_ops_cc(nls):
+def unary_cc(nls):
     ops = [op for op in nls["operators"] if op[2] == 1]
 
-    return Template(filename=os.sep.join(["templates", "ast_unary_ops_cc.tpl"])).render(
+    return Template(filename=os.sep.join(["templates", "expr_unary_auto_cc.tpl"])).render(
         operators=ops,
         vtypes=nls["vtypes"],
         vtype2ast=nls["vtype2ast"],
@@ -73,10 +73,10 @@ def unary_ops_cc(nls):
         op2node=nls["op2node"],
     )
 
-def binary_ops_hh(nls):
+def binary_hh(nls):
     ops = [op for op in nls["operators"] if op[2] == 2]
 
-    return Template(filename=os.sep.join(["templates", "ast_binary_ops_hh.tpl"])).render(
+    return Template(filename=os.sep.join(["templates", "expr_binary_auto_hh.tpl"])).render(
         operators=ops,
         vtypes=nls["vtypes"],
         vtype2ast=nls["vtype2ast"],
@@ -85,10 +85,10 @@ def binary_ops_hh(nls):
         op2node=nls["op2node"],
     )
 
-def binary_ops_cc(nls):
+def binary_cc(nls):
     ops = [op for op in nls["operators"] if op[2] == 2]
 
-    return Template(filename=os.sep.join(["templates", "ast_binary_ops_cc.tpl"])).render(
+    return Template(filename=os.sep.join(["templates", "expr_binary_auto_cc.tpl"])).render(
         operators=ops,
         vtypes=nls["vtypes"],
         vtype2ast=nls["vtype2ast"],
@@ -98,12 +98,12 @@ def binary_ops_cc(nls):
     )
 
 generators = {
-    "ast_vtype_auto.hh": vtype_hh,
-    "ast_vtype_auto.cc": vtype_cc,
-    "ast_binary_ops_auto.hh": binary_ops_hh,
-    "ast_binary_ops_auto.cc": binary_ops_cc,
-    "ast_unary_ops_auto.hh": unary_ops_hh,
-    "ast_unary_ops_auto.cc": unary_ops_cc,
+    "expr_value_auto.hh": vtype_hh,
+    "expr_value_auto.cc": vtype_cc,
+    "expr_binary_auto.hh": binary_hh,
+    "expr_binary_auto.cc": binary_cc,
+    "expr_unary_auto.hh": unary_hh,
+    "expr_unary_auto.cc": unary_cc,
 }
 
 def main():
@@ -119,12 +119,21 @@ def main():
         type=str,
         help="Generator to run.",
         choices = generators.keys(),
-        required=True
+    )
+    parser.add_argument(
+        "--cmake",
+        action='store_true',
+        help="Produce CMAKE custom depends."
     )
 
     args = parser.parse_args()              # Parse command-line arguments
     nls = json.load(open(args.json))        # Load json
-    print(generators[args.generator](nls))  # Call generator
+    if args.cmake:
+        print cmake("templates")
+    elif args.generator:
+        print(generators[args.generator](nls))  # Call generator
+    else:
+        parser.print_help()
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,8 @@
-#include <ast.hh>
+#include <nls/ast/expr_unary_auto.hh>
 
 using namespace std;
 namespace nls {
+namespace ast {
 
 %for k, op, ninput, exprs in operators:
 
@@ -53,5 +54,5 @@ void ${op2node[op]}::eval(Driver& env)
 string ${op2node[op]}::dot_label(void) { return "${op2node[op]}"; }
 %endfor
 
-}
+}}
 

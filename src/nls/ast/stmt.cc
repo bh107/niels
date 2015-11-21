@@ -202,7 +202,7 @@ string RecordDef::txt(void) {
 
 Block::Block(Node* left, Node* right) : Node(left) {
     if (typeid(*right) != typeid(StmtList)) {
-        nls::Node* stmtList = new nls::StmtList(right);
+        Node* stmtList = new StmtList(right);
         stmtList->left(NULL);
         stmtList->right(right);
         this->right(stmtList);

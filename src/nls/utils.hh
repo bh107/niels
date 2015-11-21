@@ -1,6 +1,7 @@
 #ifndef NLS_UTILS_HH
 #define NLS_UTILS_HH
 #include <sstream>
+#include <nls/ast/node.hh>
 #include <nls/value.hh>
 #include <nls/symboltable.hh>
 
@@ -38,7 +39,7 @@ std::string VType_text(VType vtype);
     Note: Implementation uses "embedded" approach to tree-walking,
           concatenating the dot-method result in a pre-order walk.
 */
-std::string dot(Node* node);
+std::string dot(ast::Node* node);
 
 }
 #endif

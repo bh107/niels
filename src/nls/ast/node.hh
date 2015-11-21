@@ -2,9 +2,10 @@
 #define NLS_AST_NODE_HH
 #include <string>
 #include <nls/value.hh>
-#include <nls/driver.hh>
 
 namespace nls {
+class Driver;   // Forward declaration
+
 namespace ast {
 
 class Node {

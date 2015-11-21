@@ -1,7 +1,8 @@
-#include <ast.hh>
+#include <nls/ast/expr_value_auto.hh>
 
 using namespace std;
 namespace nls {
+namespace ast {
 
 %for vtype in vtypes:
 <%
@@ -24,5 +25,5 @@ string ${ast}::dot_shape(void) { return "house"; }
 string ${ast}::dot_color(void) { return "#d9f0d3"; }
 %endfor
 
-}
+}}
 

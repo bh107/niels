@@ -51,16 +51,27 @@ private:
     bool _ub_open;
 };
 
+class Accessor : public Node {
+public:
+    Accessor(Node* left, Node* right);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
+class Shape : public Node {
+public:
+    Shape(Node* left);
+
+    std::string dot_label(void);
+    std::string dot_shape(void);
+};
+
 class Call : public Node {
 public:
     Call(Node* left, Node* right);
     std::string dot_label(void);
     std::string dot_shape(void);
-};
-
-class Add : public Node {
-public:
-    Add();
 };
 
 }}

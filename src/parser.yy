@@ -1,5 +1,5 @@
 %define parse.error verbose
-%{
+%code requires {
 #include <cinttypes>
 #include <cstdint>
 #include <climits>
@@ -8,8 +8,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <cstring>
-#include <driver.hh>
-#include <utils.hh>
+#include <nls/nls.hh>
 
 using namespace std;
 
@@ -18,13 +17,13 @@ extern "C++" int yyparse(nls::Driver& env);
 extern "C++" FILE *yyin;
 
 extern "C++" void yyerror(nls::Driver& env, const char *s);
-extern "C++" void assert_known(nls::Driver& env, nls::Node* node);
-extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
+extern "C++" void assert_known(nls::Driver& env, nls::ast::Node* node);
+extern "C++" void assert_undefined(nls::Driver& env, nls::ast::Node* node);
 
-%}
+}
 %param { nls::Driver& env }
 %union {
-    nls::Node*   node;
+    nls::ast::Node*   node;
     char* str;
 }
 
@@ -108,7 +107,7 @@ extern "C++" void assert_undefined(nls::Driver& env, nls::Node* node);
 input:
   %empty {}
 | stmts {
-    $$ = new nls::Collection(new nls::Ident("root"), $1);
+    $$ = new nls::ast::Collection(new nls::ast::Ident("root"), $1);
     env.ast($$);
 }
 ;
@@ -121,37 +120,37 @@ exitScope:
 
 noop:
   %empty {
-    $$ = new nls::Noop();
+    $$ = new nls::ast::Noop();
 }
 ;
 
 import:
   IMPORT ident {
-    $$ = new nls::Import($2);
+    $$ = new nls::ast::Import($2);
 }
 ;
 
 block:
   LBRACE noop[n] RBRACE {
-    $$ = new nls::Block(new nls::Anon(), $n);
+    $$ = new nls::ast::Block(new nls::ast::Anon(), $n);
 }
 | LBRACE expr[e] RBRACE {
-    $$ = new nls::Block(new nls::Anon(), $e);
+    $$ = new nls::ast::Block(new nls::ast::Anon(), $e);
 }
 | LBRACE stmts[s] RBRACE {
-    $$ = new nls::Block(new nls::Anon(), $s);
+    $$ = new nls::ast::Block(new nls::ast::Anon(), $s);
 }
 ;
 
 return:
   RETURN expr NL {
-    $$ = new nls::Return($2);
+    $$ = new nls::ast::Return($2);
 }
 ;
 
 function_body:
   LPAREN params[p] RPAREN block[b] {
-    $$ = new nls::FunctionBody($p, $b);
+    $$ = new nls::ast::FunctionBody($p, $b);
 }
 ;
 
@@ -159,7 +158,7 @@ function_head:
     FUNCTION ident[id] {
     assert_undefined(env, $id);
 
-    $$ = new nls::FunctionDef($id);
+    $$ = new nls::ast::FunctionDef($id);
     env.symbolTable().put($id->name(), $$);
     env.createScope($id->name());
 }
@@ -173,55 +172,55 @@ function:
 
 while:
   WHILE LPAREN expr RPAREN block {
-    $$ = new nls::While($3, $5);
+    $$ = new nls::ast::While($3, $5);
 }
 ;
 
 is:
   IS LPAREN scalar RPAREN block {
-    $$ = new nls::Is($3, $5);
+    $$ = new nls::ast::Is($3, $5);
 }
 ;
 otherwise:
   OTHERWISE block {
-    $$ = new nls::Otherwise(new nls::Bul(true), $2);
+    $$ = new nls::ast::Otherwise(new nls::ast::Bul(true), $2);
 }
 ;
 cases:
   is {
-    $$ = new nls::Cases($1);
+    $$ = new nls::ast::Cases($1);
 }
 | cases is {
-    $1->append(new nls::Cases($2));
+    $1->append(new nls::ast::Cases($2));
     $$ = $1;
 }
 ;
 when:
   WHEN LPAREN expr RPAREN cases {
-    $5->append(new nls::Cases(
-        new nls::Otherwise(
-            new nls::Bul(true),
-            new nls::Block(new nls::Anon(), new nls::Noop())
+    $5->append(new nls::ast::Cases(
+        new nls::ast::Otherwise(
+            new nls::ast::Bul(true),
+            new nls::ast::Block(new nls::ast::Anon(), new nls::ast::Noop())
         )
     ));
-    $$ = new nls::When($3, $5);
+    $$ = new nls::ast::When($3, $5);
 }
 | WHEN LPAREN expr RPAREN cases otherwise {
-    $5->append(new nls::Cases($6));
-    $$ = new nls::When($3, $5);
+    $5->append(new nls::ast::Cases($6));
+    $$ = new nls::ast::When($3, $5);
 }
 | WHEN LPAREN expr RPAREN block {
-    $$ = new nls::WhenBool($3, new nls::Cases(
-        new nls::Is(new nls::Bul(true), $5),
-        new nls::Cases(new nls::Otherwise(
-            new nls::Bul(true),
-            new nls::Block(new nls::Anon(), new nls::Noop()))
+    $$ = new nls::ast::WhenBool($3, new nls::ast::Cases(
+        new nls::ast::Is(new nls::ast::Bul(true), $5),
+        new nls::ast::Cases(new nls::ast::Otherwise(
+            new nls::ast::Bul(true),
+            new nls::ast::Block(new nls::ast::Anon(), new nls::ast::Noop()))
         )));
 }
 | WHEN LPAREN expr RPAREN block otherwise {
-    $$ = new nls::WhenBool($3, new nls::Cases(
-        new nls::Is(new nls::Bul(true), $5),
-        new nls::Cases($6)
+    $$ = new nls::ast::WhenBool($3, new nls::ast::Cases(
+        new nls::ast::Is(new nls::ast::Bul(true), $5),
+        new nls::ast::Cases($6)
     ));
 }
 ;
@@ -242,25 +241,25 @@ val:
 ;
 
 shape:
-  expr { $$ = new nls::Shape($1); }
+  expr { $$ = new nls::ast::Shape($1); }
 | shape COMMA expr {
-    $1->right(new nls::Shape($3));
+    $1->right(new nls::ast::Shape($3));
     $$ = $1;
 }
 ;
 
 range:
   LBRACK expr DOTDOT expr RBRACK {
-    $$ = new nls::Range(false, false, $2, $4);
+    $$ = new nls::ast::Range(false, false, $2, $4);
 }
 | LBRACK expr DOTDOT expr LBRACK {
-    $$ = new nls::Range(false, true, $2, $4);
+    $$ = new nls::ast::Range(false, true, $2, $4);
 }
 | RBRACK expr DOTDOT expr RBRACK {
-    $$ = new nls::Range(true, false, $2, $4);
+    $$ = new nls::ast::Range(true, false, $2, $4);
 }
 | RBRACK expr DOTDOT expr LBRACK {
-    $$ = new nls::Range(true, true, $2, $4);
+    $$ = new nls::ast::Range(true, true, $2, $4);
 }
 ;
 
@@ -274,16 +273,16 @@ ident:
 attr:
   ident[id] ASSIGN scalar[s] {
     assert_undefined(env, $id);
-    $$ = new nls::Attr($id, $s);
+    $$ = new nls::ast::Attr($id, $s);
     env.symbolTable().put($id->name(), $$);
 }
 ;
 
 attrs:
-  %empty { $$ = new nls::Empty(); }
-| attr { $$ = new nls::AttrList($1); }
+  %empty { $$ = new nls::ast::Empty(); }
+| attr { $$ = new nls::ast::AttrList($1); }
 | attrs NL attr {
-    $1->right(new nls::AttrList($3));
+    $1->right(new nls::ast::AttrList($3));
     $$ = $1;
 }
 ;
@@ -298,7 +297,7 @@ record_head:
   RECORD ident[id] {
     assert_undefined(env, $id);
 
-    $$ = new nls::RecordDef($id);
+    $$ = new nls::ast::RecordDef($id);
     env.symbolTable().put($id->name(), $$);
     env.createScope($id->name());
 }
@@ -313,34 +312,34 @@ record:
 
 param: ident[id] {
         assert_undefined(env, $id);
-        $$ = new nls::Param($1, new nls::Undefined());
+        $$ = new nls::ast::Param($1, new nls::ast::Undefined());
         env.symbolTable().put($1->name(), $$);
     }
     | ident[id] COLON scalar[s] {
         assert_undefined(env, $id);
-        $$ = new nls::Param($1, $3);
+        $$ = new nls::ast::Param($1, $3);
         env.symbolTable().put($1->name(), $$);
     }
 ;
-params: %empty { $$ = new nls::Empty(); }
-    | param { $$ = new nls::Params($1); }
+params: %empty { $$ = new nls::ast::Empty(); }
+    | param { $$ = new nls::ast::Params($1); }
     | params COMMA param {
-        $1->right(new nls::Params($3));
+        $1->right(new nls::ast::Params($3));
         $$ = $1;
     }
 ;
 
-args: %empty { $$ = new nls::Args(new nls::Empty()); }
-    | expr { $$ = new nls::Args($1); }
+args: %empty { $$ = new nls::ast::Args(new nls::ast::Empty()); }
+    | expr { $$ = new nls::ast::Args($1); }
     | args COMMA expr {
-        $1->right(new nls::Args($3));
+        $1->right(new nls::ast::Args($3));
         $$ = $1;
     }
 ;
 
 accessor:
   ident DOT ident {
-    $$ = new nls::Accessor($1, $3);
+    $$ = new nls::ast::Accessor($1, $3);
 }
 | accessor DOT ident {
     $1->left()->name() += "::"+ $1->right()->name();
@@ -358,59 +357,59 @@ expr:
 | range { $$ = $1; }
 | expr LPAREN args RPAREN {
     assert_known(env, $1);
-    $$ = new nls::Call($1, $3);
+    $$ = new nls::ast::Call($1, $3);
 }
-| NEW ident { $$ = new nls::Record($2); }
+| NEW ident { $$ = new nls::ast::Record($2); }
 | accessor { $$ = $1; }
 | LPAREN expr RPAREN { $$ = $2; }
-| expr ADD expr  { $$ = new nls::Add($1, $3); }
-| expr SUB expr  { $$ = new nls::Sub($1, $3); }
-| expr MUL expr  { $$ = new nls::Mul($1, $3); }
-| expr MOD expr  { $$ = new nls::Mod($1, $3); }
-| expr DIV expr  { $$ = new nls::Div($1, $3); }
-| expr POW expr  { $$ = new nls::Pow($1, $3); }
-| expr EQUAL expr       { $$ = new nls::Equal($1, $3); }
-| expr NOT_EQUAL expr   { $$ = new nls::NotEqual($1, $3); }
-| expr LTHAN expr       { $$ = new nls::Lthan($1, $3); }
-| expr GTHAN expr       { $$ = new nls::Gthan($1, $3); }
-| expr LTHAN_EQUAL expr { $$ = new nls::LthanEqual($1, $3); }
-| expr GTHAN_EQUAL expr { $$ = new nls::GthanEqual($1, $3); }
+| expr ADD expr  { $$ = new nls::ast::Add($1, $3); }
+| expr SUB expr  { $$ = new nls::ast::Sub($1, $3); }
+| expr MUL expr  { $$ = new nls::ast::Mul($1, $3); }
+| expr MOD expr  { $$ = new nls::ast::Mod($1, $3); }
+| expr DIV expr  { $$ = new nls::ast::Div($1, $3); }
+| expr POW expr  { $$ = new nls::ast::Pow($1, $3); }
+| expr EQUAL expr       { $$ = new nls::ast::Equal($1, $3); }
+| expr NOT_EQUAL expr   { $$ = new nls::ast::NotEqual($1, $3); }
+| expr LTHAN expr       { $$ = new nls::ast::Lthan($1, $3); }
+| expr GTHAN expr       { $$ = new nls::ast::Gthan($1, $3); }
+| expr LTHAN_EQUAL expr { $$ = new nls::ast::LthanEqual($1, $3); }
+| expr GTHAN_EQUAL expr { $$ = new nls::ast::GthanEqual($1, $3); }
 
-| expr AND expr { $$ = new nls::And($1, $3); }
-| expr OR expr  { $$ = new nls::Or($1, $3); }
-| expr XOR expr { $$ = new nls::Xor($1, $3); }
-| NOT expr      { $$ = new nls::Not($2); }
+| expr AND expr { $$ = new nls::ast::And($1, $3); }
+| expr OR expr  { $$ = new nls::ast::Or($1, $3); }
+| expr XOR expr { $$ = new nls::ast::Xor($1, $3); }
+| NOT expr      { $$ = new nls::ast::Not($2); }
 
-| expr BW_AND expr  { $$ = new nls::BwAnd($1, $3); }
-| expr BW_OR expr   { $$ = new nls::BwOr($1, $3); }
-| expr BW_XOR expr  { $$ = new nls::BwXor($1, $3); }
-| BW_NOT expr       { $$ = new nls::BwNot($2); }
-| expr BW_LSHIFT expr { $$ = new nls::BwLshift($1, $3); }
-| expr BW_RSHIFT expr { $$ = new nls::BwLshift($1, $3); }
+| expr BW_AND expr  { $$ = new nls::ast::BwAnd($1, $3); }
+| expr BW_OR expr   { $$ = new nls::ast::BwOr($1, $3); }
+| expr BW_XOR expr  { $$ = new nls::ast::BwXor($1, $3); }
+| BW_NOT expr       { $$ = new nls::ast::BwNot($2); }
+| expr BW_LSHIFT expr { $$ = new nls::ast::BwLshift($1, $3); }
+| expr BW_RSHIFT expr { $$ = new nls::ast::BwLshift($1, $3); }
 
-| expr AS LPAREN shape RPAREN { $$ = new nls::As($1, $4); }
+| expr AS LPAREN shape RPAREN { $$ = new nls::ast::As($1, $4); }
 ;
 
 stmts:
   stmt {
-    $$ = new nls::StmtList($1);
+    $$ = new nls::ast::StmtList($1);
     $$->left(NULL);
     $$->right($1);
 }
 | stmts stmt {
-    if (env.fewerNoops() && ((typeid(*$2) == typeid(nls::Noop)))) {
+    if (env.fewerNoops() && ((typeid(*$2) == typeid(nls::ast::Noop)))) {
         $$ = $1;
     } else {
-        $$ = new nls::StmtList($1, $2);
+        $$ = new nls::ast::StmtList($1, $2);
     }
 }
 ;
 
 stmt:
-  NL { $$ = new nls::Noop(); }
+  NL { $$ = new nls::ast::Noop(); }
 | COMMENT { $$ = $1; }
 | QUERY expr  {
-    $$ = new nls::Query($2);
+    $$ = new nls::ast::Query($2);
 }
 | expr NL { $$ = $1; }
 | ident ASSIGN expr {
@@ -418,7 +417,7 @@ stmt:
         if (!$1->defined()) {
             env.symbolTable().put($1->name(), $1);
         }
-        $$ = new nls::Assign($1, $3);
+        $$ = new nls::ast::Assign($1, $3);
     } catch (exception& e) {
         yyerror(env, e.what());
     }
@@ -430,7 +429,7 @@ stmt:
         if (!$1->defined()) {   // Add Alias to symbol table
             env.symbolTable().put($1->name(), $1);
         }
-        $$ = new nls::Alias($1, $3);
+        $$ = new nls::ast::Alias($1, $3);
     } catch (exception& e) {
         yyerror(env, e.what());
     }
@@ -451,7 +450,7 @@ void yyerror(nls::Driver& env, const char *s) {
     exit(-1);
 }
 
-void assert_known(nls::Driver& env, nls::Node* node) {
+void assert_known(nls::Driver& env, nls::ast::Node* node) {
     if (!node->known()) {
         stringstream ss;
         ss << "Identifier(" << node->name() << ") is not defined";
@@ -459,7 +458,7 @@ void assert_known(nls::Driver& env, nls::Node* node) {
     }
 }
 
-void assert_undefined(nls::Driver& env, nls::Node* node) {
+void assert_undefined(nls::Driver& env, nls::ast::Node* node) {
     if (node->defined()) {
         stringstream ss;
         ss << "Identifier(" << node->name() << ") used elsewhere.";
