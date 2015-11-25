@@ -87,6 +87,10 @@ string Node::dot(void)
     return ss.str();
 }
 
+string Node::dot_shape(void) { return "box"; }
+string Node::dot_label(void) { return "b0rk3d"; }
+string Node::dot_color(void) { return "#e0e0e0"; }
+
 string Node::txt(void)
 {
     stringstream ss;
@@ -255,9 +259,6 @@ Node::~Node(void) {
         break;
     }
 }
-string Node::dot_shape(void) { return "box"; }
-string Node::dot_label(void) { return "b0rk3d"; }
-string Node::dot_color(void) { return "#e0e0e0"; }
 
 }}
 

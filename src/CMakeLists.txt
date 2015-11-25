@@ -27,8 +27,6 @@ set(HDR "${HDR};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_value_auto.hh")
 set(HDR "${HDR};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_unary_auto.hh")
 set(HDR "${HDR};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_binary_auto.hh")
 set(HDR "${HDR};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/stmt.hh")
-set(HDR "${HDR};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/visitor.hh")
-set(HDR "${HDR};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/evaluator.hh")
 
 set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/niels.cc")
 
@@ -41,8 +39,6 @@ set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_value_auto.cc")
 set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_unary_auto.cc")
 set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_binary_auto.cc")
 set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/stmt.cc")
-set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/visitor.cc")
-set(SRC "${SRC};${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/evaluator.cc")
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_value_auto.hh ${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_binary_auto.hh ${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_value_auto.cc ${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_unary_auto.cc ${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_binary_auto.cc ${CMAKE_CURRENT_SOURCE_DIR}/nls/ast/expr_unary_auto.hh
 
