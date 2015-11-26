@@ -136,17 +136,17 @@ def gen_evaluator_visit_auto_hh_inc(ast, output_root, template_root):
 
 def main(args):
     
-    yaml_path = os.path.expandvars(os.path.expanduser(args.yaml))
+    yaml_path = os.path.realpath(os.path.expandvars(os.path.expanduser(args.yaml)))
 
     ast = yaml.load(open(yaml_path))    # Load yaml
     fill_ast(ast)                       # Fill it out with default values
 
-    output_root = os.path.expandvars(os.path.expanduser(os.sep.join([
+    output_root = os.path.realpath(os.path.expandvars(os.path.expanduser(os.sep.join([
         args.output_root,
         ast["namespace"]["name"],
         "ast"]
-    )))
-    template_root = os.path.expandvars(os.path.expanduser(args.template_root))
+    ))))
+    template_root = os.path.realpath(os.path.expandvars(os.path.expanduser(args.template_root)))
 
     for path in [output_root, template_root]:        # Check paths
         if not os.path.exists(path):
@@ -165,7 +165,8 @@ def main(args):
         ast,
         output_root,
         template_root
-    )   
+    )
+    pprint.pprint(generated)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
