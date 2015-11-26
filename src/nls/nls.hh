@@ -5,7 +5,7 @@
 #include <nls/symbol_table.hh>
 #include <nls/driver.hh>
 #include <nls/ast/node.hh>
-#include <nls/ast/visitor.hh>
-#include <nls/ast/evaluator.hh>
+#include <nls/ast/visitor/visitor.hh>
+#include <nls/ast/visitor/evaluator.hh>
 #endif
 
