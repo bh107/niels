@@ -2,7 +2,7 @@
 #define NLS_DRIVER_HH
 #include <string>
 #include <nls/ast/node.hh>
-#include <nls/symboltable.hh>
+#include <nls/symbol_table.hh>
 
 namespace nls {
 
@@ -17,8 +17,6 @@ public:
     void scanEnd(void);
 
     int parse(const std::string& filename);
-
-    void walk(ast::Node* node);
 
     void error(const std::string& m);
     void error(int yylineno, const std::string& m);

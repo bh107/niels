@@ -1,14 +1,18 @@
-#ifndef NLS_VALUE_HH
-#define NLS_VALUE_HH
+#ifndef NLS_VARIANT
+#define NLS_VARIANT
 #include <cinttypes>
+#include <cstddef>
 #include <complex>
 #include <string>
 #include <bxx/bohrium.hpp>
 
 namespace nls {
+namespace ast {
+    class Node;
+}
 
 //
-// Typedefing Niels value types
+// Typedefing Variant members
 //
 typedef bool bul_type;
 typedef int32_t i32_type;
@@ -30,6 +34,8 @@ typedef bxx::multi_array<std::complex<double> > c128_a_type;
 
 typedef std::string str_type;
 
+typedef ast::Node node_type;
+
 union Value {
     bool bul;
     int32_t i32;
@@ -50,12 +56,12 @@ union Value {
     bxx::multi_array<std::complex<double> >* c128_a;
 
     std::string* str;
+    ast::Node* node;
 };
 typedef union Value Value;
 
-enum VType : uint64_t {
+enum ValueType : uint64_t {
     NLS_UND = 0,
-
     NLS_BUL = 1,
     NLS_I32 = 2,
     NLS_I64 = 4,
@@ -72,30 +78,21 @@ enum VType : uint64_t {
     NLS_C64_A = 4096,
     NLS_C128_A = 8192,
 
-    NLS_STR = 16384
+    NLS_STR = 16384,
+    NLS_FUN = 32768,
+    NLS_REC = 65536,
 };
-typedef enum VType VType;
+typedef enum ValueType ValueType;
 
 #define SCALAR  (NLS_BUL    |NLS_I32    |NLS_I64    |NLS_R32    |NLS_R64    |NLS_C64    |NLS_C128)
 #define ARRAY   (NLS_BUL_A  |NLS_I32_A  |NLS_I64_A  |NLS_R32_A  |NLS_R64_A  |NLS_C64_A  |NLS_C128_A)
 
-enum SType : uint32_t {
-    UNKNOWN,
-
-    EXPR,
-    VAR,
-    REC,
-    REC_DEF,
-    ATTR,
-    FUN_DEF,
-    ARG,
-    PARAM,
-    MOD,
-    COLL
+struct Variant {
+    Value value;
+    ValueType value_type;
 };
-typedef enum SType SType;
+typedef struct Variant Variant;
 
 }
 
-#endif
-
+#endif //NLS_VARIANT

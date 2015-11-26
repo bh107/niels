@@ -17,8 +17,6 @@ extern "C++" int yyparse(nls::Driver& env);
 extern "C++" FILE *yyin;
 
 extern "C++" void yyerror(nls::Driver& env, const char *s);
-extern "C++" void assert_known(nls::Driver& env, nls::ast::Node* node);
-extern "C++" void assert_undefined(nls::Driver& env, nls::ast::Node* node);
 
 }
 %param { nls::Driver& env }
@@ -156,11 +154,8 @@ function_body:
 
 function_head:
     FUNCTION ident[id] {
-    assert_undefined(env, $id);
 
     $$ = new nls::ast::FunctionDef($id);
-    env.symbolTable().put($id->name(), $$);
-    env.createScope($id->name());
 }
 
 function:
@@ -265,16 +260,13 @@ range:
 
 ident:
   IDENT {
-    env.symbolTable().getIdent($1);
     $$ = $1;
 }
 ;
 
 attr:
   ident[id] ASSIGN scalar[s] {
-    assert_undefined(env, $id);
     $$ = new nls::ast::Attr($id, $s);
-    env.symbolTable().put($id->name(), $$);
 }
 ;
 
@@ -295,11 +287,7 @@ record_body:
 
 record_head:
   RECORD ident[id] {
-    assert_undefined(env, $id);
-
     $$ = new nls::ast::RecordDef($id);
-    env.symbolTable().put($id->name(), $$);
-    env.createScope($id->name());
 }
 ;
 
@@ -311,14 +299,10 @@ record:
 ;
 
 param: ident[id] {
-        assert_undefined(env, $id);
         $$ = new nls::ast::Param($1, new nls::ast::Undefined());
-        env.symbolTable().put($1->name(), $$);
     }
     | ident[id] COLON scalar[s] {
-        assert_undefined(env, $id);
         $$ = new nls::ast::Param($1, $3);
-        env.symbolTable().put($1->name(), $$);
     }
 ;
 params: %empty { $$ = new nls::ast::Empty(); }
@@ -351,12 +335,10 @@ accessor:
 expr:
   val { $$ = $1; }
 | ident {
-    assert_known(env, $1);
     $$ = $1;
 }
 | range { $$ = $1; }
 | expr LPAREN args RPAREN {
-    assert_known(env, $1);
     $$ = new nls::ast::Call($1, $3);
 }
 | NEW ident { $$ = new nls::ast::Record($2); }
@@ -413,26 +395,10 @@ stmt:
 }
 | expr NL { $$ = $1; }
 | ident ASSIGN expr {
-    try {
-        if (!$1->defined()) {
-            env.symbolTable().put($1->name(), $1);
-        }
-        $$ = new nls::ast::Assign($1, $3);
-    } catch (exception& e) {
-        yyerror(env, e.what());
-    }
+    $$ = new nls::ast::Assign($1, $3);
 }
 | ident ALIAS ident {
-    assert_known(env, $3);
-
-    try {
-        if (!$1->defined()) {   // Add Alias to symbol table
-            env.symbolTable().put($1->name(), $1);
-        }
-        $$ = new nls::ast::Alias($1, $3);
-    } catch (exception& e) {
-        yyerror(env, e.what());
-    }
+    $$ = new nls::ast::Alias($1, $3);
 }
 | function { $$ = $1; }
 | record { $$ = $1; }
@@ -450,6 +416,7 @@ void yyerror(nls::Driver& env, const char *s) {
     exit(-1);
 }
 
+/*
 void assert_known(nls::Driver& env, nls::ast::Node* node) {
     if (!node->known()) {
         stringstream ss;
@@ -464,5 +431,5 @@ void assert_undefined(nls::Driver& env, nls::ast::Node* node) {
         ss << "Identifier(" << node->name() << ") used elsewhere.";
         yyerror(env, ss.str().c_str());
     }
-}
+}*/
 

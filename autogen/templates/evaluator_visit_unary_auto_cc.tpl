@@ -1,29 +1,20 @@
 #include <nls/ast/expr_unary_auto.hh>
+#include <nls/ast/evaluator.hh>
 
 using namespace std;
 namespace nls {
 namespace ast {
 
-%for k, op, ninput, exprs in operators:
-
-${op2node[op]}::${op2node[op]}(Node* left) : Node(left)
+% for node in ast["nodes"]:
+void Evaluator::visit(${node["class"]& node)
 {
-    %if k == "comparison" or k == "logical":
-    vtype(NLS_BUL);
-    %elif k == "arithmetic" or k == "bitwise":
-    _vtype = left->vtype();
-    %else:
-    FORGOT SOMETHING
-    %endif
+    walk()
+    Variant in1 = pop();
+    Variant res;
 
-    stype(EXPR);
-}
-void ${op2node[op]}::eval(Driver& env)
-{
-    Node* res = this;
-    Node* in1 = left();
+    // TODO: Derive type
     
-    VType res_t = res->vtype(); // Evaluate *this
+    VType res_t = res->vtype();
     VType in1_t = in1->vtype();
     uint64_t mask = (res_t << 16) + in1_t;
     switch(mask) {
@@ -51,7 +42,6 @@ void ${op2node[op]}::eval(Driver& env)
         break;
     }
 }
-string ${op2node[op]}::dot_label(void) { return "${op2node[op]}"; }
 %endfor
 
 }}

@@ -1,71 +1,55 @@
 #ifndef NLS_AST_NODE_HH
 #define NLS_AST_NODE_HH
 #include <string>
-#include <nls/value.hh>
+#include <nls/variant.hh>
 
 namespace nls {
-class Driver;   // Forward declaration
-
 namespace ast {
+
+class Visitor; // Forward declarations
 
 class Node {
 public:
+
     Node(void);
+
     Node(Node* left);
+
     Node(Node* left, Node* right);
 
-    virtual ~Node(void);
+    ~Node(void);
 
-    Node* left(void);
-    Node* right(void);
-    void left(Node* left);
-    void right(Node* right);
+    virtual void accept(Visitor& visitor) = 0;
 
-    void append(Node* node);
+    virtual Node* left(void);
 
-    VType vtype(void);
-    void vtype(VType val);
+    virtual Node* right(void);
 
-    SType stype(void);
-    void stype(SType val);
+    virtual void left(Node* node);
 
-    void value(Value& val);
+    virtual void right(Node* node);
 
-    Value& value(void);
+    virtual Variant* variant(void);
 
-    bool defined(void);
-    bool known(void);
+    virtual void variant(Variant* var);
 
-    std::string& str(void);
-
-    std::string dot(void);
-    std::string dot_relation(void);
-    virtual std::string txt(void);
-
-    std::string& name(void);
-    void name(const std::string& val);
-
-    virtual void eval(Driver& env);
+    virtual std::string dot_label(void);
 
     virtual std::string dot_shape(void);
-    virtual std::string dot_label(void);
+
     virtual std::string dot_color(void);
-    
-    template <typename T>
-    void visit(T& visitor);
+
+    void name(std::string& val);
+    std::string& name(void);
 
 protected:
-    SType _stype;
-    VType _vtype;
-    Value _value;
-
     Node* _left;
     Node* _right;
 
+    Variant* _variant;
     std::string _name;
 };
 
 }}
 
-#endif
-
+#endif //NLS_AST_NODE_HH

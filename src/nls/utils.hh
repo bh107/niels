@@ -2,8 +2,8 @@
 #define NLS_UTILS_HH
 #include <sstream>
 #include <nls/ast/node.hh>
-#include <nls/value.hh>
-#include <nls/symboltable.hh>
+#include <nls/variant.hh>
+#include <nls/symbol_table.hh>
 
 namespace nls {
 
@@ -20,18 +20,11 @@ std::string tos(T val)
 }
 
 /*
-    Returns a textual description of the structural type.
-
-    E.g. variable, record, "record definition".
-*/
-std::string SType_text(SType stype);
-
-/*
     Returns a textual description of the value type.
 
     E.g. i32, bool[], str.
 */
-std::string VType_text(VType vtype);
+std::string ValueType_text(ValueType value_type);
 
 /*
     Returns a dot-representation of the ast rooted at the given node.
@@ -39,7 +32,7 @@ std::string VType_text(VType vtype);
     Note: Implementation uses "embedded" approach to tree-walking,
           concatenating the dot-method result in a pre-order walk.
 */
-std::string dot(ast::Node* node);
+//std::string dot(ast::Node* node);
 
 }
 #endif

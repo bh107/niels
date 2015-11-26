@@ -4,9 +4,9 @@ using namespace std;
 
 namespace nls {
 
-string VType_text(VType vtype)
+string ValueType_text(ValueType value_type)
 {
-    switch(vtype) {
+    switch(value_type) {
         case NLS_UND: return "undefined";
         
         case NLS_BUL: return "bool";
@@ -27,31 +27,14 @@ string VType_text(VType vtype)
 
         case NLS_STR: return "string";
 
-        default: return "FORGOTTEN vtype!";
-    }
-}
-
-string SType_text(SType stype)
-{
-    switch(stype) {
-        case VAR:       return "variable";
-        case FUN_DEF:   return "function def";
-        case REC:       return "record";
-        case REC_DEF:   return "record def";
-        case ATTR:      return "attribute";
-        case ARG:       return "argument";
-        case PARAM:     return "parameter";
-        case MOD:       return "module";
-        case COLL:      return "collection";
-        case UNKNOWN:   return "unknown";
-
-        default: return "FORGOTTEN stype!";
+        default: return "FORGOTTEN ValueType!";
     }
 }
 
 /*
  *  Pretty print the ast rooted at the given node.
  */
+/*
 string dot(ast::Node* node) {
 
     if (NULL==node) {
@@ -61,6 +44,7 @@ string dot(ast::Node* node) {
             dot(node->left())                     + \
             dot(node->right());
 }
+*/
 
 }
 

@@ -1,14 +1,55 @@
-namespace: nls
+namespace:
+    name: nls
 nodes:
 # Literals
   - name: bul
+    constr_lval: |
+        _variant = new Variant;
+        _variant->value.bul = lval[0] == 't';
+        _variant->value_type = NLS_BUL;
+
   - name: i32
+    constr_lval: |
+        _variant = new Variant;
+        _variant->value.i32 = atoi(lval);
+        _variant->value_type = NLS_I32;
+
   - name: i64
+    constr_lval: |
+        _variant = new Variant;
+        _variant->value.i64 = atol(lval);
+        _variant->value_type = NLS_I64;
+
   - name: r32
+    constr_lval: |
+        _variant = new Variant;
+        _variant->value.r32 = atof(lval);
+        _variant->value_type = NLS_R32;
+
   - name: r64
+    constr_lval: |
+        _variant = new Variant;
+        _variant->value.r64 = atof(lval);
+        _variant->value_type = NLS_R64;
+
   - name: str
+    constr_lval: |
+        _variant = new Variant;
+        _variant->value.str = new string(lval+1, strlen(lval)-2);
+        _variant->value_type = NLS_STR;
+# Comment
+  - name: comment
+    constr_lval: |
+        _variant = new Variant;
+        _variant->value.str = new string(val);
+        _variant->value_type = NLS_STR;
+
 # Identifier
   - name: ident
+    constr_lval: |
+        _variant = new Variant;
+        _variant->value.str = new string(lval);
+        _variant->value_type = NLS_STR;
 # Expressions - Arithmetic
   - name: add
   - name: sub

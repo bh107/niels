@@ -20,8 +20,9 @@ int main(int argc, char** argv) {
                                     // TODO: Syntax check
                                     // TODO: Type check
 
-    driver.walk(driver.ast());      // TODO: Evaluation
-    
+    //driver.walk(driver.ast());      // TODO: Evaluation
+   
+    /* 
     if (argc>2) {                   // Dump dot
         ofstream dotfile(argv[2]);
         if (dotfile.is_open()) {
@@ -29,5 +30,6 @@ int main(int argc, char** argv) {
             dotfile.close();
         }
     }
+    */
 }
 

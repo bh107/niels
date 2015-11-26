@@ -1,5 +1,6 @@
 #include <nls/ast/expr_binary_auto.hh>
 #include <nls/utils.hh>
+#include <nls/ast/evaluator.hh>
 
 using namespace std;
 namespace nls {
@@ -36,6 +37,10 @@ ${op2node[op]}::${op2node[op]}(Node* left, Node* right) : Node(left, right)
     FORGOT SOMETHING
     %endif
     stype(EXPR);
+}
+void ${op2node[op]}::visit(Evaluator& visitor)
+{
+    visitor.visit(*this);
 }
 void ${op2node[op]}::eval(Driver& env)
 {

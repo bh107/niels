@@ -32,6 +32,7 @@ int Driver::parse(const string& filename)
     return res;
 }
 
+/*
 void Driver::walk(ast::Node* node)
 {
     if (NULL==node) {
@@ -72,7 +73,7 @@ void Driver::walk(ast::Node* node)
         walk(node->right());
         node->eval(*this);
     }
-}
+}*/
 
 //
 // NOTE: scanBegin and scanEnd are defined in scanner.ll
@@ -133,6 +134,7 @@ bool Driver::fewerNoops(void)
     return _fewer_noops;
 }
 
+/*
 string Driver::dot(void)
 {
     stringstream ss;                        // CReate dot
@@ -144,6 +146,7 @@ string Driver::dot(void)
 
     return ss.str();
 }
+*/
 
 }
 

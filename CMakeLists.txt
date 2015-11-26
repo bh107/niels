@@ -20,46 +20,32 @@ BISON_TARGET(NielsParser "${SRC_DIR}/parser.yy" ${CMAKE_CURRENT_BINARY_DIR}/pars
 FLEX_TARGET(NielsScanner "${SRC_DIR}/scanner.ll" ${CMAKE_CURRENT_BINARY_DIR}/scanner.cc)
 
 set(HDR "${HDR};${SRC_DIR}/nls/nls.hh")
-set(HDR "${HDR};${SRC_DIR}/nls/value.hh")
+set(HDR "${HDR};${SRC_DIR}/nls/variant.hh")
 set(HDR "${HDR};${SRC_DIR}/nls/utils.hh")
 set(HDR "${HDR};${SRC_DIR}/nls/driver.hh")
-set(HDR "${HDR};${SRC_DIR}/nls/symboltable.hh")
+set(HDR "${HDR};${SRC_DIR}/nls/symbol_table.hh")
 set(HDR "${HDR};${SRC_DIR}/nls/ast/node.hh")
-set(HDR "${HDR};${SRC_DIR}/nls/ast/expr.hh")
-set(HDR "${HDR};${SRC_DIR}/nls/ast/expr_value_auto.hh")
-set(HDR "${HDR};${SRC_DIR}/nls/ast/expr_unary_auto.hh")
-set(HDR "${HDR};${SRC_DIR}/nls/ast/expr_binary_auto.hh")
-set(HDR "${HDR};${SRC_DIR}/nls/ast/stmt.hh")
 
 set(SRC "${SRC};${SRC_DIR}/niels.cc")
 
 set(SRC "${SRC};${SRC_DIR}/nls/utils.cc")
 set(SRC "${SRC};${SRC_DIR}/nls/driver.cc")
-set(SRC "${SRC};${SRC_DIR}/nls/symboltable.cc")
+set(SRC "${SRC};${SRC_DIR}/nls/symbol_table.cc")
 set(SRC "${SRC};${SRC_DIR}/nls/ast/node.cc")
-set(SRC "${SRC};${SRC_DIR}/nls/ast/expr.cc")
-set(SRC "${SRC};${SRC_DIR}/nls/ast/expr_value_auto.cc")
-set(SRC "${SRC};${SRC_DIR}/nls/ast/expr_unary_auto.cc")
-set(SRC "${SRC};${SRC_DIR}/nls/ast/expr_binary_auto.cc")
-set(SRC "${SRC};${SRC_DIR}/nls/ast/stmt.cc")
 
-add_custom_command(OUTPUT ${SRC_DIR}/nls/ast/expr_value_auto.hh ${SRC_DIR}/nls/ast/expr_binary_auto.hh ${SRC_DIR}/nls/ast/expr_value_auto.cc ${SRC_DIR}/nls/ast/expr_unary_auto.cc ${SRC_DIR}/nls/ast/expr_binary_auto.cc ${SRC_DIR}/nls/ast/expr_unary_auto.hh
+add_custom_command(OUTPUT ${SRC_DIR}/nls/ast/expr_binary_auto.hh ${SRC_DIR}/nls/ast/expr_unary_auto.cc ${SRC_DIR}/nls/ast/expr_binary_auto.cc ${SRC_DIR}/nls/ast/expr_unary_auto.hh
 
     COMMAND ./niels.py > niels.json
-    COMMAND ./gen.py --generator=expr_value_auto.hh > ${SRC_DIR}/nls/ast/expr_value_auto.hh
-    COMMAND ./gen.py --generator=expr_value_auto.cc > ${SRC_DIR}/nls/ast/expr_value_auto.cc
     COMMAND ./gen.py --generator=expr_unary_auto.hh > ${SRC_DIR}/nls/ast/expr_unary_auto.hh
     COMMAND ./gen.py --generator=expr_unary_auto.cc > ${SRC_DIR}/nls/ast/expr_unary_auto.cc
     COMMAND ./gen.py --generator=expr_binary_auto.hh > ${SRC_DIR}/nls/ast/expr_binary_auto.hh
     COMMAND ./gen.py --generator=expr_binary_auto.cc > ${SRC_DIR}/nls/ast/expr_binary_auto.cc
 
     WORKING_DIRECTORY ${GEN_DIR}
-    DEPENDS ${GEN_DIR}/templates/expr_value_auto_hh.tpl ${GEN_DIR}/templates/expr_binary_auto_hh.tpl ${GEN_DIR}/templates/expr_unary_auto_cc.tpl ${GEN_DIR}/templates/expr_binary_auto_cc.tpl ${GEN_DIR}/templates/expr_value_auto_cc.tpl ${GEN_DIR}/templates/expr_unary_auto_hh.tpl
+    DEPENDS ${GEN_DIR}/templates/expr_binary_auto_hh.tpl ${GEN_DIR}/templates/expr_binary_auto_cc.tpl ${GEN_DIR}/templates/expr_unary_auto_hh.tpl ${GEN_DIR}/templates/expr_unary_auto_cc.tpl 
     COMMENT "Autogenerating based on niels.json"
     VERBATIM)
 
-set_source_files_properties(${SRC_DIR}/nls/ast/expr_value_auto.hh PROPERTIES GENERATED TRUE)
-set_source_files_properties(${SRC_DIR}/nls/ast/expr_value_auto.cc PROPERTIES GENERATED TRUE)
 set_source_files_properties(${SRC_DIR}/nls/ast/expr_unary_auto.hh PROPERTIES GENERATED TRUE)
 set_source_files_properties(${SRC_DIR}/nls/ast/expr_unary_auto.cc PROPERTIES GENERATED TRUE)
 set_source_files_properties(${SRC_DIR}/nls/ast/expr_binary_auto.hh PROPERTIES GENERATED TRUE)
