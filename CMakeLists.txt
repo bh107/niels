@@ -7,7 +7,7 @@ set(BOHRIUM_LIB "$ENV{HOME}/.local/lib" CACHE STRING "Bohrium lib path")
 set(BOHRIUM_INC "$ENV{HOME}/.local/include" CACHE STRING "Bohrium inc path")
 
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(GEN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/autogen")
+set(GEN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gen")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 INCLUDE_DIRECTORIES(${SRC_DIR})
