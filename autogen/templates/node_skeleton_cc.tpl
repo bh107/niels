@@ -3,7 +3,7 @@
 
     * Declaration:  autogen/ast.yaml
     * Logic:        autogen/ast.py
-    * Template:     autogen/templates/nodes_cc.tpl
+    * Template:     autogen/templates/node_skeleton_cc.tpl
 
     Modify the above files to persist changes.
 

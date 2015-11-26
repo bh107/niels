@@ -65,8 +65,8 @@ def gen_nodes(ast, output_root):
 
     generated = []  # Names of generated files
 
-    hdr_template = os.sep.join(["templates", "nodes_hh.tpl"])
-    src_template = os.sep.join(["templates", "nodes_cc.tpl"])
+    hdr_template = os.sep.join(["templates", "node_skeleton_hh.tpl"])
+    src_template = os.sep.join(["templates", "node_skeleton_cc.tpl"])
 
     namespace = ast["namespace"]
     for node in ast["nodes"]:
@@ -94,6 +94,19 @@ def gen_nodes(ast, output_root):
         generated.append(src_path)
 
     return generated
+
+def gen_nodes_hh(ast, output_root):
+
+    code = Template(filename=os.sep.join([
+        "templates",
+        "nodes_hh.tpl"
+    ])).render(namespace=ast["namespace"], nodes=ast["nodes"])
+
+    inc_path = output_root +os.sep+ "nodes.hh"
+    with open(inc_path, "w") as fd:
+        fd.write(code)
+
+    return [inc_path]
 
 def gen_visitor_visit_auto_hh_inc(ast, output_root):
 
@@ -125,11 +138,22 @@ def main(args):
     ast = yaml.load(open(args.yaml))    # Load yaml
     fill_ast(ast)                       # Fill it out with default values
 
-    output_root = os.sep.join(["out", ast["namespace"]["name"], "ast"])
+    output_root = os.sep.join([
+        args.output_root,
+        ast["namespace"]["name"],
+        "ast"]
+    )
 
-    generated_nodes = gen_nodes(ast, output_root)
-    gen_visitor_visit_auto_hh_inc(ast, output_root)
-    gen_evaluator_visit_auto_hh_inc(ast, output_root)
+    if not os.path.exists(output_root):
+        print("Path(%s) does not exist." % output_root)
+
+    generated = []
+    generated += gen_nodes(ast, output_root)                        # Nodes
+    generated += gen_nodes_hh(ast, output_root)                     # Nodes header
+    generated += gen_visitor_visit_auto_hh_inc(ast, output_root)    # Visitor::visit(...)
+    generated += gen_evaluator_visit_auto_hh_inc(ast, output_root)  # Evaluator::visit(...)
+
+    pprint.pprint(generated)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -141,6 +165,12 @@ if __name__ == "__main__":
         help="Path to ast.yaml",
         default=os.sep.join([os.path.dirname(os.path.realpath(__file__)), "ast.yaml"])
     )
-
+    parser.add_argument(
+        "--output_root",
+        type=str,
+        help="Path to dir to place generated files.",
+        default=os.sep.join([os.path.dirname(os.path.realpath(__file__)), "out"])
+    )
+    
     args = parser.parse_args()          # Parse command-line arguments
     main(args)                          # Run main

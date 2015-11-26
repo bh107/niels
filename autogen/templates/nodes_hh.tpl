@@ -3,7 +3,7 @@
 
     * Declaration:  autogen/ast.yaml
     * Logic:        autogen/ast.py
-    * Template:     autogen/templates/node.hh.tpl
+    * Template:     autogen/templates/nodes_hh.tpl
 
     Modify the above files to persist changes.
 
@@ -11,33 +11,7 @@
     picks up changes to ANY file in autogen/* and thereby
     overwrites ALL local changes to ANY generated file.
 */
-#ifndef ${namespace["guard"]}_AST_${node["guard"]}_HH
-#define ${namespace["guard"]}_AST_${node["guard"]}_HH
-#include <nls/ast/node.hh>
+% for node in nodes:
+#include <${namespace["name"]}/ast/${node["name"]}.hh>
+% endfor
 
-namespace ${namespace["name"]} {
-namespace ast {
-
-class ${node["class"]} : public Node {
-public:
-    ${node["class"]}(void);
-
-    ${node["class"]}(Node* left);
-
-    ${node["class"]}(Node* left, Node* right);
-
-% if node["constr_lval"]:
-    ${node["class"]}(const char* lval);
-% endif
-
-    void accept(Visitor& visitor);
-
-    std::string dot_label(void);
-
-    std::string dot_shape(void);
-
-};
-
-}}
-
-#endif //${namespace["guard"]}_AST_${node["guard"]}_HH
