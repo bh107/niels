@@ -41,7 +41,7 @@ nodes:
   - name: comment
     constr_lval: |
         _variant = new Variant;
-        _variant->value.str = new string(val);
+        _variant->value.str = new string(lval);
         _variant->value_type = NLS_STR;
 
 # Identifier
@@ -99,16 +99,19 @@ nodes:
   - name: bw_not
   - name: bw_lshift
   - name: bw_rshift
-# Expressions - Function call and accessor
+# Expressions - Function call, arguments and accessor
   - name: call
+  - name: arg_list
   - name: accessor
 # Expressions - Constructors
   - name: as
+  - name: shape
   - name: range
   - name: new
 # Statements
   - name: alias
   - name: assign
+  - name: query
 # Statements - Organization
   - name: import
   - name: module
@@ -118,16 +121,20 @@ nodes:
 # Statements - Control
   - name: while
   - name: when
+  - name: case_list
   - name: is
   - name: otherwise
   - name: return
 # Statements - Definitions
+  - name: record
   - name: record_def
   - name: attr
   - name: attr_list
   - name: function_def
+  - name: function_body
   - name: param
   - name: param_list
 # Misc
   - name: noop
   - name: empty
+  - name: anon

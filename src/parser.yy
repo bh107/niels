@@ -88,14 +88,14 @@ extern "C++" void yyerror(nls::Driver& env, const char *s);
 %type <node> noop
 %type <node> expr
 %type <node> block
-%type <node> stmts
+%type <node> stmt_list
 %type <node> stmt
 %type <node> return
 %type <node> while
-%type <node> when is otherwise cases
+%type <node> when is otherwise case_list
 %type <node> import
-%type <node> args
-%type <node> function function_head function_body params param
+%type <node> arg_list
+%type <node> function function_head function_body param_list param
 %type <node> record record_head record_body attr attrs
 %type <node> accessor
 %type <node> exitScope
@@ -104,8 +104,8 @@ extern "C++" void yyerror(nls::Driver& env, const char *s);
 
 input:
   %empty {}
-| stmts {
-    $$ = new nls::ast::Collection(new nls::ast::Ident("root"), $1);
+| stmt_list {
+    $$ = new nls::ast::Module(new nls::ast::Ident("root"), $1);
     env.ast($$);
 }
 ;
@@ -135,7 +135,7 @@ block:
 | LBRACE expr[e] RBRACE {
     $$ = new nls::ast::Block(new nls::ast::Anon(), $e);
 }
-| LBRACE stmts[s] RBRACE {
+| LBRACE stmt_list[s] RBRACE {
     $$ = new nls::ast::Block(new nls::ast::Anon(), $s);
 }
 ;
@@ -147,7 +147,7 @@ return:
 ;
 
 function_body:
-  LPAREN params[p] RPAREN block[b] {
+  LPAREN param_list[p] RPAREN block[b] {
     $$ = new nls::ast::FunctionBody($p, $b);
 }
 ;
@@ -178,44 +178,44 @@ is:
 ;
 otherwise:
   OTHERWISE block {
-    $$ = new nls::ast::Otherwise(new nls::ast::Bul(true), $2);
+    $$ = new nls::ast::Otherwise(new nls::ast::Bul("true"), $2);
 }
 ;
-cases:
+case_list:
   is {
-    $$ = new nls::ast::Cases($1);
+    $$ = new nls::ast::CaseList($1);
 }
-| cases is {
-    $1->append(new nls::ast::Cases($2));
+| case_list is {
+    $1->append(new nls::ast::CaseList($2));
     $$ = $1;
 }
 ;
 when:
-  WHEN LPAREN expr RPAREN cases {
-    $5->append(new nls::ast::Cases(
+  WHEN LPAREN expr RPAREN case_list {
+    $5->append(new nls::ast::CaseList(
         new nls::ast::Otherwise(
-            new nls::ast::Bul(true),
+            new nls::ast::Bul("true"),
             new nls::ast::Block(new nls::ast::Anon(), new nls::ast::Noop())
         )
     ));
     $$ = new nls::ast::When($3, $5);
 }
-| WHEN LPAREN expr RPAREN cases otherwise {
-    $5->append(new nls::ast::Cases($6));
+| WHEN LPAREN expr RPAREN case_list otherwise {
+    $5->append(new nls::ast::CaseList($6));
     $$ = new nls::ast::When($3, $5);
 }
 | WHEN LPAREN expr RPAREN block {
-    $$ = new nls::ast::WhenBool($3, new nls::ast::Cases(
-        new nls::ast::Is(new nls::ast::Bul(true), $5),
-        new nls::ast::Cases(new nls::ast::Otherwise(
-            new nls::ast::Bul(true),
+    $$ = new nls::ast::When($3, new nls::ast::CaseList(
+        new nls::ast::Is(new nls::ast::Bul("true"), $5),
+        new nls::ast::CaseList(new nls::ast::Otherwise(
+            new nls::ast::Bul("true"),
             new nls::ast::Block(new nls::ast::Anon(), new nls::ast::Noop()))
         )));
 }
 | WHEN LPAREN expr RPAREN block otherwise {
-    $$ = new nls::ast::WhenBool($3, new nls::ast::Cases(
-        new nls::ast::Is(new nls::ast::Bul(true), $5),
-        new nls::ast::Cases($6)
+    $$ = new nls::ast::When($3, new nls::ast::CaseList(
+        new nls::ast::Is(new nls::ast::Bul("true"), $5),
+        new nls::ast::CaseList($6)
     ));
 }
 ;
@@ -245,16 +245,20 @@ shape:
 
 range:
   LBRACK expr DOTDOT expr RBRACK {
-    $$ = new nls::ast::Range(false, false, $2, $4);
+    //$$ = new nls::ast::Range(false, false, $2, $4);
+    $$ = new nls::ast::Range($2, $4);
 }
 | LBRACK expr DOTDOT expr LBRACK {
-    $$ = new nls::ast::Range(false, true, $2, $4);
+    //$$ = new nls::ast::Range(false, false, $2, $4);
+    $$ = new nls::ast::Range($2, $4);
 }
 | RBRACK expr DOTDOT expr RBRACK {
-    $$ = new nls::ast::Range(true, false, $2, $4);
+    //$$ = new nls::ast::Range(false, false, $2, $4);
+    $$ = new nls::ast::Range($2, $4);
 }
 | RBRACK expr DOTDOT expr LBRACK {
-    $$ = new nls::ast::Range(true, true, $2, $4);
+    //$$ = new nls::ast::Range(false, false, $2, $4);
+    $$ = new nls::ast::Range($2, $4);
 }
 ;
 
@@ -298,25 +302,22 @@ record:
 }
 ;
 
-param: ident[id] {
-        $$ = new nls::ast::Param($1, new nls::ast::Undefined());
-    }
-    | ident[id] COLON scalar[s] {
+param: ident[id] COLON scalar[s] {
         $$ = new nls::ast::Param($1, $3);
     }
 ;
-params: %empty { $$ = new nls::ast::Empty(); }
-    | param { $$ = new nls::ast::Params($1); }
-    | params COMMA param {
-        $1->right(new nls::ast::Params($3));
+param_list: %empty { $$ = new nls::ast::Empty(); }
+    | param { $$ = new nls::ast::ParamList($1); }
+    | param_list COMMA param {
+        $1->right(new nls::ast::ParamList($3));
         $$ = $1;
     }
 ;
 
-args: %empty { $$ = new nls::ast::Args(new nls::ast::Empty()); }
-    | expr { $$ = new nls::ast::Args($1); }
-    | args COMMA expr {
-        $1->right(new nls::ast::Args($3));
+arg_list: %empty { $$ = new nls::ast::ArgList(new nls::ast::Empty()); }
+    | expr { $$ = new nls::ast::ArgList($1); }
+    | arg_list COMMA expr {
+        $1->right(new nls::ast::ArgList($3));
         $$ = $1;
     }
 ;
@@ -338,7 +339,7 @@ expr:
     $$ = $1;
 }
 | range { $$ = $1; }
-| expr LPAREN args RPAREN {
+| expr LPAREN arg_list RPAREN {
     $$ = new nls::ast::Call($1, $3);
 }
 | NEW ident { $$ = new nls::ast::Record($2); }
@@ -372,13 +373,13 @@ expr:
 | expr AS LPAREN shape RPAREN { $$ = new nls::ast::As($1, $4); }
 ;
 
-stmts:
+stmt_list:
   stmt {
     $$ = new nls::ast::StmtList($1);
     $$->left(NULL);
     $$->right($1);
 }
-| stmts stmt {
+| stmt_list stmt {
     if (env.fewerNoops() && ((typeid(*$2) == typeid(nls::ast::Noop)))) {
         $$ = $1;
     } else {

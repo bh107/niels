@@ -19,28 +19,32 @@ public:
 
     ~Node(void);
 
+
+    Node* left(void);
+
+    Node* right(void);
+
+    void left(Node* node);
+
+    void right(Node* node);
+
+    void append(Node* node);
+
+    Variant* variant(void);
+
+    void variant(Variant* var);
+
+    void name(std::string& val);
+
+    std::string& name(void);
+
     virtual void accept(Visitor& visitor) = 0;
-
-    virtual Node* left(void);
-
-    virtual Node* right(void);
-
-    virtual void left(Node* node);
-
-    virtual void right(Node* node);
-
-    virtual Variant* variant(void);
-
-    virtual void variant(Variant* var);
 
     virtual std::string dot_label(void);
 
     virtual std::string dot_shape(void);
 
     virtual std::string dot_color(void);
-
-    void name(std::string& val);
-    std::string& name(void);
 
 protected:
     Node* _left;

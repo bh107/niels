@@ -37,6 +37,11 @@ void Node::right(Node* node)
     _right = node;
 }
 
+void Node::append(Node* node)
+{
+    
+}
+
 void Node::variant(Variant *var)
 {
     _variant = var;

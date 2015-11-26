@@ -35,11 +35,13 @@ void ${node["class"]}::accept(Visitor& visitor)
 {
     visitor.visit(*this);
 }
-string ${node["class"]}::dot_label(void) {
+string ${node["class"]}::dot_label(void)
+{
     return "${node["class"]}";
 }
 
-string ${node["class"]}::dot_shape(void) {
+string ${node["class"]}::dot_shape(void)
+{
     return "${node["shape"]}";
 }
 

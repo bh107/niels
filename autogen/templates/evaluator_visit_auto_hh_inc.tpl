@@ -12,6 +12,6 @@
     overwrites ALL local changes to ANY generated file.
 */
 % for node in nodes:
-    void visit(${node["class"]}& &node);
+    void visit(${node["class"]}& node);
 % endfor
 

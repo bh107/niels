@@ -3,7 +3,7 @@ all: run
 run:
 	mkdir -p build
 	touch build/empty
-	cd build && cmake ../../ && make
+	cd build && cmake ../../ && make -j4
 
 test:
 	../testing/runner.py

@@ -102,49 +102,49 @@ stringstream _comment;
 "otherwise" { return OTHERWISE; }
 
 "true" {
-    yylval.node = new nls::ast::Bul(true);
+    yylval.node = new nls::ast::Bul("true");
     return BOOL;
 }
 "false" {
-    yylval.node = new nls::ast::Bul(false);
+    yylval.node = new nls::ast::Bul("false");
     return BOOL;
 }
 "bool" {
-    yylval.node = new nls::ast::Bul();
+    yylval.node = new nls::ast::Bul("false");
     return BOOL;
 }
 
 [0-9]+\.[0-9]+  {
-    yylval.node = new nls::ast::R64(atof(yytext));
+    yylval.node = new nls::ast::R64(yytext);
     return REAL64;
 }
 "r32" {
-    yylval.node = new nls::ast::R32();
+    yylval.node = new nls::ast::R32("0");
     return REAL32;
 }
 "r64" {
-    yylval.node = new nls::ast::R64();
+    yylval.node = new nls::ast::R64("0");
     return REAL64;
 }
 "real" {
-    yylval.node = new nls::ast::R64();
+    yylval.node = new nls::ast::R64("0");
     return REAL64;
 }
 
 [0-9]+          {
-    yylval.node = new nls::ast::I64(atol(yytext));
+    yylval.node = new nls::ast::I64(yytext);
     return INT64;
 }
 "i32" {
-    yylval.node = new nls::ast::I32();
+    yylval.node = new nls::ast::I32("0");
     return INT32;
 }
 "i64" {
-    yylval.node = new nls::ast::I64();
+    yylval.node = new nls::ast::I64("0");
     return INT64;
 }
 "int" {
-    yylval.node = new nls::ast::I64();
+    yylval.node = new nls::ast::I64("0");
     return INT64;
 }
 
