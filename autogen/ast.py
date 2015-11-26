@@ -50,7 +50,7 @@ def fill_ast(ast):
                         # visits_auto etc. might be convenient
                         # it might also be really annoying... who knows?
 
-def gen_nodes(ast, output_root):
+def gen_nodes(ast, output_root, template_root):
     """
     Generates code for and stores to file:
 
@@ -65,8 +65,8 @@ def gen_nodes(ast, output_root):
 
     generated = []  # Names of generated files
 
-    hdr_template = os.sep.join(["templates", "node_skeleton_hh.tpl"])
-    src_template = os.sep.join(["templates", "node_skeleton_cc.tpl"])
+    hdr_template = os.sep.join([template_root, "node_skeleton_hh.tpl"])
+    src_template = os.sep.join([template_root, "node_skeleton_cc.tpl"])
 
     namespace = ast["namespace"]
     for node in ast["nodes"]:
@@ -95,10 +95,10 @@ def gen_nodes(ast, output_root):
 
     return generated
 
-def gen_nodes_hh(ast, output_root):
+def gen_nodes_hh(ast, output_root, template_root):
 
     code = Template(filename=os.sep.join([
-        "templates",
+        template_root,
         "nodes_hh.tpl"
     ])).render(namespace=ast["namespace"], nodes=ast["nodes"])
 
@@ -108,10 +108,10 @@ def gen_nodes_hh(ast, output_root):
 
     return [inc_path]
 
-def gen_visitor_visit_auto_hh_inc(ast, output_root):
+def gen_visitor_visit_auto_hh_inc(ast, output_root, template_root):
 
     code = Template(filename=os.sep.join([
-        "templates",
+        template_root,
         "visitor_visit_auto_hh_inc.tpl"
     ])).render(namespace=ast["namespace"], nodes=ast["nodes"])
 
@@ -121,10 +121,10 @@ def gen_visitor_visit_auto_hh_inc(ast, output_root):
 
     return [inc_path]
 
-def gen_evaluator_visit_auto_hh_inc(ast, output_root):
+def gen_evaluator_visit_auto_hh_inc(ast, output_root, template_root):
    
     code = Template(filename=os.sep.join([
-        "templates",
+        template_root,
         "evaluator_visit_auto_hh_inc.tpl"
     ])).render(namespace=ast["namespace"], nodes=ast["nodes"])
 
@@ -135,25 +135,37 @@ def gen_evaluator_visit_auto_hh_inc(ast, output_root):
     return [inc_path]
 
 def main(args):
-    ast = yaml.load(open(args.yaml))    # Load yaml
+    
+    yaml_path = os.path.expandvars(os.path.expanduser(args.yaml))
+
+    ast = yaml.load(open(yaml_path))    # Load yaml
     fill_ast(ast)                       # Fill it out with default values
 
-    output_root = os.sep.join([
+    output_root = os.path.expandvars(os.path.expanduser(os.sep.join([
         args.output_root,
         ast["namespace"]["name"],
         "ast"]
-    )
+    )))
+    template_root = os.path.expandvars(os.path.expanduser(args.template_root))
 
-    if not os.path.exists(output_root):
-        print("Path(%s) does not exist." % output_root)
+    for path in [output_root, template_root]:        # Check paths
+        if not os.path.exists(path):
+            print("Path(%s) does not exist." % path)
+            return
+
+    print (output_root, template_root)
 
     generated = []
-    generated += gen_nodes(ast, output_root)                        # Nodes
-    generated += gen_nodes_hh(ast, output_root)                     # Nodes header
-    generated += gen_visitor_visit_auto_hh_inc(ast, output_root)    # Visitor::visit(...)
-    generated += gen_evaluator_visit_auto_hh_inc(ast, output_root)  # Evaluator::visit(...)
-
-    pprint.pprint(generated)
+    generated += gen_nodes(ast, output_root, template_root)     # Nodes
+    generated += gen_nodes_hh(ast, output_root, template_root)  # Nodes header
+    generated += gen_visitor_visit_auto_hh_inc(                 # Visitor::visit(...)
+        ast, output_root, template_root
+    )
+    generated += gen_evaluator_visit_auto_hh_inc(               # Evaluator::visit(...)
+        ast,
+        output_root,
+        template_root
+    )   
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -163,13 +175,28 @@ if __name__ == "__main__":
         "--yaml",
         type=str,
         help="Path to ast.yaml",
-        default=os.sep.join([os.path.dirname(os.path.realpath(__file__)), "ast.yaml"])
+        default=os.sep.join([
+            os.path.dirname(os.path.realpath(__file__)),
+            "ast.yaml"
+        ])
+    )
+    parser.add_argument(
+        "--template_root",
+        type=str,
+        help="Path to dir containing templates.",
+        default=os.sep.join([
+            os.path.dirname(os.path.realpath(__file__)),
+            "templates"
+        ])
     )
     parser.add_argument(
         "--output_root",
         type=str,
         help="Path to dir to place generated files.",
-        default=os.sep.join([os.path.dirname(os.path.realpath(__file__)), "out"])
+        default=os.sep.join([
+            os.path.dirname(os.path.realpath(__file__)),
+            "out"
+        ])
     )
     
     args = parser.parse_args()          # Parse command-line arguments
