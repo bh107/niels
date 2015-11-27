@@ -21,38 +21,14 @@ def cmake(autogen_path):
     return "OUTPUT %s\n\nDEPENDS %s" % (output, depends)
 
 #
-# Construct vtype nodes which the scanner can construct.
-#
-def vtype_hh(nls):
-    tmpl = Template(filename=os.sep.join(["templates", "expr_value_auto_hh.tpl"]))
-
-    return tmpl.render(
-        vtypes=nls["vtypes"],
-        vtype2ast=nls["vtype2ast"],
-        vtype2enum=nls["vtype2enum"],
-        vtype2ctype=nls["vtype2ctype"],
-        op2node=nls["op2node"],
-    )
-
-def vtype_cc(nls):
-    tmpl = Template(filename=os.sep.join(["templates", "expr_value_auto_cc.tpl"]))
-    return tmpl.render(
-        vtypes=nls["vtypes"],
-        vtype2ast=nls["vtype2ast"],
-        vtype2enum=nls["vtype2enum"],
-        vtype2ctype=nls["vtype2ctype"],
-        op2node=nls["op2node"],
-    )
-
-#
 # Construct expr nodes for the grammar to construct
 #
 
-def unary_hh(nls):
+def evaluator_visit_variant_auto_cc(nls):
 
     ops = [op for op in nls["operators"] if op[2] == 1]
     
-    return Template(filename=os.sep.join(["templates", "expr_unary_auto_hh.tpl"])).render(
+    return Template(filename=os.sep.join(["templates", "evaluator_visit_variant_auto_cc.tpl"])).render(
         operators=ops,
         vtypes=nls["vtypes"],
         vtype2ast=nls["vtype2ast"],
@@ -61,10 +37,10 @@ def unary_hh(nls):
         op2node=nls["op2node"],
     )
 
-def unary_cc(nls):
+def evaluator_visit_unary_auto_cc(nls):
     ops = [op for op in nls["operators"] if op[2] == 1]
 
-    return Template(filename=os.sep.join(["templates", "expr_unary_auto_cc.tpl"])).render(
+    return Template(filename=os.sep.join(["templates", "evaluator_visit_unary_auto_cc.tpl"])).render(
         operators=ops,
         vtypes=nls["vtypes"],
         vtype2ast=nls["vtype2ast"],
@@ -73,22 +49,10 @@ def unary_cc(nls):
         op2node=nls["op2node"],
     )
 
-def binary_hh(nls):
+def evaluator_visit_binary_auto_cc(nls):
     ops = [op for op in nls["operators"] if op[2] == 2]
 
-    return Template(filename=os.sep.join(["templates", "expr_binary_auto_hh.tpl"])).render(
-        operators=ops,
-        vtypes=nls["vtypes"],
-        vtype2ast=nls["vtype2ast"],
-        vtype2enum=nls["vtype2enum"],
-        vtype2ctype=nls["vtype2ctype"],
-        op2node=nls["op2node"],
-    )
-
-def binary_cc(nls):
-    ops = [op for op in nls["operators"] if op[2] == 2]
-
-    return Template(filename=os.sep.join(["templates", "expr_binary_auto_cc.tpl"])).render(
+    return Template(filename=os.sep.join(["templates", "evaluator_visit_binary_auto_cc.tpl"])).render(
         operators=ops,
         vtypes=nls["vtypes"],
         vtype2ast=nls["vtype2ast"],
@@ -98,12 +62,9 @@ def binary_cc(nls):
     )
 
 generators = {
-    "expr_value_auto.hh": vtype_hh,
-    "expr_value_auto.cc": vtype_cc,
-    "expr_binary_auto.hh": binary_hh,
-    "expr_binary_auto.cc": binary_cc,
-    "expr_unary_auto.hh": unary_hh,
-    "expr_unary_auto.cc": unary_cc,
+    "evaluator_visit_variant_auto.cc":  evaluator_visit_variant_auto_cc,
+    "evaluator_visit_unary_auto.cc":    evaluator_visit_unary_auto_cc,
+    "evaluator_visit_binary_auto.cc":   evaluator_visit_binary_auto_cc,
 }
 
 def main():

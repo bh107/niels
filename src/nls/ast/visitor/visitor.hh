@@ -9,6 +9,7 @@ namespace ast {
 class Visitor {
 public:
     Visitor(void);
+    virtual ~Visitor(void);
 
     // Generated visit-declarations e.g. "virtual void visit(Add& node) = 0;"
     #include <nls/ast/visitor/visitor_visit_auto_hh.inc>

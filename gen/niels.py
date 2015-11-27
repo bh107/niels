@@ -134,391 +134,391 @@ nls = {
     "operators": [
         ("arithmetic", "add", 2, {
             "kkk":   (
-                "res->value().{res_t} = in1->value().{in1_t} + in2->value().{in2_t}",
+                "res.value.{res_t} = in1->value.{in1_t} + in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"])
             ),
             "aak": (
-                "*res->value().{res_t} = bh_add(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_add(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bh_add(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_add(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bh_add(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_add(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"], "aaa")
             )
         }),
 
         ("arithmetic", "sub", 2, {
             "kkk": (
-                "res->value().{res_t} = in1->value().{in1_t} - in2->value().{in2_t}",
+                "res.value.{res_t} = in1->value.{in1_t} - in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"])
             ),
             "aak": (
-                "*res->value().{res_t} = bh_subtract(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_subtract(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bh_subtract(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_subtract(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bh_subtract(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_subtract(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"], "aaa")
             )
         }),
 
         ("arithmetic", "mul", 2, {
             "kkk":   (
-                "res->value().{res_t} = in1->value().{in1_t} * in2->value().{in2_t}",
+                "res.value.{res_t} = in1->value.{in1_t} * in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"])
             ),
             "aak": (
-                "*res->value().{res_t} = bh_multiply(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_multiply(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bh_multiply(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_multiply(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bh_multiply(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_multiply(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"], "aaa")
             )
         }),
 
         ("arithmetic", "mod", 2, {
             "kkk": (
-                "res->value().{res_t} = in1->value().{in1_t} % in2->value().{in2_t}",
+                "res.value.{res_t} = in1->value.{in1_t} % in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"][0:3])
             ),
             "aak": (
-                "*res->value().{res_t} = bh_mod(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_mod(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bh_mod(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_mod(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bh_mod(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_mod(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")
             )
         }),
 
         ("arithmetic", "div", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} / in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} / in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"])
             ),
             "aak": (
-                "*res->value().{res_t} = bh_divide(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_divide(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bh_divide(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_divide(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bh_divide(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_divide(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")
             )
         }),
 
         ("arithmetic", "pow", 2, {
-            "kkk":   ("res->value().{res_t} = pow(in1->value().{in1_t}, in2->value().{in2_t})",
+            "kkk":   ("res.value.{res_t} = pow(in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_sigs(vtypes_grouped["scalar"])
             ),
             "aak": (
-                "*res->value().{res_t} = bh_power(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_power(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bh_power(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_power(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bh_power(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bh_power(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:], "aaa")
             )
         }),
 
         ("comparison", "lthan", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} < in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} < in2->value.{in2_t}",
                 binary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aak":    (
-                "*res->value().{res_t} = bxx::bh_less(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_less(*in1->value.{in1_t}, in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")]
             ),
             "aka":    (
-                "*res->value().{res_t} = bxx::bh_less(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_less(in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")]
             ),
             "aaa":    (
-                "*res->value().{res_t} = bxx::bh_less(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_less(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")]
             )
         }),
 
         ("comparison", "gthan", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} > in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} > in2->value.{in2_t}",
                 binary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aak":    (
-                "*res->value().{res_t} = bxx::bh_greater(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_greater(*in1->value.{in1_t}, in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")]
             ),
             "aka":    (
-                "*res->value().{res_t} = bxx::bh_greater(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_greater(in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")]
             ),
             "aaa":    (
-                "*res->value().{res_t} = bxx::bh_greater(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_greater(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")]
             )
         }),
 
         ("comparison", "equal", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} == in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} == in2->value.{in2_t}",
                 binary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aak":    (
-                "*res->value().{res_t} = bxx::bh_equal(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_equal(*in1->value.{in1_t}, in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")]
             ),
             "aka":    (
-                "*res->value().{res_t} = bxx::bh_equal(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_equal(in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")]
             ),
             "aaa":    (
-                "*res->value().{res_t} = bxx::bh_equal(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_equal(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")]
             )
         }),
 
         ("comparison", "not_equal", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} != in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} != in2->value.{in2_t}",
                 binary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aak":    (
-                "*res->value().{res_t} = bxx::bh_not_equal(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_not_equal(*in1->value.{in1_t}, in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")]
             ),
             "aka":    (
-                "*res->value().{res_t} = bxx::bh_not_equal(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_not_equal(in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")]
             ),
             "aaa":    (
-                "*res->value().{res_t} = bxx::bh_not_equal(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_not_equal(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")]
             )
         }),
 
         ("comparison", "lthan_equal", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} <= in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} <= in2->value.{in2_t}",
                 binary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aak":    (
-                "*res->value().{res_t} = bxx::bh_less_equal(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_less_equal(*in1->value.{in1_t}, in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")]
             ),
             "aka":    (
-                "*res->value().{res_t} = bxx::bh_less_equal(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_less_equal(in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")]
             ),
             "aaa":    (
-                "*res->value().{res_t} = bxx::bh_less_equal(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_less_equal(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")]
             )
         }),
 
         ("comparison", "gthan_equal", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} >= in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} >= in2->value.{in2_t}",
                 binary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aak":    (
-                "*res->value().{res_t} = bxx::bh_greater_equal(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_greater_equal(*in1->value.{in1_t}, in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")]
             ),
             "aka":    (
-                "*res->value().{res_t} = bxx::bh_greater_equal(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_greater_equal(in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")]
             ),
             "aaa":    (
-                "*res->value().{res_t} = bxx::bh_greater_equal(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_greater_equal(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", in1, in2) for out, in1, in2 in binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")]
             )
         }),
 
         ("logical", "and", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} && in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} && in2->value.{in2_t}",
                 binary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aak":    (
-                "*res->value().{res_t} = bxx::bh_logical_and(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_logical_and(*in1->value.{in1_t}, in2->value.{in2_t})",
                 [("bul_a", "bul_a", "bul")]
             ),
             "aka":    (
-                "*res->value().{res_t} = bxx::bh_logical_and(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_logical_and(in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", "bul", "bul_a")]
             ),
             "aaa":    (
-                "*res->value().{res_t} = bxx::bh_logical_and(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_logical_and(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", "bul_a", "bul_a")]
             )
         }),
         
         ("logical", "or", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} || in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} || in2->value.{in2_t}",
                 binary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aak":    (
-                "*res->value().{res_t} = bxx::bh_logical_or(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_logical_or(*in1->value.{in1_t}, in2->value.{in2_t})",
                 [("bul_a", "bul_a", "bul")]
             ),
             "aka":    (
-                "*res->value().{res_t} = bxx::bh_logical_or(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_logical_or(in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", "bul", "bul_a")]
             ),
             "aaa":    (
-                "*res->value().{res_t} = bxx::bh_logical_or(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_logical_or(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", "bul_a", "bul_a")]
             )
         }),
 
         ("logical", "xor", 2, {
-            "kkk":   ("res->value().{res_t} = in1->value().{in1_t} || in2->value().{in2_t}",
+            "kkk":   ("res.value.{res_t} = in1->value.{in1_t} || in2->value.{in2_t}",
                 binary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aak":    (
-                "*res->value().{res_t} = bxx::bh_logical_xor(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_logical_xor(*in1->value.{in1_t}, in2->value.{in2_t})",
                 [("bul_a", "bul_a", "bul")]
             ),
             "aka":    (
-                "*res->value().{res_t} = bxx::bh_logical_xor(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_logical_xor(in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", "bul", "bul_a")]
             ),
             "aaa":    (
-                "*res->value().{res_t} = bxx::bh_logical_xor(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_logical_xor(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 [("bul_a", "bul_a", "bul_a")]
             )
         }),
 
         ("logical", "not", 1, {
             "kk": (
-                "res->value().{res_t} = !in1->value().{in1_t}",
+                "res.value.{res_t} = !in1->value.{in1_t}",
                 unary_logic_sigs(vtypes_grouped["scalar"])
             ),
             "aa": (
-                "*res->value().{res_t} = bxx::bh_logical_not(*in1->value().{in1_t})",
+                "*res.value.{res_t} = bxx::bh_logical_not(*in1->value.{in1_t})",
                 [("bul_a", "bul_a")]
             )
         }),
 
         ("bitwise", "bw_lshift", 2, {
             "kkk": (
-                "res->value().{res_t} = in1->value().{in1_t} << in2->value().{in2_t}",
+                "res.value.{res_t} = in1->value.{in1_t} << in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"][1:3])
             ),
             "aak": (
-                "*res->value().{res_t} = bxx::left_shift(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::left_shift(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bxx::left_shift(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::left_shift(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bxx::left_shift(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::left_shift(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")
             ),
         }),
 
         ("bitwise", "bw_rshift", 2, {
             "kkk": (
-                "res->value().{res_t} = in1->value().{in1_t} >> in2->value().{in2_t}",
+                "res.value.{res_t} = in1->value.{in1_t} >> in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"][1:3])
             ),
             "aak": (
-                "*res->value().{res_t} = bxx::bh_right_shift(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_right_shift(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bxx::bh_right_shift(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_right_shift(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bxx::bh_right_shift(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_right_shift(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")
             ),
         }),
 
         ("bitwise", "bw_and", 2, {
             "kkk": (
-                "res->value().{res_t} = in1->value().{in1_t} & in2->value().{in2_t}",
+                "res.value.{res_t} = in1->value.{in1_t} & in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"][1:3])
             ),
             "aak": (
-                "*res->value().{res_t} = bxx::bh_bitwise_and(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_bitwise_and(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bxx::bh_bitwise_and(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_bitwise_and(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bxx::bh_bitwise_and(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_bitwise_and(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")
             ),
         }),
 
         ("bitwise", "bw_or", 2, {
             "kkk": (
-                "res->value().{res_t} = in1->value().{in1_t} | in2->value().{in2_t}",
+                "res.value.{res_t} = in1->value.{in1_t} | in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"][1:3])
             ),
             "aak": (
-                "*res->value().{res_t} = bxx::bh_bitwise_or(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_bitwise_or(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bxx::bh_bitwise_or(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_bitwise_or(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bxx::bh_bitwise_or(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_bitwise_or(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")
             ),
         }),
 
         ("bitwise", "bw_xor", 2, {
             "kkk": (
-                "res->value().{res_t} = in1->value().{in1_t} ^ in2->value().{in2_t}",
+                "res.value.{res_t} = in1->value.{in1_t} ^ in2->value.{in2_t}",
                 binary_sigs(vtypes_grouped["scalar"][1:3])
             ),
             "aak": (
-                "*res->value().{res_t} = bxx::bh_bitwise_xor(*in1->value().{in1_t}, in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_bitwise_xor(*in1->value.{in1_t}, in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aak")
             ),
             "aka": (
-                "*res->value().{res_t} = bxx::bh_bitwise_xor(in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_bitwise_xor(in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aka")
             ),
             "aaa": (
-                "*res->value().{res_t} = bxx::bh_bitwise_xor(*in1->value().{in1_t}, *in2->value().{in2_t})",
+                "*res.value.{res_t} = bxx::bh_bitwise_xor(*in1->value.{in1_t}, *in2->value.{in2_t})",
                 binary_repeat_sigs(vtypes_grouped["array"][1:3], "aaa")
             ),
         }),
 
         ("bitwise", "bw_not", 1, {
             "kk": (
-                "res->value().{res_t} = ~ in1->value().{in1_t}",
+                "res.value.{res_t} = ~ in1->value.{in1_t}",
                 unary_sigs(vtypes_grouped["scalar"][1:3])
             ),
             "aa": (
-                "*res->value().{res_t} = bxx::bh_invert(*in1->value().{in1_t})",
+                "*res.value.{res_t} = bxx::bh_invert(*in1->value.{in1_t})",
                 unary_repeat_sigs(vtypes_grouped["array"][1:3])
             ),
         })

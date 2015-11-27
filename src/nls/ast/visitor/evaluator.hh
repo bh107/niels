@@ -9,13 +9,15 @@ namespace ast {
 
 class Evaluator : public Visitor {
 public:
+    Evaluator(void);
     Evaluator(SymbolTable& symbolTable);
-
-    // Generated visit-declarations e.g. "void visit(Add& node);"
-    #include <nls/ast/visitor/evaluator_visit_auto_hh.inc>
+    ~Evaluator(void);
 
     Variant pop(void);
     void push(Variant var);
+
+    // Generated visit-declarations e.g. "void visit(Add& node);"
+    #include <nls/ast/visitor/evaluator_visit_auto_hh.inc>
 
 private:
     std::stack<Variant> _stack;

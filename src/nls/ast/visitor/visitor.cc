@@ -6,6 +6,7 @@ using namespace std;
 namespace nls {
 namespace ast {
 
-Visitor::Visitor(void) { }
+Visitor::Visitor(void) {}
+Visitor::~Visitor(void) {}
 
 }}

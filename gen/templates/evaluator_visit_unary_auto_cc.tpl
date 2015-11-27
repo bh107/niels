@@ -1,21 +1,20 @@
-#include <nls/ast/expr_unary_auto.hh>
-#include <nls/ast/evaluator.hh>
+#include <nls/ast/visitor/evaluator.hh>
 
 using namespace std;
 namespace nls {
 namespace ast {
 
-% for node in ast["nodes"]:
-void Evaluator::visit(${node["class"]& node)
+%for k, op, ninput, exprs in operators:
+void Evaluator::visit(${op2node[op]}& node)
 {
-    walk()
+    walk();
     Variant in1 = pop();
     Variant res;
 
-    // TODO: Derive type
+    // TODO: Derive type of res, 
     
-    VType res_t = res->vtype();
-    VType in1_t = in1->vtype();
+    ValueType res_t = res.value_type;
+    ValueType in1_t = in1.value_type;
     uint64_t mask = (res_t << 16) + in1_t;
     switch(mask) {
     
@@ -41,6 +40,8 @@ void Evaluator::visit(${node["class"]& node)
         throw std::logic_error("Unsupported types for operator.");
         break;
     }
+
+    push(res);
 }
 %endfor
 

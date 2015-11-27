@@ -1,7 +1,6 @@
 #ifndef NLS_UTILS_HH
 #define NLS_UTILS_HH
 #include <sstream>
-#include <nls/ast/node.hh>
 #include <nls/variant.hh>
 #include <nls/symbol_table.hh>
 
@@ -20,11 +19,17 @@ std::string tos(T val)
 }
 
 /*
+    Returns an "Unsupportes types..." error message.
+*/
+std::string value_type_error(Variant* res, Variant* left);
+std::string value_type_error(Variant* res, Variant* left, Variant* right);
+
+/*
     Returns a textual description of the value type.
 
     E.g. i32, bool[], str.
 */
-std::string ValueType_text(ValueType value_type);
+std::string value_type_text(ValueType value_type);
 
 /*
     Returns a dot-representation of the ast rooted at the given node.

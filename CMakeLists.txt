@@ -19,7 +19,7 @@ LINK_DIRECTORIES("${BOHRIUM_LIB}")
 BISON_TARGET(NielsParser "${SRC_DIR}/parser.yy" ${CMAKE_CURRENT_BINARY_DIR}/parser.cc)
 FLEX_TARGET(NielsScanner "${SRC_DIR}/scanner.ll" ${CMAKE_CURRENT_BINARY_DIR}/scanner.cc)
 
-set(GENERATED_SOURCE_FILES
+set(GENERATED_AST_SOURCE_FILES
     ${SRC_DIR}/nls/ast/abs.hh
     ${SRC_DIR}/nls/ast/abs.cc
     ${SRC_DIR}/nls/ast/accessor.hh
@@ -192,6 +192,15 @@ set(GENERATED_SOURCE_FILES
     ${SRC_DIR}/nls/ast/visitor/visitor_visit_auto_hh.inc
     ${SRC_DIR}/nls/ast/visitor/evaluator_visit_auto_hh.inc
 )
+set(GENERATED_NIELS_SOURCE_FILES
+    ${SRC_DIR}/nls/ast/visitor/evaluator_visit_variant_auto.cc
+    ${SRC_DIR}/nls/ast/visitor/evaluator_visit_unary_auto.cc
+    ${SRC_DIR}/nls/ast/visitor/evaluator_visit_binary_auto.cc
+)
+set(GENERATED_SOURCE_FILES
+    ${GENERATED_AST_SOURCE_FILES}
+    ${GENERATED_NIELS_SOURCE_FILES}
+)
 
 set(SOURCE_FILES
     ${SRC_DIR}/niels.cc
@@ -205,39 +214,60 @@ set(SOURCE_FILES
     ${SRC_DIR}/nls/ast/node.cc
     ${SRC_DIR}/nls/symbol_table.hh
     ${SRC_DIR}/nls/symbol_table.cc
+    ${SRC_DIR}/nls/ast/visitor/visitor.hh
+    ${SRC_DIR}/nls/ast/visitor/visitor.cc
+    ${SRC_DIR}/nls/ast/visitor/evaluator.hh
+    ${SRC_DIR}/nls/ast/visitor/evaluator.cc
     ${GENERATED_SOURCE_FILES}
 )
 
-set(GENERATOR_TEMPLATES
+set(GENERATOR_AST_TEMPLATES
     ${GEN_DIR}/templates/nodes_hh.tpl
     ${GEN_DIR}/templates/node_skeleton_hh.tpl
     ${GEN_DIR}/templates/node_skeleton_cc.tpl
     ${GEN_DIR}/templates/visitor_visit_auto_hh_inc.tpl
     ${GEN_DIR}/templates/evaluator_visit_auto_hh_inc.tpl
+)
+set(GENERATOR_NIELS_TEMPLATES
+    ${GEN_DIR}/templates/evaluator_visit_variant_auto_cc.tpl
     ${GEN_DIR}/templates/evaluator_visit_unary_auto_cc.tpl
     ${GEN_DIR}/templates/evaluator_visit_binary_auto_cc.tpl
 )
 
-set(GENERATOR_FILES
+set(GENERATOR_AST_FILES
     ${GEN_DIR}/ast.py
     ${GEN_DIR}/ast.yaml
     ${GEN_DIR}/gen.py
     ${GEN_DIR}/niels.json
 )
 
-add_custom_command(OUTPUT ${GENERATED_SOURCE_FILES}
+set(GENERATOR_NIELS_FILES
+    ${GEN_DIR}/ast.py
+    ${GEN_DIR}/ast.yaml
+    ${GEN_DIR}/gen.py
+    ${GEN_DIR}/niels.json
+)
+
+add_custom_command(OUTPUT ${GENERATED_AST_SOURCE_FILES}
     COMMAND ./ast.py --output_root ${SRC_DIR}
+
     WORKING_DIRECTORY ${GEN_DIR}
-    DEPENDS  ${GENERATOR_FILES} ${GENERATOR_TEMPLATES}
+    DEPENDS  ${GENERATOR_AST_FILES} ${GENERATOR_AST_TEMPLATES}
     COMMENT "Generating AST nodes and visitor boiler-plate."
     VERBATIM)
-#    COMMAND ./niels.py > niels.json
-#    COMMAND ./gen.py --generator=expr_unary_auto.hh > ${SRC_DIR}/nls/ast/expr_unary_auto.hh
-#    COMMAND ./gen.py --generator=expr_unary_auto.cc > ${SRC_DIR}/nls/ast/expr_unary_auto.cc
-#    COMMAND ./gen.py --generator=expr_binary_auto.hh > ${SRC_DIR}/nls/ast/expr_binary_auto.hh
-#    COMMAND ./gen.py --generator=expr_binary_auto.cc > ${SRC_DIR}/nls/ast/expr_binary_auto.cc
 
-set_source_files_properties(${GENERATED_FILES} PROPERTIES GENERATED TRUE)
+add_custom_command(OUTPUT ${GENERATED_NIELS_SOURCE_FILES}
+    COMMAND ./niels.py > niels.json
+    COMMAND ./gen.py --generator=evaluator_visit_variant_auto.cc > ${SRC_DIR}/nls/ast/visitor/evaluator_visit_variant_auto.cc
+    COMMAND ./gen.py --generator=evaluator_visit_unary_auto.cc > ${SRC_DIR}/nls/ast/visitor/evaluator_visit_unary_auto.cc
+    COMMAND ./gen.py --generator=evaluator_visit_binary_auto.cc > ${SRC_DIR}/nls/ast/visitor/evaluator_visit_binary_auto.cc
+
+    WORKING_DIRECTORY ${GEN_DIR}
+    DEPENDS  ${GENERATOR_NIELS_FILES} ${GENERATOR_NIELS_TEMPLATES}
+    COMMENT "Generating evaluator visit methods."
+    VERBATIM)
+
+set_source_files_properties(${GENERATED_SOURCE_FILES} PROPERTIES GENERATED TRUE)
 
 add_executable(niels
     ${SOURCE_FILES}

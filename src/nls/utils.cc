@@ -4,7 +4,26 @@ using namespace std;
 
 namespace nls {
 
-string ValueType_text(ValueType value_type)
+string value_type_error(Variant* res, Variant* left)
+{
+    stringstream ss;
+    ss << "Unsupported types for operator: ";
+    ss << value_type_text(res->value_type)      << ", ";
+    ss << value_type_text(left->value_type)     << ".";
+    return ss.str();
+}
+
+string value_type_error(Variant* res, Variant* left, Variant* right)
+{
+    stringstream ss;
+    ss << "Unsupported types for operator: ";
+    ss << value_type_text(res->value_type)      << ", ";
+    ss << value_type_text(left->value_type)     << ", ";
+    ss << value_type_text(right->value_type)    << ".";
+    return ss.str();
+}
+
+string value_type_text(ValueType value_type)
 {
     switch(value_type) {
         case NLS_UND: return "undefined";
