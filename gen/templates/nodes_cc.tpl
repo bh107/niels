@@ -3,7 +3,7 @@
 
     * Declaration:  autogen/ast.yaml
     * Logic:        autogen/ast.py
-    * Template:     autogen/templates/node_skeleton_cc.tpl
+    * Template:     autogen/templates/nodes_cc.tpl
 
     Modify the above files to persist changes.
 
@@ -11,12 +11,14 @@
     picks up changes to ANY file in autogen/* and thereby
     overwrites ALL local changes to ANY generated file.
 */
-#include <${namespace["name"]}/ast/${node["name"]}.hh>
+#include <${namespace["name"]}/ast/nodes.hh>
 #include <${namespace["name"]}/ast/visitor/visitor.hh>
 
 using namespace std;
 namespace ${namespace["name"]} {
 namespace ast {
+
+% for node in nodes:
 
 ${node["class"]}::${node["class"]}(void) : Node() { }
 
@@ -44,6 +46,7 @@ string ${node["class"]}::dot_shape(void)
 {
     return "${node["shape"]}";
 }
+% endfor
 
 }}
 

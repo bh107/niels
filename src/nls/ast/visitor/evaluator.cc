@@ -35,6 +35,13 @@ void Evaluator::push(Variant var)
 
 // Visitors
 
+void Evaluator::visit(Query& node)
+{
+    walk(node);
+
+    Variant var = pop();
+    cout << "? " << var.value.r64 << endl;
+}
 
 
 }}

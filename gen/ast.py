@@ -41,6 +41,9 @@ def fill_ast(ast):
         else:
             node["constr_lval"] = None
 
+        if "evaluator" not in node:
+            node["evaluator"] = "default"
+
     ast["nodes"].sort() # Sorting the nodes by name
                         # Reasoning: the default listing in filesystems
                         #            wont preserve the order as given in
@@ -50,89 +53,51 @@ def fill_ast(ast):
                         # visits_auto etc. might be convenient
                         # it might also be really annoying... who knows?
 
-def gen_nodes(ast, output_root, template_root):
-    """
-    Generates code for and stores to file:
 
-      * output_root/ast/add.hh
-      * output_root/ast/add.cc
-      * output_root/ast/sub.hh
-      * output_root/ast/sub.cc
-      * ...
+class Emitter(object):
 
-    @returns list of generated files.
-    """
+    def __init__(self, output_root, template_root):
+        self.output_root = output_root
+        self.template_root = template_root
+        self.emitted = []
 
-    generated = []  # Names of generated files
-
-    hdr_template = os.sep.join([template_root, "node_skeleton_hh.tpl"])
-    src_template = os.sep.join([template_root, "node_skeleton_cc.tpl"])
-
-    namespace = ast["namespace"]
-    for node in ast["nodes"]:
-        # Fill out the HEADER template
-        hdr = Template(filename=hdr_template).render(
-            namespace=namespace,
-            node=node
+    def fill(self, template_fn, ast):
+        """
+        Returns the template filled as filled by the ast values.
+        """
+        template_path = os.sep.join([
+            self.template_root,
+            template_fn
+        ])
+        code = Template(filename=template_path).render(
+            namespace=ast["namespace"],
+            nodes=ast["nodes"]
         )
-        # Write it to file
-        hdr_path = output_root +os.sep+ "%s.hh" % node["name"]
-        with open(hdr_path, "w") as fd:
-            fd.write(hdr)
-        # Log the generated file
-        generated.append(hdr_path)
+        return code
 
-        # Fill out the SOURCE template
-        src = Template(filename=src_template).render(
-            namespace=namespace,
-            node=node
-        )
-        src_path = output_root +os.sep+ "%s.cc" % node["name"]
-        with open(src_path, "w") as fd:
-            fd.write(src)
-        # Log the generated file
-        generated.append(src_path)
+    def to_file(self, code, output_path):
+        """
+        Write code to file.
 
-    return generated
+        @Return Path to the file written.
+        """
+        fn = os.sep.join([self.output_root, output_path])
+        with open(fn, 'w') as fd:
+            fd.write(code)
+        return fn
 
-def gen_nodes_hh(ast, output_root, template_root):
+    def emit(self, template_fn, output_path, ast):
+        """
+        Generate code and store it to file.
 
-    code = Template(filename=os.sep.join([
-        template_root,
-        "nodes_hh.tpl"
-    ])).render(namespace=ast["namespace"], nodes=ast["nodes"])
+        @Return Path to where the generated file..
+        """
+        code = self.fill(template_fn, ast)
+        path = self.to_file(code, output_path)
 
-    inc_path = output_root +os.sep+ "nodes.hh"
-    with open(inc_path, "w") as fd:
-        fd.write(code)
+        self.emitted.append(path)
 
-    return [inc_path]
-
-def gen_visitor_visit_auto_hh_inc(ast, output_root, template_root):
-
-    code = Template(filename=os.sep.join([
-        template_root,
-        "visitor_visit_auto_hh_inc.tpl"
-    ])).render(namespace=ast["namespace"], nodes=ast["nodes"])
-
-    inc_path = output_root +os.sep+ "visitor" +os.sep+ "visitor_visit_auto_hh.inc"
-    with open(inc_path, "w") as fd:
-        fd.write(code)
-
-    return [inc_path]
-
-def gen_evaluator_visit_auto_hh_inc(ast, output_root, template_root):
-   
-    code = Template(filename=os.sep.join([
-        template_root,
-        "evaluator_visit_auto_hh_inc.tpl"
-    ])).render(namespace=ast["namespace"], nodes=ast["nodes"])
-
-    inc_path = output_root +os.sep+ "visitor" +os.sep+ "evaluator_visit_auto_hh.inc"
-    with open(inc_path, "w") as fd:
-        fd.write(code)
-
-    return [inc_path]
+        return path
 
 def main(args):
     
@@ -153,20 +118,36 @@ def main(args):
             print("Path(%s) does not exist." % path)
             return
 
+    """
     print (output_root, template_root)
 
     generated = []
     generated += gen_nodes(ast, output_root, template_root)     # Nodes
     generated += gen_nodes_hh(ast, output_root, template_root)  # Nodes header
     generated += gen_visitor_visit_auto_hh_inc(                 # Visitor::visit(...)
-        ast, output_root, template_root
+        ast,
+        output_root,
+        template_root
     )
     generated += gen_evaluator_visit_auto_hh_inc(               # Evaluator::visit(...)
         ast,
         output_root,
         template_root
     )
-    pprint.pprint(generated)
+    generated += gen_evaluator_visit_auto_cc(               # Evaluator::visit(...)
+        ast,
+        output_root,
+        template_root
+    )
+    """
+    emitter = Emitter(output_root, template_root)
+    emitter.emit("nodes_hh.tpl", "nodes.hh", ast)
+    emitter.emit("nodes_cc.tpl", "nodes.cc", ast)
+    emitter.emit("visitor_visit_auto_hh_inc.tpl", "visitor/visitor_visit_auto_hh.inc", ast)
+    emitter.emit("evaluator_visit_auto_hh_inc.tpl", "visitor/evaluator_visit_auto_hh.inc", ast)
+    emitter.emit("evaluator_visit_auto_cc.tpl", "visitor/evaluator_visit_auto.cc", ast)
+
+    pprint.pprint(emitter.emitted)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

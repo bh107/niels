@@ -22,7 +22,6 @@ int main(int argc, char** argv) {
 
     //driver.walk(driver.ast());      // TODO: Evaluation
     nls::ast::Evaluator evaluator(driver.symbolTable());
-   
     /* 
     if (argc>2) {                   // Dump dot
         ofstream dotfile(argv[2]);

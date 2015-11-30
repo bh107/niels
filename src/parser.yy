@@ -98,12 +98,18 @@ extern "C++" void yyerror(nls::Driver& env, const char *s);
 %type <node> function function_head function_body param_list param
 %type <node> record record_head record_body attr attrs
 %type <node> accessor
-%type <node> exitScope
-
+%type <operator> exitScope
+%destructor {
+    if ($$) {
+        delete $$;
+    }
+} <node>
 %%
 
 input:
-  %empty {}
+  %empty {
+    $$ = NULL;
+}
 | stmt_list {
     $$ = new nls::ast::Module(new nls::ast::Ident("root"), $1);
     env.ast($$);

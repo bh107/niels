@@ -24,19 +24,6 @@ def cmake(autogen_path):
 # Construct expr nodes for the grammar to construct
 #
 
-def evaluator_visit_variant_auto_cc(nls):
-
-    ops = [op for op in nls["operators"] if op[2] == 1]
-    
-    return Template(filename=os.sep.join(["templates", "evaluator_visit_variant_auto_cc.tpl"])).render(
-        operators=ops,
-        vtypes=nls["vtypes"],
-        vtype2ast=nls["vtype2ast"],
-        vtype2enum=nls["vtype2enum"],
-        vtype2ctype=nls["vtype2ctype"],
-        op2node=nls["op2node"],
-    )
-
 def evaluator_visit_unary_auto_cc(nls):
     ops = [op for op in nls["operators"] if op[2] == 1]
 

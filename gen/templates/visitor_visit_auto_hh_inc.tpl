@@ -3,7 +3,7 @@
 
     * Declaration:  autogen/ast.yaml
     * Logic:        autogen/ast.py
-    * Template:     autogen/templates/evaluator_visit_auto_hh_inc.tpl
+    * Template:     autogen/templates/visitor_visit_auto_hh_inc.tpl
 
     Modify the above files to persist changes.
 

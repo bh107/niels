@@ -19,12 +19,12 @@ public:
         pre or post-order walk within visit(...).
     */
     template<typename T>
-    void walk(T &node)
+    void walk(T& node)
     {
-        if (node.right()) {
+        if (node.left()) {
             node.left()->accept(*this);
         }
-        if (node.left()) {
+        if (node.right()) {
             node.right()->accept(*this);
         }
     }
