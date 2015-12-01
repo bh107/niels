@@ -99,11 +99,6 @@ extern "C++" void yyerror(nls::Driver& env, const char *s);
 %type <node> record record_head record_body attr attrs
 %type <node> accessor
 %type <operator> exitScope
-%destructor {
-    if ($$) {
-        delete $$;
-    }
-} <node>
 %%
 
 input:
