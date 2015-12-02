@@ -128,8 +128,14 @@ nodes:
   - name: block
   - name: stmt
   - name: stmt_list
+    evaluator: custom
 # Statements - Control
   - name: while
+    evaluator: custom
+  - name: break
+    evaluator: custom
+  - name: continue
+    evaluator: custom
   - name: when
   - name: case_list
   - name: is

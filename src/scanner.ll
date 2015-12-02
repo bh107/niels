@@ -96,6 +96,8 @@ stringstream _comment;
 
 "return" { return RETURN; }
 "while" { return WHILE; }
+"continue" { return CONTINUE; }
+"break" { return BREAK; }
 
 "when"      { return WHEN; }
 "is"        { return IS; }

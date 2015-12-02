@@ -22,6 +22,7 @@ FLEX_TARGET(NielsScanner "${SRC_DIR}/scanner.ll" ${CMAKE_CURRENT_BINARY_DIR}/sca
 set(GENERATED_SOURCE_FILES
     ${SRC_DIR}/nls/ast/nodes.hh
     ${SRC_DIR}/nls/ast/nodes.cc
+    ${SRC_DIR}/nls/ast/exception.hh
     ${SRC_DIR}/nls/ast/visitor/visitor_visit_auto_hh.inc
     ${SRC_DIR}/nls/ast/visitor/evaluator_visit_auto_hh.inc
     ${SRC_DIR}/nls/ast/visitor/evaluator_visit_auto.cc

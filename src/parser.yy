@@ -166,9 +166,20 @@ function:
 }
 ;
 
+while_body:
+    block[b] {
+    
+    nls::ast::Node* c = new nls::ast::StmtList(
+        $b->right(),
+        new nls::ast::Continue()
+    );
+    $b->right(c);
+}
+;
+
 while:
-  WHILE LPAREN expr RPAREN block {
-    $$ = new nls::ast::While($3, $5);
+  WHILE LPAREN expr[e] RPAREN while_body[b] {
+    $$ = new nls::ast::While($e, $b);
 }
 ;
 
@@ -406,6 +417,8 @@ stmt:
 | record { $$ = $1; }
 | return { $$ = $1; }
 | while { $$ = $1; }
+| BREAK { $$ = new nls::ast::Break(); }
+| CONTINUE { $$ = new nls::ast::Continue(); }
 | when { $$ = $1; }
 | block { $$ = $1; }
 | import { $$ = $1; }
