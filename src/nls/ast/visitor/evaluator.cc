@@ -1,5 +1,7 @@
 #include <iostream>
+#include <nls/ast/exception.hh>
 #include <nls/ast/visitor/evaluator.hh>
+#include <nls/utils.hh>
 
 using namespace std;
 

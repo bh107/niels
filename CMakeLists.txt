@@ -10,6 +10,10 @@ set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(GEN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gen")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+# Ignore warning on unused yyunput from Flex generated scanner
+set_source_files_properties(scanner.cc PROPERTIES COMPILE_FLAGS -Wno-unused-function)
+
 INCLUDE_DIRECTORIES(${SRC_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES("${BOHRIUM_INC}/")

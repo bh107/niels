@@ -8,7 +8,7 @@
     Modify the above files to persist changes.
 
     Locally changing this file is possible, however, be aware that cmake
-    picks up changes to ANY file in autogen/* and thereby
+    picks up changes to ANY file in autogen/ and thereby
     overwrites ALL local changes to ANY generated file.
 */
 #ifndef ${namespace["guard"]}_AST_NODES_HH
