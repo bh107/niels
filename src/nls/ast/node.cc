@@ -39,7 +39,11 @@ void Node::right(Node* node)
 
 void Node::append(Node* node)
 {
-    
+    Node* next = this;
+    while(next->right()) {
+        next = next->right();
+    }
+    next->right(node);
 }
 
 void Node::variant(Variant *var)
