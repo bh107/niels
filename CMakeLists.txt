@@ -65,7 +65,7 @@ set(GENERATOR_FILES
 )
 
 add_custom_command(OUTPUT ${GENERATED_SOURCE_FILES}
-    COMMAND ./ast.py --yaml ${SRC_DIR}/ast.yaml--output_root ${SRC_DIR}
+    COMMAND ./ast.py --yaml ${SRC_DIR}/ast.yaml --output_root ${SRC_DIR}
 
     WORKING_DIRECTORY ${GEN_DIR}
     DEPENDS  ${GENERATOR_FILES} ${GENERATOR_TEMPLATES}
