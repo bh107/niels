@@ -5,7 +5,8 @@ NAME=${BASENAME%%.*}
 DOT="/tmp/${NAME}.dot"
 PDF="/tmp/${NAME}.pdf"
 
-niels $PROGRAM $DOT
+niels $PROGRAM $DOT &
+sleep 1
 if [ -f $DOT ]; then
     dot -T pdf $DOT > $PDF
     if [ -f $PDF ]; then

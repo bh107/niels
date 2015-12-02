@@ -30,6 +30,7 @@ std::string value_type_error(Variant* res, Variant* left, Variant* right);
     E.g. i32, bool[], str.
 */
 std::string value_type_text(ValueType value_type);
+std::string variant_text(Variant variant);
 
 /*
     Returns a dot-representation of the ast rooted at the given node.
@@ -37,7 +38,7 @@ std::string value_type_text(ValueType value_type);
     Note: Implementation uses "embedded" approach to tree-walking,
           concatenating the dot-method result in a pre-order walk.
 */
-//std::string dot(ast::Node* node);
+std::string dot(ast::Node* node);
 
 }
 #endif

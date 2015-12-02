@@ -132,19 +132,22 @@ bool Driver::fewerNoops(void)
     return _fewer_noops;
 }
 
-/*
+void Driver::eval(void)
+{
+    nls::ast::Evaluator evaluator(symbolTable());
+    ast()->accept(evaluator);
+}
+
 string Driver::dot(void)
 {
     stringstream ss;                        // CReate dot
     ss << "graph {" << endl;
     ss << "graph[ordering=out]" << endl;
-    ss << symbolTable().dot() << endl;
     ss << nls::dot(ast()) << endl;
     ss << "}" << endl;
 
     return ss.str();
 }
-*/
 
 }
 

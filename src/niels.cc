@@ -6,25 +6,15 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    // TOOD: REPL
+    nls::Driver driver;             // TODO: REPL
 
-    nls::Driver driver;
-
-    string filename = "-";
-
+    string filename = "-";          // Default to stdin
     if (argc>1) {
         filename = argv[1];
     }
     
     driver.parse(filename);         // Parsing
-                                    // TODO: Syntax check
-                                    // TODO: Type check
 
-    //driver.walk(driver.ast());      // TODO: Evaluation
-    nls::ast::Evaluator evaluator(driver.symbolTable());
-
-    driver.ast()->accept(evaluator);
-    /* 
     if (argc>2) {                   // Dump dot
         ofstream dotfile(argv[2]);
         if (dotfile.is_open()) {
@@ -32,6 +22,10 @@ int main(int argc, char** argv) {
             dotfile.close();
         }
     }
-    */
+                                    // TODO: Syntax check
+                                    // TODO: Type check
+
+    driver.eval();                  // TODO: Evaluation
+
 }
 
