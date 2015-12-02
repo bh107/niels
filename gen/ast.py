@@ -118,28 +118,6 @@ def main(args):
             print("Path(%s) does not exist." % path)
             return
 
-    """
-    print (output_root, template_root)
-
-    generated = []
-    generated += gen_nodes(ast, output_root, template_root)     # Nodes
-    generated += gen_nodes_hh(ast, output_root, template_root)  # Nodes header
-    generated += gen_visitor_visit_auto_hh_inc(                 # Visitor::visit(...)
-        ast,
-        output_root,
-        template_root
-    )
-    generated += gen_evaluator_visit_auto_hh_inc(               # Evaluator::visit(...)
-        ast,
-        output_root,
-        template_root
-    )
-    generated += gen_evaluator_visit_auto_cc(               # Evaluator::visit(...)
-        ast,
-        output_root,
-        template_root
-    )
-    """
     emitter = Emitter(output_root, template_root)
     emitter.emit("nodes_hh.tpl", "nodes.hh", ast)
     emitter.emit("nodes_cc.tpl", "nodes.cc", ast)

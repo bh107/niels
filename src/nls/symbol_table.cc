@@ -6,7 +6,7 @@ using namespace std;
 
 namespace nls {
 
-SymbolTable::SymbolTable(void) : _symbols(), _scope("root") { }
+SymbolTable::SymbolTable(void) : _scope("root"), _symbols() { }
 
 SymbolTable::~SymbolTable(void) { }
 

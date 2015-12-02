@@ -40,6 +40,9 @@ public:
 
     virtual void accept(Visitor& visitor) = 0;
 
+    virtual std::string dot(void);
+    virtual std::string dot_relation(void);
+
     virtual std::string dot_label(void);
 
     virtual std::string dot_shape(void);

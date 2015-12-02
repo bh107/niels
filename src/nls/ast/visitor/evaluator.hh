@@ -19,6 +19,8 @@ public:
     // Generated visit-declarations e.g. "void visit(Add& node);"
     #include <nls/ast/visitor/evaluator_visit_auto_hh.inc>
 
+    void garbage(Variant& val);
+
 private:
     std::stack<Variant> _stack;
     SymbolTable _symbolTable;

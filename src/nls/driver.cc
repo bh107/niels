@@ -1,6 +1,7 @@
 #include <parser.hh>
 #include <nls/driver.hh>
 #include <nls/utils.hh>
+#include <nls/ast/visitor/evaluator.hh>
 
 using namespace std;
 namespace nls {

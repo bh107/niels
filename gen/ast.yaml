@@ -1,5 +1,10 @@
 namespace:
     name: nls
+visitors:
+  - name: syntax_checker
+  - name: type_checker
+  - name: evaluator
+  - name: dotifier
 nodes:
 # Literals
   - name: bul
@@ -114,14 +119,16 @@ nodes:
   - name: accessor
 # Expressions - Constructors
   - name: as
+    evaluator: manual
   - name: shape
+    evaluator: manual
   - name: range
   - name: new
 # Statements
   - name: alias
   - name: assign
   - name: query
-    evaluator: manual
+    evaluator: custom
 # Statements - Organization
   - name: import
   - name: module

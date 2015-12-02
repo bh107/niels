@@ -74,7 +74,7 @@ extern "C++" void yyerror(nls::Driver& env, const char *s);
 %token <node> COMMENT BOOL INT32 INT64 REAL32 REAL64
 %token <node> COMPLEX64 COMPLEX128
 %token <node> STRING IDENT
-%token RETURN FUNCTION WHILE WHEN IS OTHERWISE
+%token RETURN FUNCTION WHILE CONTINUE BREAK WHEN IS OTHERWISE
 %token NEW RECORD
 
 %left LPAREN
@@ -91,7 +91,7 @@ extern "C++" void yyerror(nls::Driver& env, const char *s);
 %type <node> stmt_list
 %type <node> stmt
 %type <node> return
-%type <node> while
+%type <node> while while_body
 %type <node> when is otherwise case_list
 %type <node> import
 %type <node> arg_list
@@ -248,10 +248,10 @@ val:
 ;
 
 shape:
-  expr { $$ = new nls::ast::Shape($1); }
-| shape COMMA expr {
-    $1->right(new nls::ast::Shape($3));
-    $$ = $1;
+  expr[e] { $$ = new nls::ast::Shape($e); }
+| shape[s] COMMA expr[e] {
+    $s->append(new nls::ast::Shape($e));
+    $$ = $s;
 }
 ;
 

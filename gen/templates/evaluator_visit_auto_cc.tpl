@@ -21,14 +21,24 @@ void Evaluator::visit(${node["class"]}& node)
 {
     walk(node);             // Evaluate children
 
-    Variant right = pop();  // Pop results
-    Variant left = pop();
     Variant res;            // Allocate result
+    Variant in1 = pop();    // Pop inputs
+    Variant in2 = pop();
 
-                            // Compute it
-    res.value.r64 = left.value.r64 + right.value.r64;
-    res.value_type = NLS_R64;
+    res.value_type = in1.value_type > in2.value_type ? in1.value_type : in2.value_type;
 
+    /*
+    uint64_t mask = (res.value_type << 32) + (in1.value_type << 16) + in2.value_type;
+    switch(mask) {
+    case (NLS_R64_A << 32) + (NLS_R64_A << 16) + NLS_R64_A:
+        res.value.r64_a = new bxx::multi_array<double>();
+        *res.value.r64_a = bxx::bh_add(*in1.value.r64_a, *in2.value.r64_a);
+        delete *in1.value.r64_a;
+        delete *in2.value.r64_a;
+        break;
+    }
+    */
+    
     push(res);              // Push result
 }
 % endif
