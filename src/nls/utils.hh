@@ -32,6 +32,8 @@ std::string value_type_error(Variant* res, Variant* left, Variant* right);
 std::string value_type_text(ValueType value_type);
 std::string variant_text(Variant variant);
 
+bool equivalent(Variant one, Variant other);
+
 /*
     Returns a dot-representation of the ast rooted at the given node.
 

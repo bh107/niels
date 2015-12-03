@@ -50,6 +50,27 @@ string value_type_text(ValueType value_type)
     }
 }
 
+bool equivalent(Variant one, Variant other)
+{
+    if (one.value_type != other.value_type) {
+        return false;
+    }
+    switch(one.value_type) {
+    case NLS_BUL:
+        return one.value.bul == other.value.bul;
+    case NLS_I32:
+        return one.value.i32 == other.value.i32;
+    case NLS_I64:
+        return one.value.i64 == other.value.i64;
+    case NLS_R32:
+        return one.value.r32 == other.value.r32;
+    case NLS_R64:
+        return one.value.r64 == other.value.r64;
+    default:
+        return false;
+    }
+}
+
 string variant_text(Variant variant)
 {
     stringstream ss;
