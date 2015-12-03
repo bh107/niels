@@ -21,9 +21,9 @@ void Evaluator::visit(${node["class"]}& node)
 {
     walk(node);             // Evaluate children
 
-    Variant res;            // Allocate result
-    Variant in1 = pop();    // Pop inputs
     Variant in2 = pop();
+    Variant in1 = pop();    // Pop inputs
+    Variant res;            // Allocate result
 
     uint64_t mask = (in2.value_type << 16) + in1.value_type;
     switch(mask) {
@@ -54,12 +54,12 @@ void Evaluator::visit(${node["class"]}& node)
         res.value.${res_value_type} = new ${res_value_type}_type();
         res.value_type = ${res_enum};
         ${expr};
-        delete in2.value.${in1_value_type};
+        delete in1.value.${in1_value_type};
     % elif combination == "aka":
         res.value.${res_value_type} = new ${res_value_type}_type();
         res.value_type = ${res_enum};
         ${expr};
-        delete in1.value.${in2_value_type};
+        delete in2.value.${in2_value_type};
     % elif combination == "kkk":
         res.value_type = ${res_enum};
         ${expr};
