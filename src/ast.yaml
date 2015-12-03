@@ -67,10 +67,15 @@ nodes:
   - name: add
     evaluator: expr
   - name: sub
+    evaluator: expr
   - name: mul
+    evaluator: expr
   - name: div
+    evaluator: expr
   - name: mod
+    evaluator: expr
   - name: pow
+    evaluator: expr
   - name: exp
   - name: sqrt
   - name: abs
@@ -96,32 +101,47 @@ nodes:
   - name: atanh
 # Expressions - Comparison
   - name: equal
+    evaluator: expr
   - name: not_equal
+    evaluator: expr
   - name: lthan
+    evaluator: expr
   - name: lthan_equal
+    evaluator: expr
   - name: gthan
+    evaluator: expr
   - name: gthan_equal
+    evaluator: expr
 # Expressions - Logical
   - name: and
+    evaluator: expr
   - name: or
+    evaluator: expr
   - name: xor
   - name: not
+    evaluator: expr
 # Expressions - Bitwise
   - name: bw_and
+    evaluator: expr
   - name: bw_or
+    evaluator: expr
   - name: bw_xor
+    evaluator: expr
   - name: bw_not
+    evaluator: expr
   - name: bw_lshift
+    evaluator: expr
   - name: bw_rshift
+    evaluator: expr
 # Expressions - Function call, arguments and accessor
   - name: call
   - name: arg_list
   - name: accessor
 # Expressions - Constructors
   - name: as
-    evaluator: manual
+    evaluator: custom
   - name: shape
-    evaluator: manual
+    evaluator: custom
   - name: range
   - name: new
 # Statements
@@ -135,7 +155,6 @@ nodes:
   - name: block
   - name: stmt
   - name: stmt_list
-    evaluator: custom
 # Statements - Control
   - name: while
     evaluator: custom
@@ -148,6 +167,7 @@ nodes:
   - name: is
   - name: otherwise
   - name: return
+    evaluator: custom
 # Statements - Definitions
   - name: record
   - name: record_def

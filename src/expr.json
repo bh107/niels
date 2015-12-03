@@ -1,28 +1,4 @@
 {
-   "op2node": {
-      "add": "Add",
-      "and": "And",
-      "bw_and": "BwAnd",
-      "bw_lshift": "BwLshift",
-      "bw_not": "BwNot",
-      "bw_or": "BwOr",
-      "bw_rshift": "BwRshift",
-      "bw_xor": "BwXor",
-      "div": "Div",
-      "equal": "Equal",
-      "gthan": "Gthan",
-      "gthan_equal": "GthanEqual",
-      "lthan": "Lthan",
-      "lthan_equal": "LthanEqual",
-      "mod": "Mod",
-      "mul": "Mul",
-      "not": "Not",
-      "not_equal": "NotEqual",
-      "or": "Or",
-      "pow": "Pow",
-      "sub": "Sub",
-      "xor": "Xor"
-   },
    "operators": [
    ["arithmetic", "add", 2, {
             "aaa": [
@@ -831,48 +807,7 @@
             "res.value.{res_t} = ~ in1.value.{in1_t}", 
             [
                ["i32", "i32"], 
-               ["i64", "i32"], 
                ["i64", "i64"]]]
-         }]],
-   "vtype2ast": {
-      "bul": "Bul",
-      "bul_a": "BulA",
-      "i32": "I32",
-      "i32_a": "I32A",
-      "i64": "I64",
-      "i64_a": "I64A",
-      "r32": "R32",
-      "r32_a": "R32A",
-      "r64": "R64",
-      "r64_a": "R64A"
-   },
-   "vtype2ctype": {
-      "bul": "bool",
-      "bul_a": "bxx::multi_array<bool>*",
-      "i32": "int32_t",
-      "i32_a": "bxx::multi_array<int32_t>*",
-      "i64": "int64_t",
-      "i64_a": "bxx::multi_array<int64_t>*",
-      "r32": "float",
-      "r32_a": "bxx::multi_array<float>*",
-      "r64": "double",
-      "r64_a": "bxx::multi_array<double>*"
-   },
-   "vtype2enum": {
-      "bul": "NLS_BUL",
-      "bul_a": "NLS_BUL_A",
-      "i32": "NLS_I32",
-      "i32_a": "NLS_I32_A",
-      "i64": "NLS_I64",
-      "i64_a": "NLS_I64_A",
-      "r32": "NLS_R32",
-      "r32_a": "NLS_R32_A",
-      "r64": "NLS_R64",
-      "r64_a": "NLS_R64_A"
-   },
-   "vtypes": ["bul", "i32", "i64", "r32", "r64", "bul_a", "i32_a", "i64_a", "r32_a", "r64_a"],
-   "vtypes_grouped": {
-      "array": ["bul_a", "i32_a", "i64_a", "r32_a", "r64_a"],
-      "scalar": ["bul", "i32", "i64", "r32", "r64"]
-   }
+         }]
+    ]
 }

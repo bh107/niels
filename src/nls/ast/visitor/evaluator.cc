@@ -217,7 +217,7 @@ void Evaluator::visit(Break& node)
     throw escape_flow();
 }
 
-void Evaluator::return(Return& node)
+void Evaluator::visit(Return& node)
 {
     walk(node);
     throw escape_flow();

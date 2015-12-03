@@ -4,6 +4,7 @@ import argparse
 import pprint
 import glob
 import yaml
+import json
 import os
 
 from mako.template import Template
@@ -18,10 +19,13 @@ def indent(lines, spaces=4):
     return ("\n".join(indented)).rstrip()
 
 
-def fill_ast(ast):
+def fill_ast(ast, expr):
     """
     Fills out the ast-dict with default values.
     """
+
+    # Re-arranging operators from expr.json
+    operators = {name: {"ninput": ninput, "group": group, "code": code} for group, name, ninput, code in expr["operators"]}
 
     if "guard" not in ast["namespace"]:
         ast["namespace"]["guard"] = ast["namespace"]["name"].upper()
@@ -43,6 +47,10 @@ def fill_ast(ast):
 
         if "evaluator" not in node:
             node["evaluator"] = "default"
+
+        # Squeezing in values from expr.json
+        if node["name"] in operators:
+            node.update(operators[node["name"]])
 
     ast["nodes"].sort() # Sorting the nodes by name
                         # Reasoning: the default listing in filesystems
@@ -102,9 +110,12 @@ class Emitter(object):
 def main(args):
     
     yaml_path = os.path.realpath(os.path.expandvars(os.path.expanduser(args.yaml)))
+    json_path = os.path.realpath(os.path.expandvars(os.path.expanduser(args.json)))
+
+    expr = json.load(open(json_path))   # Load expressions
 
     ast = yaml.load(open(yaml_path))    # Load yaml
-    fill_ast(ast)                       # Fill it out with default values
+    fill_ast(ast, expr)                 # Fill it out with default values
 
     output_root = os.path.realpath(os.path.expandvars(os.path.expanduser(os.sep.join([
         args.output_root,
@@ -138,6 +149,15 @@ if __name__ == "__main__":
         default=os.sep.join([
             os.path.dirname(os.path.realpath(__file__)),
             "ast.yaml"
+        ])
+    )
+    parser.add_argument(
+        "--json",
+        type=str,
+        help="Path to expr.yaml",
+        default=os.sep.join([
+            os.path.dirname(os.path.realpath(__file__)),
+            "expr.json"
         ])
     )
     parser.add_argument(
