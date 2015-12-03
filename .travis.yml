@@ -9,6 +9,7 @@ addons:
   apt:
     packages:
       - python
+      - python-yaml
       - python-numpy
       - python-cheetah
       - cython
