@@ -194,7 +194,7 @@ void Evaluator::visit(While& node)
 {
     node.left()->accept(*this);             // Eval condition
     Variant cond = pop();                   // Pop the result
-
+    
     bool cont = true;
     while(cond.value.bul && cont) {
         // TODO: Push scope
@@ -226,6 +226,127 @@ void Evaluator::visit(Return& node)
 {
     walk(node);
     throw escape_flow();
+}
+
+/*
+    Resolve ident in symbol table.
+    If it does not exist then add an NLS_UND Variant.
+*/
+void Evaluator::visit(Ident& node)
+{
+    Variant var = _symbolTable.get(node.name());
+
+    Variant res = var;          // Copy the value in symbol table
+
+    switch(var.value_type) {    // Construct views of arrays
+    case NLS_BUL_A:
+        res.value.bul_a = new bxx::multi_array<bool>();
+        *res.value.bul_a = *var.value.bul_a;
+        break;
+    case NLS_I32_A:
+        res.value.i32_a = new bxx::multi_array<int32_t>();
+        *res.value.i32_a = *var.value.i32_a;
+        break;
+    case NLS_I64_A:
+        res.value.i64_a = new bxx::multi_array<int64_t>();
+        *res.value.i64_a = *var.value.i64_a;
+        break;
+    case NLS_R32_A:
+        res.value.r32_a = new bxx::multi_array<float>();
+        *res.value.r32_a = *var.value.r32_a;
+        break;
+    case NLS_R64_A:
+        res.value.r64_a = new bxx::multi_array<double>();
+        *res.value.r64_a = *var.value.r64_a;
+        break;
+    }
+    push(res);
+}
+
+// Assignment
+void Evaluator::visit(Assign& node)
+{
+    walk(node);
+
+    Variant expr = pop();
+    Variant var = pop();
+
+    switch(var.value_type) {
+    case NLS_UND:
+    case NLS_BUL:
+    case NLS_I32:
+    case NLS_I64:
+    case NLS_R32:
+    case NLS_R64:
+        var = expr;
+        _symbolTable.put(node.left()->name(), var);
+        break;
+
+    case NLS_BUL_A:
+        (*var.value.bul_a)(*expr.value.bul_a);
+        delete var.value.bul_a;
+        delete expr.value.bul_a;
+        break;
+    case NLS_I32_A:
+        (*var.value.i32_a)(*expr.value.i32_a);
+        delete var.value.i32_a;
+        delete expr.value.i32_a;
+        break;
+    case NLS_I64_A:
+        (*var.value.i64_a)(*expr.value.i64_a);
+        delete var.value.i64_a;
+        delete expr.value.i64_a;
+        break;
+    case NLS_R32_A:
+        (*var.value.r32_a)(*expr.value.r32_a);
+        delete var.value.r32_a;
+        delete expr.value.r32_a;
+        break;
+    case NLS_R64_A:
+        (*var.value.r64_a)(*expr.value.r64_a);
+        delete var.value.r64_a;
+        delete expr.value.r64_a;
+        break;
+    }
+
+}
+
+void Evaluator::visit(When& node)
+{
+    node.left()->accept(*this);         // Pushes expression value on stack
+    try {
+        node.right()->accept(*this);    // Go down until breaking out
+    } catch (escape_flow& e) {
+        Variant comp = pop();           // Pop the condition var
+        garbage(comp);
+    }
+}
+
+void Evaluator::visit(CaseList& node)
+{
+    walk(node);
+}
+
+void Evaluator::visit(Is& node)
+{
+    Variant comp = peek();              // Get the when-expr-value
+
+    node.left()->accept(*this);         // Evaluate is-expr
+    Variant expr = pop();               // Get the is-expr-value
+
+    if (equivalent(comp, expr)) {       // Compare is-expr-value and when-expr-value
+        node.right()->accept(*this);    // Evaluate is-body
+        throw escape_flow();            // Escape recursion
+    }
+}
+
+void Evaluator::visit(Otherwise& node)
+{
+    node.right()->accept(*this);        // Tail, always execute regardless of value
+    throw escape_flow();                // Escape recusion
+
+    // NOTE: The exception is thrown to normalize the handling when
+    //       visiting "When"
 }
 
 

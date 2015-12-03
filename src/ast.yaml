@@ -148,6 +148,7 @@ nodes:
 # Statements
   - name: alias
   - name: assign
+    evaluator: manual
   - name: query
     evaluator: custom
 # Statements - Organization
@@ -164,9 +165,13 @@ nodes:
   - name: continue
     evaluator: custom
   - name: when
+    evaluator: custom
   - name: case_list
+    evaluator: custom
   - name: is
+    evaluator: custom
   - name: otherwise
+    evaluator: custom
   - name: return
     evaluator: custom
 # Statements - Definitions
