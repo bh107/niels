@@ -23,6 +23,11 @@ Evaluator::~Evaluator(void)
 }
 
 // Stack operations
+Variant Evaluator::peek(void)
+{
+    return _stack.top();
+}
+
 Variant Evaluator::pop(void)
 {
     Variant res = _stack.top();

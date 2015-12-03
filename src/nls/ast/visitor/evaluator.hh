@@ -13,6 +13,7 @@ public:
     Evaluator(SymbolTable& symbolTable);
     ~Evaluator(void);
 
+    Variant peek(void);
     Variant pop(void);
     void push(Variant var);
 

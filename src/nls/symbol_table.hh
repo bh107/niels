@@ -14,9 +14,9 @@ public:
      * Returns a pointer to the symbol if it exists
      * and NULL otherwise.
      */
-    Variant* get(std::string name);
+    Variant get(const std::string& name);
 
-    void put(std::string name, Variant* val);
+    void put(std::string name, Variant val);
 
     std::string& scope(void);
 
@@ -24,7 +24,7 @@ public:
 
 private:
     std::string _scope;
-    std::map<std::string, Variant*> _symbols;
+    std::map<std::string, Variant> _symbols;
 };
 
 }
