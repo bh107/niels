@@ -60,9 +60,10 @@ nodes:
 # Identifier
   - name: ident
     constr_lval: |
-        _variant = new Variant;
-        _variant->value.str = new string(lval);
-        _variant->value_type = NLS_STR;
+        stringstream ss;
+        ss << *lval;
+        _name = ss.str();
+    evaluator: custom
 # Expressions - Arithmetic
   - name: add
     evaluator: expr
