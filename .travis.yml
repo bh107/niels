@@ -10,7 +10,6 @@ addons:
     packages:
       - python
       - python-yaml
-      - python-numpy
       - python-cheetah
       - cython
       - swig
@@ -32,6 +31,7 @@ addons:
 script:
   - pip install --upgrade pip --user
   - pip install mako --user
+  - pip install numpy
   - source util/setenv.bash
   - source util/deps.cmake.sh
   - source util/deps.bison.sh
